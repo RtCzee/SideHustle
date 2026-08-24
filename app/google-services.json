@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "991749898937",
+    "project_id": "sidehustle-d709c",
+    "storage_bucket": "sidehustle-d709c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991749898937:android:3f6ff2659d565e9d35d168",
+        "android_client_info": {
+          "package_name": "com.example.sidehustle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB73huSIi1o70Er1Crpr7iwX2o7Ibzu9_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
