@@ -38,6 +38,12 @@ From our Part 1 design:
 
 **Deferred to PoE:** offline mode, Google Sign-In, FCM, file attachments, extra languages, final artwork.
 
+**Libraries (why they are here)**
+
+- **Firebase Auth** — assignment SDK; email/password login with hashed passwords
+- **Retrofit + Gson** — REST calls to our hosted API (connected in a later issue)
+- **Room** — not added yet; reserved for PoE offline mode
+
 ---
 
 ## How we use GitHub

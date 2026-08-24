@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -47,6 +48,15 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
+    // Firebase BOM + Auth SDK — hashes passwords and hosts the user list for the demo
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+
+    // Retrofit — REST client for the hosted API (wired up in a later issue)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
