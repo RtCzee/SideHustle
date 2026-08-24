@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.sidehustle.ui.auth.LoginFragment"
+        android:label="@string/login_title"
+        tools:layout="@layout/fragment_placeholder">
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.sidehustle.ui.auth.RegisterFragment"
+        android:label="@string/register_title"
+        tools:layout="@layout/fragment_placeholder">
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_registerFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.example.sidehustle.ui.dashboard.DashboardFragment"
+        android:label="@string/dashboard_title"
+        tools:layout="@layout/fragment_placeholder" />
+
+    <fragment
+        android:id="@+id/clientsFragment"
+        android:name="com.example.sidehustle.ui.clients.ClientsFragment"
+        android:label="@string/clients_title"
+        tools:layout="@layout/fragment_placeholder">
+        <action
+            android:id="@+id/action_clientsFragment_to_clientDetailsFragment"
+            app:destination="@id/clientDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/clientDetailsFragment"
+        android:name="com.example.sidehustle.ui.clients.ClientDetailsFragment"
+        android:label="@string/client_details_title"
+        tools:layout="@layout/fragment_placeholder" />
+
+    <fragment
+        android:id="@+id/projectsFragment"
+        android:name="com.example.sidehustle.ui.projects.ProjectsFragment"
+        android:label="@string/projects_title"
+        tools:layout="@layout/fragment_placeholder">
+        <action
+            android:id="@+id/action_projectsFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/projectDetailsFragment"
+        android:name="com.example.sidehustle.ui.projects.ProjectDetailsFragment"
+        android:label="@string/project_details_title"
+        tools:layout="@layout/fragment_placeholder" />
+
+    <fragment
+        android:id="@+id/invoicesFragment"
+        android:name="com.example.sidehustle.ui.invoices.InvoicesFragment"
+        android:label="@string/invoices_title"
+        tools:layout="@layout/fragment_placeholder">
+        <action
+            android:id="@+id/action_invoicesFragment_to_expensesFragment"
+            app:destination="@id/expensesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/expensesFragment"
+        android:name="com.example.sidehustle.ui.expenses.ExpensesFragment"
+        android:label="@string/expenses_title"
+        tools:layout="@layout/fragment_placeholder" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.sidehustle.ui.settings.SettingsFragment"
+        android:label="@string/settings_title"
+        tools:layout="@layout/fragment_placeholder" />
+</navigation>
