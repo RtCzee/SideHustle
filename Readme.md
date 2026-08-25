@@ -106,7 +106,7 @@ The **product idea is ours**. SideHustle, the competitor research, screens, data
 
 5. **Submission planning** - how our  README will be structurd Git actions, comments, logging, how we plan to do the demo video, and this AI note fit the mark scheme.
 
-6. **Google Sign-In icon** — Cursor’s image generator made a colourful G (`app/src/main/res/drawable/ic_google_logo.png`) for the Google auth button. Android’s Material button tinted that PNG lime-green (it had a white background), so the on-screen button uses a transparent vector G (`ic_google_g.xml`) with tint turned off. The generated PNG is kept as the AI image we produced. Google Sign-In itself is still a later issue.
+6. **Google Sign-In icon** - Cursor’s image generator made a colourful G (`app/src/main/res/drawable/ic_google_logo.png`) for the Google auth button. Android’s Material button tinted that PNG lime-green (it had a white background), so the on-screen button uses a transparent vector G (`ic_google_g.xml`) with tint turned off. The generated PNG is kept as the AI image we produced. Google Sign-In itself is still a later issue.
 
 <small><em>In summary, AI was used for some planning and automating the most repetitive stuff.</em></small>
 

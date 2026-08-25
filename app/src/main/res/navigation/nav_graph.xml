@@ -9,7 +9,7 @@
         android:id="@+id/loginFragment"
         android:name="com.example.sidehustle.ui.auth.LoginFragment"
         android:label="@string/login_title"
-        tools:layout="@layout/fragment_placeholder">
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
@@ -95,5 +95,11 @@
         android:id="@+id/settingsFragment"
         android:name="com.example.sidehustle.ui.settings.SettingsFragment"
         android:label="@string/settings_title"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
