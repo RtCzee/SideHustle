@@ -110,10 +110,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/action_google_sign_in"
-            app:icon="@drawable/ic_google_logo"
+            app:icon="@drawable/ic_google_g"
             app:iconGravity="textStart"
             app:iconPadding="12dp"
-            app:iconSize="20dp"
+            app:iconSize="24dp"
+            app:iconTint="@null"
             app:strokeColor="@color/cyan" />
 
         <com.google.android.material.button.MaterialButton
