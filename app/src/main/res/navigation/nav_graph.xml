@@ -24,7 +24,7 @@
         android:id="@+id/registerFragment"
         android:name="com.example.sidehustle.ui.auth.RegisterFragment"
         android:label="@string/register_title"
-        tools:layout="@layout/fragment_placeholder">
+        tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment"
