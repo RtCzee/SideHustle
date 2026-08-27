@@ -1,12 +1,14 @@
 # SideHustle API
 
-Node.js + Express REST API for the SideHustle Android app. Issue **#7** scaffold: health check, Firebase token auth, JSON errors.
+Node.js + Express REST API for the SideHustle Android app.
 
-PostgreSQL and business routes come in issues **#8** and later.
+- Issue **#7**: health check, Firebase token auth, JSON errors
+- Issue **#8**: PostgreSQL schema + local database setup
 
 ## Requirements
 
 - [Node.js](https://nodejs.org/) 18 or newer
+- [PostgreSQL](https://www.postgresql.org/) 14+ (local install, or hosted in issue #9)
 - Firebase project **sidehustle-d709c** (same as the Android app)
 
 ## Setup
@@ -18,18 +20,25 @@ PostgreSQL and business routes come in issues **#8** and later.
    cp .env.example .env
    ```
 
-2. **Firebase service account** (do this in the Firebase Console):
+2. **Firebase service account** (Firebase Console):
    - Project settings → **Service accounts** → **Generate new private key**
-   - Save the JSON file as `backend/Api-Secrets.json` (gitignored)
-   - Do **not** commit this file
+   - Save as `backend/secrets/firebase-service-account.json` (gitignored)
 
-3. Install dependencies:
+3. **PostgreSQL** (issue #8):
+   - Create a database named `sidehustle` (or update `DATABASE_URL` in `.env`)
+   - Example (psql or pgAdmin): `CREATE DATABASE sidehustle;`
+   - Set `DATABASE_URL` in `.env`, e.g.:
+     `postgresql://postgres:YOUR_PASSWORD@localhost:5432/sidehustle`
+
+4. Install dependencies and apply schema:
 
    ```bash
    npm install
+   npm run db:schema
+   npm run db:seed
    ```
 
-4. Start the server:
+5. Start the server:
 
    ```bash
    npm run dev
@@ -37,13 +46,27 @@ PostgreSQL and business routes come in issues **#8** and later.
 
 ## Test locally
 
-### Health (no auth)
+### Health (includes database status when configured)
 
 ```bash
 curl http://localhost:3000/health
 ```
 
-Expected: `{"status":"ok","service":"sidehustle-api"}`
+Expected (with DB): `{"status":"ok","service":"sidehustle-api","database":"connected"}`
+
+### Verify sample rows (psql or pgAdmin)
+
+```sql
+SELECT * FROM users;
+SELECT * FROM clients;
+SELECT * FROM jobs;
+```
+
+Or:
+
+```bash
+psql $DATABASE_URL -c "SELECT email, full_name FROM users;"
+```
 
 ### Protected route (needs Firebase ID token)
 
@@ -86,13 +109,15 @@ backend/
     config/       Firebase Admin
     middleware/   auth, errors
     routes/       HTTP routes
-    db/           PostgreSQL (issue #8)
-  secrets/        optional folder for other local secrets (gitignored)
+    db/           schema.sql, seed.sql, pool.js
+  secrets/        Firebase service account (gitignored)
 ```
 
 ## Scripts
 
-| Command       | Description        |
-|---------------|--------------------|
-| `npm run dev` | Run with auto-reload |
-| `npm start`   | Run once           |
+| Command            | Description                    |
+|--------------------|--------------------------------|
+| `npm run dev`      | Run API with auto-reload       |
+| `npm start`        | Run API once                   |
+| `npm run db:schema`| Create tables (schema.sql)     |
+| `npm run db:seed`  | Insert demo rows (seed.sql)    |
