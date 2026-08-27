@@ -17,3 +17,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Node API (issue #7+)
+backend/node_modules/
+backend/.env
+backend/Api-Secrets.json
+backend/*-Secrets.json
+backend/secrets/
+backend/*firebase-adminsdk*.json

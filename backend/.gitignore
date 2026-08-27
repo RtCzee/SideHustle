@@ -1,0 +1,11 @@
+node_modules/
+.env
+*.log
+.DS_Store
+
+# Firebase service account and API secrets — never commit
+Api-Secrets.json
+*-Secrets.json
+*firebase-adminsdk*.json
+service-account*.json
+secrets/
