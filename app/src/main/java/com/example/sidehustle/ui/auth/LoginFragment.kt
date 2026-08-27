@@ -14,6 +14,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 
+
+/* This is the login fragment, and is used to login to the user app*/
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
@@ -28,7 +30,7 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
-
+        /*override fun onViewCreated is used to create the view for the fragment */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.loginButton.setOnClickListener { submitLogin() }
@@ -66,7 +68,7 @@ class LoginFragment : Fragment() {
                 }
             }
     }
-
+        /* This is used to map the firebase error to a string */
     private fun mapFirebaseError(error: Exception?): String {
         val code = (error as? FirebaseAuthException)?.errorCode
         val messageRes = when (code) {
