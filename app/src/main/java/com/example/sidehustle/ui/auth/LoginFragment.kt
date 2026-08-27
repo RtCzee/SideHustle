@@ -82,6 +82,7 @@ class LoginFragment : Fragment() {
         return getString(messageRes)
     }
 
+    /* This is used to set the loading state of the login button */
     private fun setLoading(loading: Boolean) {
         binding.loginButton.isEnabled = !loading
         binding.googleButton.isEnabled = !loading
@@ -91,6 +92,7 @@ class LoginFragment : Fragment() {
         )
     }
 
+    /* This is used to destroy the view of the fragment basically meaning that the fragment of the login page is destroyed making it that the user cannot login again */
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
