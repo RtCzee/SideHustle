@@ -22,7 +22,8 @@ Node.js + Express REST API for the SideHustle Android app.
 
 2. **Firebase service account** (Firebase Console):
    - Project settings → **Service accounts** → **Generate new private key**
-   - Save as `backend/secrets/firebase-service-account.json` (gitignored)
+   - **Local:** save as `backend/secrets/firebase-service-account.json` (gitignored)
+   - **Railway (issue #9):** add variable `FIREBASE_SERVICE_ACCOUNT_JSON` with the full JSON pasted in (no file upload needed)
 
 3. **PostgreSQL** (issue #8):
    - Create a database named `sidehustle` (or update `DATABASE_URL` in `.env`)
@@ -121,3 +122,16 @@ backend/
 | `npm start`        | Run API once                   |
 | `npm run db:schema`| Create tables (schema.sql)     |
 | `npm run db:seed`  | Insert demo rows (seed.sql)    |
+
+## Deploy to Railway (issue #9)
+
+1. **PostgreSQL** service — Railway provides `DATABASE_URL` automatically.
+2. **API** service from GitHub repo:
+   - **Root Directory:** `backend`
+   - **Variables:**
+     - `DATABASE_URL` → reference from Postgres service
+     - `FIREBASE_SERVICE_ACCOUNT_JSON` → paste full service account JSON (from Firebase Console)
+   - Do **not** set `PORT` manually; do **not** use `localhost` for `DATABASE_URL`.
+3. Apply schema/seed to hosted Postgres from your laptop (use Postgres service **public** URL in `DATABASE_URL` temporarily):
+   `npm run db:schema && npm run db:seed`
+4. **Settings → Networking → Generate Domain**, then test `GET /health`.
