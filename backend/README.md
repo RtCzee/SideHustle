@@ -122,6 +122,7 @@ backend/
 | `npm start`        | Run API once                   |
 | `npm run db:schema`| Create tables (schema.sql)     |
 | `npm run db:seed`  | Insert demo rows (seed.sql)    |
+| `npm run db:verify`| Print row counts (check seed)  |
 
 ## Deploy to Railway (issue #9)
 
