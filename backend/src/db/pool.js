@@ -18,7 +18,7 @@ function getPool() {
 
   return pool;
 }
-
+// funcion to check the database connection
 async function checkDatabaseConnection() {
   const client = await getPool().connect();
   try {
