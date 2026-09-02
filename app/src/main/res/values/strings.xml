@@ -37,6 +37,9 @@
 
     <string name="dashboard_title">Dashboard</string>
     <string name="dashboard_placeholder">Business metrics and the SideHustle Score will appear here.</string>
+    <string name="dashboard_loading_api">Connecting to the hosted API…</string>
+    <string name="dashboard_api_connected">Connected to the API as %1$s. Business metrics will appear here.</string>
+    <string name="dashboard_api_unknown_email">your account</string>
     <string name="clients_title">Clients</string>
     <string name="clients_placeholder">Your client list will appear here. Open details to check that navigation works.</string>
     <string name="client_details_title">Client details</string>
