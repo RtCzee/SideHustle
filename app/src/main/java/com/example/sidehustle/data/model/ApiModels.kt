@@ -36,3 +36,22 @@ data class CreateProfileRequest(
     @SerializedName("preferred_language")
     val preferredLanguage: String = "en",
 )
+
+data class DashboardResponse(
+    @SerializedName("full_name")
+    val fullName: String,
+    @SerializedName("preferred_currency")
+    val preferredCurrency: String,
+    @SerializedName("total_income")
+    val totalIncome: Double,
+    @SerializedName("total_expenses")
+    val totalExpenses: Double,
+    @SerializedName("net_profit")
+    val netProfit: Double,
+    @SerializedName("outstanding_payments")
+    val outstandingPayments: Double,
+    @SerializedName("completed_jobs_this_month")
+    val completedJobsThisMonth: Int,
+    @SerializedName("side_hustle_score")
+    val sideHustleScore: Int,
+)

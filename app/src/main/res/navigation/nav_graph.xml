@@ -41,7 +41,7 @@
         android:id="@+id/dashboardFragment"
         android:name="com.example.sidehustle.ui.dashboard.DashboardFragment"
         android:label="@string/dashboard_title"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/clientsFragment"
