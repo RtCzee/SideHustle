@@ -1,7 +1,8 @@
 package com.example.sidehustle.data.remote
 
+import com.example.sidehustle.data.model.CreateProfileRequest
 import com.example.sidehustle.data.model.HealthResponse
-import com.example.sidehustle.data.model.MeResponse
+import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.network.ApiClient
 import com.example.sidehustle.network.SideHustleApi
 import retrofit2.HttpException
@@ -15,7 +16,10 @@ class RemoteDataSource(
 
     suspend fun fetchHealth(): ApiResult<HealthResponse> = safeApiCall { api.getHealth() }
 
-    suspend fun fetchMe(): ApiResult<MeResponse> = safeApiCall { api.getMe() }
+    suspend fun fetchProfile(): ApiResult<UserProfileResponse> = safeApiCall { api.getProfile() }
+
+    suspend fun createProfile(request: CreateProfileRequest): ApiResult<UserProfileResponse> =
+        safeApiCall { api.createProfile(request) }
 
     private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
         return try {
@@ -36,6 +40,8 @@ class RemoteDataSource(
     private fun mapHttpError(code: Int): String {
         return when (code) {
             401 -> "Your session expired. Please log in again."
+            404 -> "Profile not found."
+            409 -> "A profile already exists for this account."
             in 500..599 -> "The server had a problem. Try again later."
             else -> "The request failed (HTTP $code)."
         }

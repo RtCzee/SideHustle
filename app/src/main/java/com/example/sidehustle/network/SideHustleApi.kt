@@ -1,8 +1,11 @@
 package com.example.sidehustle.network
 
+import com.example.sidehustle.data.model.CreateProfileRequest
 import com.example.sidehustle.data.model.HealthResponse
-import com.example.sidehustle.data.model.MeResponse
+import com.example.sidehustle.data.model.UserProfileResponse
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 interface SideHustleApi {
 
@@ -10,5 +13,8 @@ interface SideHustleApi {
     suspend fun getHealth(): HealthResponse
 
     @GET("me")
-    suspend fun getMe(): MeResponse
+    suspend fun getProfile(): UserProfileResponse
+
+    @POST("me")
+    suspend fun createProfile(@Body body: CreateProfileRequest): UserProfileResponse
 }
