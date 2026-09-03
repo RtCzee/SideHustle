@@ -23,10 +23,12 @@ class DashboardFragment : PlaceholderFragment() {
         val repository = (requireActivity().application as SideHustleApp).repository
 
         viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = repository.fetchMe()) {
+            when (val result = repository.fetchProfile()) {
                 is ApiResult.Success -> {
-                    val email = result.data.email ?: getString(R.string.dashboard_api_unknown_email)
-                    binding.description.text = getString(R.string.dashboard_api_connected, email)
+                    binding.description.text = getString(
+                        R.string.dashboard_profile_loaded,
+                        result.data.fullName,
+                    )
                 }
                 is ApiResult.Error -> {
                     binding.description.text = result.message

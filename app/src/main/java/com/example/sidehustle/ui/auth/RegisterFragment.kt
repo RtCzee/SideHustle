@@ -6,14 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.R
+import com.example.sidehustle.SideHustleApp
+import com.example.sidehustle.data.model.CreateProfileRequest
+import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentRegisterBinding
 import com.example.sidehustle.util.AuthValidator
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
 
@@ -68,19 +73,18 @@ class RegisterFragment : Fragment() {
                 if (task.isSuccessful) {
                     val user = task.result?.user
                     Log.d(TAG, "Registered uid=${user?.uid}")
-                    val goToDashboard = {
-                        setLoading(false)
-                        findNavController().navigate(
-                            R.id.action_registerFragment_to_dashboardFragment
-                        )
-                    }
                     if (user == null) {
-                        goToDashboard()
-                    } else {
-                        val profile = UserProfileChangeRequest.Builder()
-                            .setDisplayName(name)
-                            .build()
-                        user.updateProfile(profile).addOnCompleteListener { goToDashboard() }
+                        setLoading(false)
+                        Snackbar.make(binding.root, R.string.error_register_generic, Snackbar.LENGTH_LONG)
+                            .show()
+                        return@addOnCompleteListener
+                    }
+
+                    val profile = UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .build()
+                    user.updateProfile(profile).addOnCompleteListener {
+                        createApiProfile(name)
                     }
                 } else {
                     setLoading(false)
@@ -89,6 +93,25 @@ class RegisterFragment : Fragment() {
                         .show()
                 }
             }
+    }
+
+    private fun createApiProfile(fullName: String) {
+        val repository = (requireActivity().application as SideHustleApp).repository
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = repository.createProfile(CreateProfileRequest(fullName = fullName))) {
+                is ApiResult.Success -> {
+                    Log.d(TAG, "Profile created for uid=${result.data.userId}")
+                    setLoading(false)
+                    findNavController().navigate(R.id.action_registerFragment_to_dashboardFragment)
+                }
+                is ApiResult.Error -> {
+                    setLoading(false)
+                    Log.e(TAG, "Profile create failed: ${result.message}")
+                    Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun mapFirebaseError(error: Exception?): String {
@@ -106,6 +129,7 @@ class RegisterFragment : Fragment() {
     private fun setLoading(loading: Boolean) {
         binding.registerButton.isEnabled = !loading
         binding.googleButton.isEnabled = !loading
+        binding.loginLink.isEnabled = !loading
         binding.registerButton.text = getString(
             if (loading) R.string.action_register_loading else R.string.action_register
         )

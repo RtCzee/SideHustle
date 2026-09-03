@@ -6,14 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.R
+import com.example.sidehustle.SideHustleApp
+import com.example.sidehustle.data.model.CreateProfileRequest
+import com.example.sidehustle.data.remote.ApiResult
+import com.example.sidehustle.data.repository.SideHustleRepository
 import com.example.sidehustle.databinding.FragmentLoginBinding
 import com.example.sidehustle.util.AuthValidator
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
-
+import kotlinx.coroutines.launch
 
 /* This is the login fragment, and is used to login to the user app*/
 class LoginFragment : Fragment() {
@@ -30,7 +35,7 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
-        /*override fun onViewCreated is used to create the view for the fragment */
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.loginButton.setOnClickListener { submitLogin() }
@@ -57,18 +62,64 @@ class LoginFragment : Fragment() {
         setLoading(true)
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
-                setLoading(false)
                 if (task.isSuccessful) {
                     Log.d(TAG, "Logged in uid=${auth.currentUser?.uid}")
-                    findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                    loadProfileAfterLogin()
                 } else {
+                    setLoading(false)
                     Log.e(TAG, "Login failed", task.exception)
                     Snackbar.make(binding.root, mapFirebaseError(task.exception), Snackbar.LENGTH_LONG)
                         .show()
                 }
             }
     }
-        /* This is used to map the firebase error to a string */
+
+    private fun loadProfileAfterLogin() {
+        val repository = (requireActivity().application as SideHustleApp).repository
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = repository.fetchProfile()) {
+                is ApiResult.Success -> {
+                    Log.d(TAG, "Profile loaded for ${result.data.fullName}")
+                    navigateToDashboard()
+                }
+                is ApiResult.Error -> {
+                    if (result.httpCode == 404) {
+                        createMissingProfile(repository)
+                    } else {
+                        setLoading(false)
+                        Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun createMissingProfile(repository: SideHustleRepository) {
+        val displayName = auth.currentUser?.displayName?.trim().orEmpty()
+        if (displayName.isEmpty()) {
+            setLoading(false)
+            Snackbar.make(binding.root, R.string.error_profile_not_found, Snackbar.LENGTH_LONG).show()
+            return
+        }
+
+        when (val result = repository.createProfile(CreateProfileRequest(fullName = displayName))) {
+            is ApiResult.Success -> {
+                Log.d(TAG, "Backfilled profile for ${result.data.fullName}")
+                navigateToDashboard()
+            }
+            is ApiResult.Error -> {
+                setLoading(false)
+                Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun navigateToDashboard() {
+        setLoading(false)
+        findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+    }
+
     private fun mapFirebaseError(error: Exception?): String {
         val code = (error as? FirebaseAuthException)?.errorCode
         val messageRes = when (code) {
@@ -82,7 +133,6 @@ class LoginFragment : Fragment() {
         return getString(messageRes)
     }
 
-    /* This is used to set the loading state of the login button */
     private fun setLoading(loading: Boolean) {
         binding.loginButton.isEnabled = !loading
         binding.googleButton.isEnabled = !loading
@@ -92,7 +142,6 @@ class LoginFragment : Fragment() {
         )
     }
 
-    /* This is used to destroy the view of the fragment basically meaning that the fragment of the login page is destroyed making it that the user cannot login again */
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
