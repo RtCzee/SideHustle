@@ -25,3 +25,4 @@ backend/Api-Secrets.json
 backend/*-Secrets.json
 backend/secrets/
 backend/*firebase-adminsdk*.json
+/.idea/markdown.xml
