@@ -1,6 +1,8 @@
 package com.example.sidehustle.data.remote
 
+import android.util.Log
 import com.example.sidehustle.data.model.CreateProfileRequest
+import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.HealthResponse
 import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.network.ApiClient
@@ -21,10 +23,14 @@ class RemoteDataSource(
     suspend fun createProfile(request: CreateProfileRequest): ApiResult<UserProfileResponse> =
         safeApiCall { api.createProfile(request) }
 
+    suspend fun fetchDashboard(): ApiResult<DashboardResponse> = safeApiCall { api.getDashboard() }
+
     private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
         return try {
             ApiResult.Success(block())
         } catch (error: HttpException) {
+            val body = error.response()?.errorBody()?.string()?.take(120)
+            Log.e("SideHustle", "API HTTP ${error.code()}: $body")
             ApiResult.Error(mapHttpError(error.code()), error.code())
         } catch (_: SocketTimeoutException) {
             ApiResult.Error("The server took too long to respond. Try again.")

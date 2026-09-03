@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Curved nav sizes — bubble_overflow controls notch height -->
+<resources>    <dimen name="curved_nav_margin_horizontal">20dp</dimen>
+    <dimen name="curved_nav_margin_bottom">20dp</dimen>
+    <dimen name="curved_nav_bar_height">64dp</dimen>
+    <dimen name="curved_nav_bubble_overflow">30dp</dimen>
+    <dimen name="curved_nav_corner_radius">28dp</dimen>
+    <dimen name="curved_nav_bubble_size">54dp</dimen>
+    <dimen name="curved_nav_icon_size">22dp</dimen>
+    <dimen name="curved_nav_label_size">11sp</dimen>
+    <dimen name="curved_nav_total_height">94dp</dimen>
+</resources>

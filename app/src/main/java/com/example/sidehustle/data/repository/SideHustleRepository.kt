@@ -1,6 +1,7 @@
 package com.example.sidehustle.data.repository
 
 import com.example.sidehustle.data.model.CreateProfileRequest
+import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.HealthResponse
 import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.data.remote.ApiResult
@@ -10,6 +11,7 @@ interface SideHustleRepository {
     suspend fun fetchHealth(): ApiResult<HealthResponse>
     suspend fun fetchProfile(): ApiResult<UserProfileResponse>
     suspend fun createProfile(request: CreateProfileRequest): ApiResult<UserProfileResponse>
+    suspend fun fetchDashboard(): ApiResult<DashboardResponse>
 }
 
 class SideHustleRepositoryImpl(
@@ -22,4 +24,6 @@ class SideHustleRepositoryImpl(
 
     override suspend fun createProfile(request: CreateProfileRequest): ApiResult<UserProfileResponse> =
         remote.createProfile(request)
+
+    override suspend fun fetchDashboard(): ApiResult<DashboardResponse> = remote.fetchDashboard()
 }

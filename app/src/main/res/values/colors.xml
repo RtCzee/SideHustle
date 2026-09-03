@@ -10,4 +10,18 @@
     <color name="on_background">#FF14221B</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Curved bottom nav — clear frosted glass + cyan accents only -->
+    <color name="nav_bar_glass_fill">#59FFFFFF</color>
+    <color name="nav_bar_glass_stroke">#9922D3EE</color>
+    <color name="nav_bubble_glass_fill">#A6FFFFFF</color>
+    <color name="nav_label_active">@color/cyan</color>
+    <color name="nav_label_inactive">#9922D3EE</color>
+    <color name="nav_icon_active">@color/cyan</color>
+    <color name="nav_icon_inactive">#8022D3EE</color>
+
+    <!-- Dashboard — light green + white, no dark green -->
+    <color name="dashboard_text">#FF374151</color>
+    <color name="dashboard_text_muted">#FF6B7280</color>
+    <color name="dashboard_card_stroke">#FFE2F0C4</color>
 </resources>

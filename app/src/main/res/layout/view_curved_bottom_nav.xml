@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Curved bottom nav layout (merged into CurvedBottomNavBar).
+  Layers: glass background → tab row → floating bubble for active icon.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <!-- Clear glass island with animated notch -->
+    <com.example.sidehustle.ui.navigation.CurvedNavBackgroundView
+        android:id="@+id/nav_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Five tabs: outline icon + label; active tab hides its inline icon -->
+    <LinearLayout
+        android:id="@+id/nav_items_row"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp">
+
+        <LinearLayout
+            android:id="@+id/nav_item_dashboard"
+            style="@style/CurvedNavItem"
+            android:contentDescription="@string/nav_dashboard">
+
+            <ImageView
+                android:id="@+id/nav_icon_dashboard"
+                style="@style/CurvedNavIcon"
+                android:src="@drawable/ic_nav_home_outline" />
+
+            <TextView
+                android:id="@+id/nav_label_dashboard"
+                style="@style/CurvedNavLabel"
+                android:text="@string/nav_dashboard" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_item_clients"
+            style="@style/CurvedNavItem"
+            android:contentDescription="@string/nav_clients">
+
+            <ImageView
+                android:id="@+id/nav_icon_clients"
+                style="@style/CurvedNavIcon"
+                android:src="@drawable/ic_nav_clients_outline" />
+
+            <TextView
+                android:id="@+id/nav_label_clients"
+                style="@style/CurvedNavLabel"
+                android:text="@string/nav_clients" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_item_projects"
+            style="@style/CurvedNavItem"
+            android:contentDescription="@string/nav_projects">
+
+            <ImageView
+                android:id="@+id/nav_icon_projects"
+                style="@style/CurvedNavIcon"
+                android:src="@drawable/ic_nav_projects_outline" />
+
+            <TextView
+                android:id="@+id/nav_label_projects"
+                style="@style/CurvedNavLabel"
+                android:text="@string/nav_projects" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_item_finances"
+            style="@style/CurvedNavItem"
+            android:contentDescription="@string/nav_finances">
+
+            <ImageView
+                android:id="@+id/nav_icon_finances"
+                style="@style/CurvedNavIcon"
+                android:src="@drawable/ic_nav_wallet_outline" />
+
+            <TextView
+                android:id="@+id/nav_label_finances"
+                style="@style/CurvedNavLabel"
+                android:text="@string/nav_finances" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_item_settings"
+            style="@style/CurvedNavItem"
+            android:contentDescription="@string/nav_settings">
+
+            <ImageView
+                android:id="@+id/nav_icon_settings"
+                style="@style/CurvedNavIcon"
+                android:src="@drawable/ic_nav_settings_outline" />
+
+            <TextView
+                android:id="@+id/nav_label_settings"
+                style="@style/CurvedNavLabel"
+                android:text="@string/nav_settings" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Active icon bubble — position set in CurvedBottomNavBar.kt -->
+    <FrameLayout
+        android:id="@+id/nav_bubble"
+        android:layout_width="@dimen/curved_nav_bubble_size"
+        android:layout_height="@dimen/curved_nav_bubble_size"
+        android:background="@drawable/bg_nav_bubble"
+        android:elevation="10dp"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/nav_bubble_icon"
+            android:layout_width="@dimen/curved_nav_icon_size"
+            android:layout_height="@dimen/curved_nav_icon_size"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
+
+</merge>
