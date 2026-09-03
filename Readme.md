@@ -116,7 +116,7 @@ SideHustle/
 3. @RtCzee reviews and merges
 4. When ready, `dev` is merged into **`master`**
 
-See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) for the full guide.
+See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) for the full guide. New teammates: start with [`.github/DEV_SETUP.md`](.github/DEV_SETUP.md).
 
 ---
 
