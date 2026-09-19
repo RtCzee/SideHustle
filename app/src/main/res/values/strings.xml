@@ -63,6 +63,14 @@
     <string name="project_details_placeholder">A single job’s status and amount will appear here.</string>
     <string name="invoices_title">Invoices</string>
     <string name="invoices_placeholder">Invoices will appear here. Open expenses to reach the other finance screen.</string>
+    <string name="invoice_create">Create invoice</string>
+    <string name="invoice_total_placeholder">Total: select a job</string>
+    <string name="invoice_list_title">Invoices</string>
+    <string name="invoice_select_client">Select client</string>
+    <string name="invoice_select_job">Select job</string>
+    <string name="invoice_saved">Invoice created.</string>
+    <string name="invoice_select_error">Select a client and job.</string>
+    <string-array name="invoice_statuses"><item>Draft</item><item>Sent</item><item>Partially Paid</item><item>Paid</item><item>Overdue</item></string-array>
     <string name="expenses_title">Expenses</string>
     <string name="expenses_placeholder">Expense records will appear here.</string>
     <string name="settings_title">Settings</string>

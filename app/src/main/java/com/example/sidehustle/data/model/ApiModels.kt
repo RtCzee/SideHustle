@@ -55,3 +55,21 @@ data class DashboardResponse(
     @SerializedName("side_hustle_score")
     val sideHustleScore: Int,
 )
+
+data class InvoiceClient(@SerializedName("client_id") val id: String, val name: String)
+data class InvoiceJob(
+    @SerializedName("job_id") val id: String,
+    @SerializedName("client_id") val clientId: String,
+    val title: String,
+    @SerializedName("agreed_amount") val agreedAmount: Double,
+    val currency: String,
+)
+data class CreateInvoiceRequest(@SerializedName("client_id") val clientId: String, @SerializedName("job_id") val jobId: String)
+data class InvoiceResponse(
+    @SerializedName("invoice_id") val id: String,
+    @SerializedName("invoice_number") val number: String,
+    @SerializedName("total_amount") val total: Double,
+    val status: String,
+    @SerializedName("client_name") val clientName: String? = null,
+)
+data class UpdateInvoiceStatusRequest(val status: String)

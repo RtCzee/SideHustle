@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="vertical" android:padding="14dp" android:background="@drawable/bg_dashboard_metric_card">
+ <TextView android:id="@+id/invoice_info" android:layout_width="match_parent" android:layout_height="wrap_content" android:textStyle="bold" />
+ <Spinner android:id="@+id/invoice_status" android:layout_width="match_parent" android:layout_height="wrap_content" />
+</LinearLayout>
