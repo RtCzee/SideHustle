@@ -89,7 +89,7 @@
         android:id="@+id/expensesFragment"
         android:name="com.example.sidehustle.ui.expenses.ExpensesFragment"
         android:label="@string/expenses_title"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_expenses" />
 
     <fragment
         android:id="@+id/settingsFragment"

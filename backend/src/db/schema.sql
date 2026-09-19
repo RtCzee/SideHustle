@@ -91,11 +91,17 @@ CREATE TABLE expense_records (
     amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
     currency VARCHAR(10) NOT NULL DEFAULT 'ZAR',
     expense_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    category VARCHAR(64) NOT NULL,
+    category VARCHAR(64) NOT NULL CHECK (category IN ('Transport', 'Materials', 'Software', 'Other')),
     description VARCHAR(255),
     receipt_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Makes the allowed categories explicit for databases created before the check above.
+ALTER TABLE expense_records DROP CONSTRAINT IF EXISTS expense_records_category_check;
+ALTER TABLE expense_records
+    ADD CONSTRAINT expense_records_category_check
+    CHECK (category IN ('Transport', 'Materials', 'Software', 'Other'));
 
 CREATE INDEX idx_clients_user_id ON clients (user_id);
 CREATE INDEX idx_jobs_user_id ON jobs (user_id);
