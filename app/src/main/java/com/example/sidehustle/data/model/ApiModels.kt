@@ -24,6 +24,8 @@ data class UserProfileResponse(
     val preferredCurrency: String,
     @SerializedName("preferred_language")
     val preferredLanguage: String,
+    @SerializedName("notifications_enabled")
+    val notificationsEnabled: Boolean = true,
 )
 
 data class CreateProfileRequest(
@@ -35,6 +37,19 @@ data class CreateProfileRequest(
     val preferredCurrency: String = "ZAR",
     @SerializedName("preferred_language")
     val preferredLanguage: String = "en",
+)
+
+data class UpdateProfileRequest(
+    @SerializedName("full_name")
+    val fullName: String,
+    @SerializedName("phone_number")
+    val phoneNumber: String,
+    @SerializedName("preferred_currency")
+    val preferredCurrency: String,
+    @SerializedName("preferred_language")
+    val preferredLanguage: String,
+    @SerializedName("notifications_enabled")
+    val notificationsEnabled: Boolean,
 )
 
 data class DashboardResponse(

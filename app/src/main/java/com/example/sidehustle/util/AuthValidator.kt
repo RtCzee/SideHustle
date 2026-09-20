@@ -25,4 +25,9 @@ object AuthValidator {
 
     fun confirmPasswordError(password: String, confirm: String): Int? =
         if (password != confirm) R.string.error_password_mismatch else null
+
+    private val PHONE_PATTERN = Regex("^\\+?[0-9 ()-]{7,20}$")
+
+    fun phoneError(phone: String): Int? =
+        if (phone.isBlank() || PHONE_PATTERN.matches(phone)) null else R.string.error_phone_invalid
 }
