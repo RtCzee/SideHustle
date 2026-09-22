@@ -145,7 +145,7 @@ Plan: run `./gradlew test` and a debug build on push/PR so the app is checked on
 
 ## Demo video
 
-_Link will be added here after the Phase 3 demonstration video (voice-over, phone, hosted auth/API/database)._
+_https://youtu.be/tJV6bNF-eE8?si=sdbUh4OWSUcZPMQS._
 
 ---
 
