@@ -1,10 +1,14 @@
 package com.example.sidehustle.data.repository
 
+import com.example.sidehustle.data.model.ClientRequest
+import com.example.sidehustle.data.model.ClientResponse
 import com.example.sidehustle.data.model.CreateProfileRequest
 import com.example.sidehustle.data.model.CreateExpenseRequest
 import com.example.sidehustle.data.model.DashboardResponse
-import com.example.sidehustle.data.model.ExpenseResponse
+import com.example.sidehustle.data.model.DeleteResult
 import com.example.sidehustle.data.model.HealthResponse
+import com.example.sidehustle.data.model.JobRequest
+import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.data.model.CreateInvoiceRequest
@@ -23,16 +27,15 @@ interface SideHustleRepository {
     suspend fun createProfile(request: CreateProfileRequest): ApiResult<UserProfileResponse>
     suspend fun updateProfile(request: UpdateProfileRequest): ApiResult<UserProfileResponse>
     suspend fun fetchDashboard(): ApiResult<DashboardResponse>
-    suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>>
-    suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse>
-    suspend fun fetchInvoiceClients(): ApiResult<List<InvoiceClient>>
-    suspend fun fetchInvoiceJobs(clientId: String): ApiResult<List<InvoiceJob>>
-    suspend fun fetchInvoices(): ApiResult<List<InvoiceResponse>>
-    suspend fun createInvoice(request: CreateInvoiceRequest): ApiResult<InvoiceResponse>
-    suspend fun updateInvoiceStatus(id: String, status: String): ApiResult<InvoiceResponse>
-    suspend fun fetchIncomeOptions(): ApiResult<IncomeOptionsResponse>
-    suspend fun fetchIncome(): ApiResult<List<IncomeResponse>>
-    suspend fun createIncome(request: CreateIncomeRequest): ApiResult<IncomeResponse>
+    suspend fun fetchClients(): ApiResult<List<ClientResponse>>
+    suspend fun fetchClient(clientId: String): ApiResult<ClientResponse>
+    suspend fun createClient(request: ClientRequest): ApiResult<ClientResponse>
+    suspend fun updateClient(clientId: String, request: ClientRequest): ApiResult<ClientResponse>
+    suspend fun deleteClient(clientId: String): ApiResult<DeleteResult>
+    suspend fun fetchJobs(): ApiResult<List<JobResponse>>
+    suspend fun fetchJob(jobId: String): ApiResult<JobResponse>
+    suspend fun createJob(request: JobRequest): ApiResult<JobResponse>
+    suspend fun updateJob(jobId: String, request: JobRequest): ApiResult<JobResponse>
 }
 
 class SideHustleRepositoryImpl(
@@ -51,17 +54,27 @@ class SideHustleRepositoryImpl(
 
     override suspend fun fetchDashboard(): ApiResult<DashboardResponse> = remote.fetchDashboard()
 
-    override suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>> = remote.fetchExpenses()
+    override suspend fun fetchClients(): ApiResult<List<ClientResponse>> = remote.fetchClients()
 
-    override suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse> =
-        remote.createExpense(request)
+    override suspend fun fetchClient(clientId: String): ApiResult<ClientResponse> =
+        remote.fetchClient(clientId)
 
-    override suspend fun fetchInvoiceClients() = remote.fetchInvoiceClients()
-    override suspend fun fetchInvoiceJobs(clientId: String) = remote.fetchInvoiceJobs(clientId)
-    override suspend fun fetchInvoices() = remote.fetchInvoices()
-    override suspend fun createInvoice(request: CreateInvoiceRequest) = remote.createInvoice(request)
-    override suspend fun updateInvoiceStatus(id: String, status: String) = remote.updateInvoiceStatus(id, status)
-    override suspend fun fetchIncomeOptions() = remote.fetchIncomeOptions()
-    override suspend fun fetchIncome() = remote.fetchIncome()
-    override suspend fun createIncome(request: CreateIncomeRequest) = remote.createIncome(request)
+    override suspend fun createClient(request: ClientRequest): ApiResult<ClientResponse> =
+        remote.createClient(request)
+
+    override suspend fun updateClient(clientId: String, request: ClientRequest): ApiResult<ClientResponse> =
+        remote.updateClient(clientId, request)
+
+    override suspend fun deleteClient(clientId: String): ApiResult<DeleteResult> =
+        remote.deleteClient(clientId)
+
+    override suspend fun fetchJobs(): ApiResult<List<JobResponse>> = remote.fetchJobs()
+
+    override suspend fun fetchJob(jobId: String): ApiResult<JobResponse> = remote.fetchJob(jobId)
+
+    override suspend fun createJob(request: JobRequest): ApiResult<JobResponse> =
+        remote.createJob(request)
+
+    override suspend fun updateJob(jobId: String, request: JobRequest): ApiResult<JobResponse> =
+        remote.updateJob(jobId, request)
 }

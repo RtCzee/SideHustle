@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="invoice_statuses">
-        <item>Draft</item><item>Sent</item><item>Partially Paid</item><item>Paid</item><item>Overdue</item>
-    </string-array>
-    <string-array name="payment_methods"><item>@string/income_payment_method_prompt</item><item>Cash</item><item>EFT</item><item>Card</item></string-array>
     <!-- Settings screen — currency & language pickers. Codes are sent to the API;
          labels are what the user sees. Arrays must stay the same length and order. -->
     <string-array name="settings_currency_codes">
@@ -28,5 +24,14 @@
         <item>English</item>
         <item>Afrikaans</item>
         <item>isiZulu</item>
+    </string-array>
+
+    <!-- Job status — values match the backend enum exactly (jobs.status CHECK constraint),
+         so no separate code/label mapping is needed; the label IS the API value. -->
+    <string-array name="job_statuses">
+        <item>Pending</item>
+        <item>In Progress</item>
+        <item>Completed</item>
+        <item>Cancelled</item>
     </string-array>
 </resources>

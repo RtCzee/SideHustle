@@ -57,13 +57,19 @@
         android:id="@+id/clientDetailsFragment"
         android:name="com.example.sidehustle.ui.clients.ClientDetailsFragment"
         android:label="@string/client_details_title"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_client_details">
+        <argument
+            android:name="clientId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
     <fragment
         android:id="@+id/projectsFragment"
         android:name="com.example.sidehustle.ui.projects.ProjectsFragment"
         android:label="@string/projects_title"
-        tools:layout="@layout/fragment_placeholder">
+        tools:layout="@layout/fragment_jobs">
         <action
             android:id="@+id/action_projectsFragment_to_projectDetailsFragment"
             app:destination="@id/projectDetailsFragment" />
@@ -73,7 +79,13 @@
         android:id="@+id/projectDetailsFragment"
         android:name="com.example.sidehustle.ui.projects.ProjectDetailsFragment"
         android:label="@string/project_details_title"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_job_details">
+        <argument
+            android:name="jobId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
     <fragment
         android:id="@+id/invoicesFragment"

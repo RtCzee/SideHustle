@@ -3,17 +3,15 @@ const express = require('express');
 const healthRouter = require('./health');
 const meRouter = require('./me');
 const dashboardRouter = require('./dashboard');
-const expensesRouter = require('./expenses');
-const invoicesRouter = require('./invoices');
-const incomeRouter = require('./income');
+const clientsRouter = require('./clients');
+const jobsRouter = require('./jobs');
 
 const router = express.Router();
 
 router.use('/health', healthRouter);
 router.use('/me', meRouter);
 router.use('/dashboard', dashboardRouter);
-router.use('/expenses', expensesRouter);
-router.use('/invoices', invoicesRouter);
-router.use('/income', incomeRouter);
+router.use('/clients', clientsRouter);
+router.use('/jobs', jobsRouter);
 
 module.exports = router;
