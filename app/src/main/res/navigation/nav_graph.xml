@@ -79,7 +79,7 @@
         android:id="@+id/invoicesFragment"
         android:name="com.example.sidehustle.ui.invoices.InvoicesFragment"
         android:label="@string/invoices_title"
-        tools:layout="@layout/fragment_placeholder">
+        tools:layout="@layout/fragment_invoices">
         <action
             android:id="@+id/action_invoicesFragment_to_expensesFragment"
             app:destination="@id/expensesFragment" />
