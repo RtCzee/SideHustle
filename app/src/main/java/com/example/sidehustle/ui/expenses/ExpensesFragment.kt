@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateExpenseRequest
@@ -38,6 +39,7 @@ class ExpensesFragment : Fragment() {
         )
         binding.dateInput.setOnClickListener { showDatePicker() }
         binding.saveExpenseButton.setOnClickListener { saveExpense() }
+        binding.invoicesTab.setOnClickListener { findNavController().navigateUp() }
         loadExpenses()
     }
 

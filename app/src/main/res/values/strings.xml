@@ -55,6 +55,15 @@
     <string name="error_profile_not_found">Your account has no profile yet. Register again or contact support.</string>
     <string name="clients_title">Clients</string>
     <string name="clients_placeholder">Your client list will appear here. Open details to check that navigation works.</string>
+    <string name="clients_no_contact_info">No contact details</string>
+    <string name="hint_address">Address</string>
+    <string name="hint_notes">Notes</string>
+    <string name="action_add_client">Add client</string>
+    <string name="action_delete_client">Delete client</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_save">Save changes</string>
+    <string name="clients_empty_title">No clients yet</string>
+    <string name="clients_empty_subtitle">Add your first client to get started.</string>
     <string name="client_details_title">Client details</string>
     <string name="client_details_placeholder">A single client’s profile will appear here.</string>
     <string name="projects_title">Projects</string>
@@ -64,6 +73,14 @@
     <string name="invoices_title">Invoices</string>
     <string name="invoices_placeholder">Invoices will appear here. Open expenses to reach the other finance screen.</string>
     <string name="expenses_title">Expenses</string>
+    <string name="invoice_create_title">Create invoice</string>
+    <string name="invoice_create_action">Create invoice</string>
+    <string name="invoice_list_title">Invoices</string>
+    <string name="invoice_select_client">Select a client</string>
+    <string name="invoice_select_job">Select a job</string>
+    <string name="invoice_total_placeholder">Total: select a job</string>
+    <string name="invoice_selection_error">Select a client and a job.</string>
+    <string name="invoice_created">Invoice created.</string>
     <string name="expenses_placeholder">Expense records will appear here.</string>
     <string name="expenses_add_title">Add an expense</string>
     <string name="expenses_amount_hint">Amount</string>
@@ -94,12 +111,10 @@
     <string name="hint_language">Language</string>
     <string name="settings_notifications_label">Notifications enabled</string>
     <string name="settings_notifications_hint">Get reminders about jobs, invoices, and payments.</string>
-    <string name="action_save">Save changes</string>
     <string name="action_save_loading">Saving…</string>
     <string name="settings_load_error">Couldn\'t load your settings. Pull to refresh or try again.</string>
     <string name="settings_saved_message">Settings saved.</string>
     <string name="error_phone_invalid">Enter a valid phone number.</string>
-    <string name="action_retry">Retry</string>
 
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_clients">Clients</string>

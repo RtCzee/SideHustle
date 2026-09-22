@@ -8,6 +8,11 @@ import com.example.sidehustle.data.model.ExpenseResponse
 import com.example.sidehustle.data.model.HealthResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
+import com.example.sidehustle.data.model.CreateInvoiceRequest
+import com.example.sidehustle.data.model.InvoiceClient
+import com.example.sidehustle.data.model.InvoiceJob
+import com.example.sidehustle.data.model.InvoiceResponse
+import com.example.sidehustle.data.model.UpdateInvoiceStatusRequest
 import com.example.sidehustle.network.ApiClient
 import com.example.sidehustle.network.SideHustleApi
 import retrofit2.HttpException
@@ -36,6 +41,12 @@ class RemoteDataSource(
 
     suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse> =
         safeApiCall { api.createExpense(request) }
+
+    suspend fun fetchInvoiceClients(): ApiResult<List<InvoiceClient>> = safeApiCall { api.getInvoiceClients() }
+    suspend fun fetchInvoiceJobs(clientId: String): ApiResult<List<InvoiceJob>> = safeApiCall { api.getInvoiceJobs(clientId) }
+    suspend fun fetchInvoices(): ApiResult<List<InvoiceResponse>> = safeApiCall { api.getInvoices() }
+    suspend fun createInvoice(request: CreateInvoiceRequest): ApiResult<InvoiceResponse> = safeApiCall { api.createInvoice(request) }
+    suspend fun updateInvoiceStatus(id: String, status: String): ApiResult<InvoiceResponse> = safeApiCall { api.updateInvoiceStatus(id, UpdateInvoiceStatusRequest(status)) }
 
     private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
         return try {

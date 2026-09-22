@@ -11,6 +11,14 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button android:id="@+id/invoices_tab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/invoices_title" />
+            <Button android:id="@+id/expenses_tab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:enabled="false" android:text="@string/expenses_title" />
+        </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
