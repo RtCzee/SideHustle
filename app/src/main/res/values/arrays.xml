@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="invoice_statuses">
+        <item>Draft</item><item>Sent</item><item>Partially Paid</item><item>Paid</item><item>Overdue</item>
+    </string-array>
+    <string-array name="payment_methods"><item>@string/income_payment_method_prompt</item><item>Cash</item><item>EFT</item><item>Card</item></string-array>
+    <!-- Settings screen — currency & language pickers. Codes are sent to the API;
+         labels are what the user sees. Arrays must stay the same length and order. -->
+    <string-array name="settings_currency_codes">
+        <item>ZAR</item>
+        <item>USD</item>
+        <item>EUR</item>
+        <item>GBP</item>
+    </string-array>
+    <string-array name="settings_currency_labels">
+        <item>ZAR – South African Rand</item>
+        <item>USD – US Dollar</item>
+        <item>EUR – Euro</item>
+        <item>GBP – British Pound</item>
+    </string-array>
+
+    <string-array name="settings_language_codes">
+        <item>en</item>
+        <item>af</item>
+        <item>zu</item>
+    </string-array>
+    <string-array name="settings_language_labels">
+        <item>English</item>
+        <item>Afrikaans</item>
+        <item>isiZulu</item>
+    </string-array>
+</resources>
