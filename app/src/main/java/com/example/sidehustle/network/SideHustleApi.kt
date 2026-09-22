@@ -12,6 +12,9 @@ import com.example.sidehustle.data.model.InvoiceClient
 import com.example.sidehustle.data.model.InvoiceJob
 import com.example.sidehustle.data.model.InvoiceResponse
 import com.example.sidehustle.data.model.UpdateInvoiceStatusRequest
+import com.example.sidehustle.data.model.CreateIncomeRequest
+import com.example.sidehustle.data.model.IncomeOptionsResponse
+import com.example.sidehustle.data.model.IncomeResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -48,4 +51,8 @@ interface SideHustleApi {
     @GET("invoices") suspend fun getInvoices(): List<InvoiceResponse>
     @POST("invoices") suspend fun createInvoice(@Body body: CreateInvoiceRequest): InvoiceResponse
     @PATCH("invoices/{id}/status") suspend fun updateInvoiceStatus(@Path("id") id: String, @Body body: UpdateInvoiceStatusRequest): InvoiceResponse
+
+    @GET("income/options") suspend fun getIncomeOptions(): IncomeOptionsResponse
+    @GET("income") suspend fun getIncome(): List<IncomeResponse>
+    @POST("income") suspend fun createIncome(@Body body: CreateIncomeRequest): IncomeResponse
 }

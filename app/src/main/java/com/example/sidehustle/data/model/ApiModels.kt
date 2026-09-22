@@ -122,3 +122,31 @@ data class InvoiceResponse(
 )
 
 data class UpdateInvoiceStatusRequest(val status: String)
+
+data class IncomeLinkOption(val id: String, val label: String)
+
+data class IncomeOptionsResponse(
+    val clients: List<IncomeClientOption>,
+    val jobs: List<IncomeJobOption>,
+    val invoices: List<IncomeInvoiceOption>,
+)
+data class IncomeClientOption(@SerializedName("client_id") val id: String, val name: String)
+data class IncomeJobOption(@SerializedName("job_id") val id: String, val title: String)
+data class IncomeInvoiceOption(@SerializedName("invoice_id") val id: String, @SerializedName("invoice_number") val number: String)
+data class CreateIncomeRequest(
+    val amount: Double,
+    @SerializedName("date_received") val dateReceived: String,
+    @SerializedName("payment_method") val paymentMethod: String,
+    val description: String? = null,
+    @SerializedName("client_id") val clientId: String? = null,
+    @SerializedName("job_id") val jobId: String? = null,
+    @SerializedName("invoice_id") val invoiceId: String? = null,
+)
+data class IncomeResponse(
+    @SerializedName("income_id") val id: String,
+    val amount: Double,
+    val currency: String,
+    @SerializedName("date_received") val dateReceived: String,
+    @SerializedName("payment_method") val paymentMethod: String,
+    val description: String? = null,
+)

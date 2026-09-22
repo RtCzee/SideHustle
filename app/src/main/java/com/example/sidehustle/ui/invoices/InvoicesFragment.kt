@@ -37,6 +37,7 @@ class InvoicesFragment : Fragment() {
 
     override fun onViewCreated(view: View, state: Bundle?) {
         binding.expensesTab.setOnClickListener { findNavController().navigate(R.id.action_invoicesFragment_to_expensesFragment) }
+        binding.incomeTab.setOnClickListener { findNavController().navigate(R.id.action_invoicesFragment_to_incomeFragment) }
         binding.invoiceClient.onItemSelectedListener = selectionListener { loadJobsForSelectedClient() }
         binding.invoiceJob.onItemSelectedListener = selectionListener { showSelectedTotal() }
         binding.createInvoice.setOnClickListener { createInvoice() }

@@ -11,6 +11,9 @@ import com.example.sidehustle.data.model.CreateInvoiceRequest
 import com.example.sidehustle.data.model.InvoiceClient
 import com.example.sidehustle.data.model.InvoiceJob
 import com.example.sidehustle.data.model.InvoiceResponse
+import com.example.sidehustle.data.model.CreateIncomeRequest
+import com.example.sidehustle.data.model.IncomeOptionsResponse
+import com.example.sidehustle.data.model.IncomeResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.data.remote.RemoteDataSource
 
@@ -27,6 +30,9 @@ interface SideHustleRepository {
     suspend fun fetchInvoices(): ApiResult<List<InvoiceResponse>>
     suspend fun createInvoice(request: CreateInvoiceRequest): ApiResult<InvoiceResponse>
     suspend fun updateInvoiceStatus(id: String, status: String): ApiResult<InvoiceResponse>
+    suspend fun fetchIncomeOptions(): ApiResult<IncomeOptionsResponse>
+    suspend fun fetchIncome(): ApiResult<List<IncomeResponse>>
+    suspend fun createIncome(request: CreateIncomeRequest): ApiResult<IncomeResponse>
 }
 
 class SideHustleRepositoryImpl(
@@ -55,4 +61,7 @@ class SideHustleRepositoryImpl(
     override suspend fun fetchInvoices() = remote.fetchInvoices()
     override suspend fun createInvoice(request: CreateInvoiceRequest) = remote.createInvoice(request)
     override suspend fun updateInvoiceStatus(id: String, status: String) = remote.updateInvoiceStatus(id, status)
+    override suspend fun fetchIncomeOptions() = remote.fetchIncomeOptions()
+    override suspend fun fetchIncome() = remote.fetchIncome()
+    override suspend fun createIncome(request: CreateIncomeRequest) = remote.createIncome(request)
 }
