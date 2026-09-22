@@ -173,15 +173,6 @@ data class ExpenseResponse(
     val description: String? = null,
 )
 
-data class ClientResponse(
-    @SerializedName("client_id")
-    val clientId: String,
-    val name: String,
-    val email: String? = null,
-    @SerializedName("phone_number")
-    val phoneNumber: String? = null,
-)
-
 data class InvoiceClient(@SerializedName("client_id") val id: String, val name: String)
 
 data class InvoiceJob(

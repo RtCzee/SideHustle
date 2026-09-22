@@ -10,7 +10,6 @@
     <color name="on_background">#FF14221B</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="error">#FFB3261E</color>
 
     <!-- Curved bottom nav — clear frosted glass + cyan accents only -->
     <color name="nav_bar_glass_fill">#59FFFFFF</color>
@@ -34,4 +33,10 @@
     <color name="status_in_progress">#FFD97706</color>
     <color name="status_completed">#FF65A30D</color>
     <color name="status_cancelled">#FFDC2626</color>
+
+    <!-- Loading & Skeleton placeholder colors -->
+    <color name="loading_track">#3365A30D</color>
+    <color name="loading_scrim">#99000000</color>
+    <color name="skeleton_base">#FFE8F5E9</color>
+    <color name="skeleton_highlight">#33FFFFFF</color>
 </resources>

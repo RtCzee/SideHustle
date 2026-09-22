@@ -28,6 +28,8 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
+import com.example.sidehustle.data.model.ExpenseResponse
+
 class RemoteDataSource(
     private val api: SideHustleApi = ApiClient.api,
 ) {
@@ -68,6 +70,33 @@ class RemoteDataSource(
     suspend fun updateJob(jobId: String, request: JobRequest): ApiResult<JobResponse> =
         safeApiCall { api.updateJob(jobId, request) }
 
+    suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>> = safeApiCall { api.getExpenses() }
+
+    suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse> =
+        safeApiCall { api.createExpense(request) }
+
+    suspend fun fetchIncomeOptions(): ApiResult<IncomeOptionsResponse> =
+        safeApiCall { api.getIncomeOptions() }
+
+    suspend fun fetchIncome(): ApiResult<List<IncomeResponse>> = safeApiCall { api.getIncome() }
+
+    suspend fun createIncome(request: CreateIncomeRequest): ApiResult<IncomeResponse> =
+        safeApiCall { api.createIncome(request) }
+
+    suspend fun fetchInvoiceClients(): ApiResult<List<InvoiceClient>> =
+        safeApiCall { api.getInvoiceClients() }
+
+    suspend fun fetchInvoiceJobs(clientId: String): ApiResult<List<InvoiceJob>> =
+        safeApiCall { api.getInvoiceJobs(clientId) }
+
+    suspend fun fetchInvoices(): ApiResult<List<InvoiceResponse>> = safeApiCall { api.getInvoices() }
+
+    suspend fun createInvoice(request: CreateInvoiceRequest): ApiResult<InvoiceResponse> =
+        safeApiCall { api.createInvoice(request) }
+
+    suspend fun updateInvoiceStatus(invoiceId: String, status: String): ApiResult<InvoiceResponse> =
+        safeApiCall { api.updateInvoiceStatus(invoiceId, UpdateInvoiceStatusRequest(status)) }
+
     private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
         return try {
             ApiResult.Success(block())
@@ -90,7 +119,7 @@ class RemoteDataSource(
     /** The backend returns validation failures as {"error": "..."} — prefer that specific
      *  message over a generic one when it's present and readable. */
     private fun extractErrorMessage(body: String): String? = try {
-        org.json.JSONObject(body).optString("error").takeIf { it.isNotBlank() }
+        JSONObject(body).optString("error").takeIf { it.isNotBlank() }
     } catch (_: Exception) {
         null
     }
@@ -104,12 +133,5 @@ class RemoteDataSource(
             in 500..599 -> "The server had a problem. Try again later."
             else -> "The request failed (HTTP $code)."
         }
-    }
-
-    /** Uses the API's useful error text instead of assigning every 404 to a missing profile. */
-    private fun apiErrorMessage(body: String?): String? = try {
-        JSONObject(body.orEmpty()).optString("error").takeIf { it.isNotBlank() }
-    } catch (_: Exception) {
-        null
     }
 }
