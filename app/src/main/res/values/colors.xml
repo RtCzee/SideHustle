@@ -24,4 +24,13 @@
     <color name="dashboard_text">#FF374151</color>
     <color name="dashboard_text_muted">#FF6B7280</color>
     <color name="dashboard_card_stroke">#FFE2F0C4</color>
+
+    <!-- Destructive actions (e.g. delete client) -->
+    <color name="error">#FFDC2626</color>
+
+    <!-- Job status badges -->
+    <color name="status_pending">#FF6B7280</color>
+    <color name="status_in_progress">#FFD97706</color>
+    <color name="status_completed">#FF65A30D</color>
+    <color name="status_cancelled">#FFDC2626</color>
 </resources>
