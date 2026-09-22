@@ -153,3 +153,83 @@ data class DashboardResponse(
     @SerializedName("side_hustle_score")
     val sideHustleScore: Int,
 )
+
+data class CreateExpenseRequest(
+    val amount: Double,
+    @SerializedName("expense_date")
+    val expenseDate: String,
+    val category: String,
+    val description: String? = null,
+)
+
+data class ExpenseResponse(
+    @SerializedName("expense_id")
+    val expenseId: String,
+    val amount: Double,
+    val currency: String,
+    @SerializedName("expense_date")
+    val expenseDate: String,
+    val category: String,
+    val description: String? = null,
+)
+
+data class ClientResponse(
+    @SerializedName("client_id")
+    val clientId: String,
+    val name: String,
+    val email: String? = null,
+    @SerializedName("phone_number")
+    val phoneNumber: String? = null,
+)
+
+data class InvoiceClient(@SerializedName("client_id") val id: String, val name: String)
+
+data class InvoiceJob(
+    @SerializedName("job_id") val id: String,
+    val title: String,
+    @SerializedName("agreed_amount") val agreedAmount: Double,
+    val currency: String,
+)
+
+data class CreateInvoiceRequest(
+    @SerializedName("client_id") val clientId: String,
+    @SerializedName("job_id") val jobId: String,
+)
+
+data class InvoiceResponse(
+    @SerializedName("invoice_id") val id: String,
+    @SerializedName("invoice_number") val number: String,
+    @SerializedName("total_amount") val total: Double,
+    val status: String,
+    @SerializedName("client_name") val clientName: String? = null,
+)
+
+data class UpdateInvoiceStatusRequest(val status: String)
+
+data class IncomeLinkOption(val id: String, val label: String)
+
+data class IncomeOptionsResponse(
+    val clients: List<IncomeClientOption>,
+    val jobs: List<IncomeJobOption>,
+    val invoices: List<IncomeInvoiceOption>,
+)
+data class IncomeClientOption(@SerializedName("client_id") val id: String, val name: String)
+data class IncomeJobOption(@SerializedName("job_id") val id: String, val title: String)
+data class IncomeInvoiceOption(@SerializedName("invoice_id") val id: String, @SerializedName("invoice_number") val number: String)
+data class CreateIncomeRequest(
+    val amount: Double,
+    @SerializedName("date_received") val dateReceived: String,
+    @SerializedName("payment_method") val paymentMethod: String,
+    val description: String? = null,
+    @SerializedName("client_id") val clientId: String? = null,
+    @SerializedName("job_id") val jobId: String? = null,
+    @SerializedName("invoice_id") val invoiceId: String? = null,
+)
+data class IncomeResponse(
+    @SerializedName("income_id") val id: String,
+    val amount: Double,
+    val currency: String,
+    @SerializedName("date_received") val dateReceived: String,
+    @SerializedName("payment_method") val paymentMethod: String,
+    val description: String? = null,
+)

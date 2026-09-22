@@ -3,6 +3,7 @@ package com.example.sidehustle.data.repository
 import com.example.sidehustle.data.model.ClientRequest
 import com.example.sidehustle.data.model.ClientResponse
 import com.example.sidehustle.data.model.CreateProfileRequest
+import com.example.sidehustle.data.model.CreateExpenseRequest
 import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.DeleteResult
 import com.example.sidehustle.data.model.HealthResponse
@@ -10,6 +11,13 @@ import com.example.sidehustle.data.model.JobRequest
 import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
+import com.example.sidehustle.data.model.CreateInvoiceRequest
+import com.example.sidehustle.data.model.InvoiceClient
+import com.example.sidehustle.data.model.InvoiceJob
+import com.example.sidehustle.data.model.InvoiceResponse
+import com.example.sidehustle.data.model.CreateIncomeRequest
+import com.example.sidehustle.data.model.IncomeOptionsResponse
+import com.example.sidehustle.data.model.IncomeResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.data.remote.RemoteDataSource
 

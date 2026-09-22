@@ -8,12 +8,21 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.sidehustle.R
 import com.example.sidehustle.databinding.FragmentPlaceholderBinding
+import com.example.sidehustle.ui.common.loading.LoadingStateHandler
+import com.example.sidehustle.ui.common.loading.forViews
 import com.google.android.material.button.MaterialButton
 
 open class PlaceholderFragment : Fragment() {
 
     private var _binding: FragmentPlaceholderBinding? = null
     protected val binding get() = _binding!!
+
+    private var _loading: LoadingStateHandler? = null
+
+    /** Shows/hides the screen loading view. Only valid between onViewCreated and onDestroyView. */
+    protected val loading: LoadingStateHandler get() = _loading!!
+
+    protected open val loadingMessageRes: Int = R.string.loading_default
 
     protected open val titleRes: Int = R.string.app_name
     protected open val descriptionRes: Int = R.string.placeholder_body
@@ -31,6 +40,12 @@ open class PlaceholderFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.loading.loadingMessage.setText(loadingMessageRes)
+        _loading = LoadingStateHandler.forViews(
+            loadingView = binding.loading.root,
+            contentView = binding.placeholderContent,
+            lifecycleOwner = viewLifecycleOwner,
+        )
         binding.title.setText(titleRes)
         binding.description.setText(descriptionRes)
         bindButton(binding.primaryButton, primaryButtonRes) { onPrimaryClicked() }
@@ -52,6 +67,7 @@ open class PlaceholderFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        _loading = null
         _binding = null
         super.onDestroyView()
     }

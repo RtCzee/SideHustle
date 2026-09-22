@@ -139,6 +139,8 @@ Plan: run `./gradlew test` and a debug build on push/PR so the app is checked on
 
 **Quick check after login:** Dashboard should show *"Connected to the API as …"* — this confirms Retrofit → Railway → Firebase token verification works end-to-end.
 
+**Loading states:** shared spinners, list skeletons, pull-to-refresh and button loading live in `ui/common/loading/`. See [`docs/LOADING_STATES.md`](docs/LOADING_STATES.md) before adding a loading indicator to a screen.
+
 **Navigation check:** Login → Register / Dashboard → bottom nav (Dashboard, Clients, Projects, Finances, Settings) → detail screens.
 
 ---

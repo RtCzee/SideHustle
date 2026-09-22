@@ -10,6 +10,14 @@ import com.example.sidehustle.data.model.JobRequest
 import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
+import com.example.sidehustle.data.model.CreateInvoiceRequest
+import com.example.sidehustle.data.model.InvoiceClient
+import com.example.sidehustle.data.model.InvoiceJob
+import com.example.sidehustle.data.model.InvoiceResponse
+import com.example.sidehustle.data.model.UpdateInvoiceStatusRequest
+import com.example.sidehustle.data.model.CreateIncomeRequest
+import com.example.sidehustle.data.model.IncomeOptionsResponse
+import com.example.sidehustle.data.model.IncomeResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET

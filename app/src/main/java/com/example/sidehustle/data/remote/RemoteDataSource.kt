@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.sidehustle.data.model.ClientRequest
 import com.example.sidehustle.data.model.ClientResponse
 import com.example.sidehustle.data.model.CreateProfileRequest
+import com.example.sidehustle.data.model.CreateExpenseRequest
 import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.DeleteResult
 import com.example.sidehustle.data.model.HealthResponse
@@ -11,9 +12,18 @@ import com.example.sidehustle.data.model.JobRequest
 import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
+import com.example.sidehustle.data.model.CreateInvoiceRequest
+import com.example.sidehustle.data.model.InvoiceClient
+import com.example.sidehustle.data.model.InvoiceJob
+import com.example.sidehustle.data.model.InvoiceResponse
+import com.example.sidehustle.data.model.UpdateInvoiceStatusRequest
+import com.example.sidehustle.data.model.CreateIncomeRequest
+import com.example.sidehustle.data.model.IncomeOptionsResponse
+import com.example.sidehustle.data.model.IncomeResponse
 import com.example.sidehustle.network.ApiClient
 import com.example.sidehustle.network.SideHustleApi
 import retrofit2.HttpException
+import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -94,5 +104,12 @@ class RemoteDataSource(
             in 500..599 -> "The server had a problem. Try again later."
             else -> "The request failed (HTTP $code)."
         }
+    }
+
+    /** Uses the API's useful error text instead of assigning every 404 to a missing profile. */
+    private fun apiErrorMessage(body: String?): String? = try {
+        JSONObject(body.orEmpty()).optString("error").takeIf { it.isNotBlank() }
+    } catch (_: Exception) {
+        null
     }
 }

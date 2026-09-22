@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         R.id.clientsFragment,
         R.id.projectsFragment,
         R.id.invoicesFragment,
+        R.id.expensesFragment,
+        R.id.incomeFragment,
         R.id.settingsFragment
     )
 

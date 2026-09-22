@@ -91,17 +91,29 @@
         android:id="@+id/invoicesFragment"
         android:name="com.example.sidehustle.ui.invoices.InvoicesFragment"
         android:label="@string/invoices_title"
-        tools:layout="@layout/fragment_placeholder">
+        tools:layout="@layout/fragment_invoices">
         <action
             android:id="@+id/action_invoicesFragment_to_expensesFragment"
             app:destination="@id/expensesFragment" />
+        <action android:id="@+id/action_invoicesFragment_to_incomeFragment" app:destination="@id/incomeFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/expensesFragment"
         android:name="com.example.sidehustle.ui.expenses.ExpensesFragment"
         android:label="@string/expenses_title"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_expenses">
+        <action android:id="@+id/action_expensesFragment_to_incomeFragment" app:destination="@id/incomeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/incomeFragment"
+        android:name="com.example.sidehustle.ui.income.IncomeFragment"
+        android:label="@string/income_title"
+        tools:layout="@layout/fragment_income">
+        <action android:id="@+id/action_incomeFragment_to_invoicesFragment" app:destination="@id/invoicesFragment" />
+        <action android:id="@+id/action_incomeFragment_to_expensesFragment" app:destination="@id/expensesFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"
