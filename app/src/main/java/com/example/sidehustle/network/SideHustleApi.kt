@@ -10,6 +10,8 @@ import com.example.sidehustle.data.model.JobRequest
 import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
+import com.example.sidehustle.data.model.CreateExpenseRequest
+import com.example.sidehustle.data.model.ExpenseResponse
 import com.example.sidehustle.data.model.CreateInvoiceRequest
 import com.example.sidehustle.data.model.InvoiceClient
 import com.example.sidehustle.data.model.InvoiceJob
@@ -24,6 +26,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface SideHustleApi {
 
@@ -68,4 +71,37 @@ interface SideHustleApi {
 
     @PUT("jobs/{id}")
     suspend fun updateJob(@Path("id") jobId: String, @Body body: JobRequest): JobResponse
+
+    // Expenses
+    @GET("expenses")
+    suspend fun getExpenses(): List<ExpenseResponse>
+
+    @POST("expenses")
+    suspend fun createExpense(@Body body: CreateExpenseRequest): ExpenseResponse
+
+    // Income
+    @GET("income/options")
+    suspend fun getIncomeOptions(): IncomeOptionsResponse
+
+    @GET("income")
+    suspend fun getIncome(): List<IncomeResponse>
+
+    @POST("income")
+    suspend fun createIncome(@Body body: CreateIncomeRequest): IncomeResponse
+
+    // Invoices
+    @GET("invoices/clients")
+    suspend fun getInvoiceClients(): List<InvoiceClient>
+
+    @GET("invoices/jobs")
+    suspend fun getInvoiceJobs(@Query("client_id") clientId: String): List<InvoiceJob>
+
+    @GET("invoices")
+    suspend fun getInvoices(): List<InvoiceResponse>
+
+    @POST("invoices")
+    suspend fun createInvoice(@Body body: CreateInvoiceRequest): InvoiceResponse
+
+    @PUT("invoices/{id}/status")
+    suspend fun updateInvoiceStatus(@Path("id") invoiceId: String, @Body body: UpdateInvoiceStatusRequest): InvoiceResponse
 }

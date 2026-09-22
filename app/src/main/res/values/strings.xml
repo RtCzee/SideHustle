@@ -56,15 +56,6 @@
     <string name="error_profile_not_found">Your account has no profile yet. Register again or contact support.</string>
     <string name="clients_title">Clients</string>
     <string name="clients_placeholder">Your client list will appear here. Open details to check that navigation works.</string>
-    <string name="clients_no_contact_info">No contact details</string>
-    <string name="hint_address">Address</string>
-    <string name="hint_notes">Notes</string>
-    <string name="action_add_client">Add client</string>
-    <string name="action_delete_client">Delete client</string>
-    <string name="action_retry">Try again</string>
-    <string name="action_save">Save changes</string>
-    <string name="clients_empty_title">No clients yet</string>
-    <string name="clients_empty_subtitle">Add your first client to get started.</string>
     <string name="client_details_title">Client details</string>
     <string name="client_details_placeholder">A single client’s profile will appear here.</string>
     <string name="projects_title">Jobs</string>
@@ -214,8 +205,6 @@
     <string name="loading_clients">Loading clients…</string>
     <string name="cd_loading">Loading</string>
     <string name="cd_loading_list">Loading list</string>
-    <string name="action_save">Save</string>
     <string name="action_saving">Saving…</string>
-    <string name="action_cancel">Cancel</string>
     <string name="client_row_updated">Updated %1$s</string>
 </resources>

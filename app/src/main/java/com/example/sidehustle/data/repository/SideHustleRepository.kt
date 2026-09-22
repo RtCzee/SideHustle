@@ -21,6 +21,8 @@ import com.example.sidehustle.data.model.IncomeResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.data.remote.RemoteDataSource
 
+import com.example.sidehustle.data.model.ExpenseResponse
+
 interface SideHustleRepository {
     suspend fun fetchHealth(): ApiResult<HealthResponse>
     suspend fun fetchProfile(): ApiResult<UserProfileResponse>
@@ -36,6 +38,16 @@ interface SideHustleRepository {
     suspend fun fetchJob(jobId: String): ApiResult<JobResponse>
     suspend fun createJob(request: JobRequest): ApiResult<JobResponse>
     suspend fun updateJob(jobId: String, request: JobRequest): ApiResult<JobResponse>
+    suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>>
+    suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse>
+    suspend fun fetchIncomeOptions(): ApiResult<IncomeOptionsResponse>
+    suspend fun fetchIncome(): ApiResult<List<IncomeResponse>>
+    suspend fun createIncome(request: CreateIncomeRequest): ApiResult<IncomeResponse>
+    suspend fun fetchInvoiceClients(): ApiResult<List<InvoiceClient>>
+    suspend fun fetchInvoiceJobs(clientId: String): ApiResult<List<InvoiceJob>>
+    suspend fun fetchInvoices(): ApiResult<List<InvoiceResponse>>
+    suspend fun createInvoice(request: CreateInvoiceRequest): ApiResult<InvoiceResponse>
+    suspend fun updateInvoiceStatus(invoiceId: String, status: String): ApiResult<InvoiceResponse>
 }
 
 class SideHustleRepositoryImpl(
@@ -77,4 +89,31 @@ class SideHustleRepositoryImpl(
 
     override suspend fun updateJob(jobId: String, request: JobRequest): ApiResult<JobResponse> =
         remote.updateJob(jobId, request)
+
+    override suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>> = remote.fetchExpenses()
+
+    override suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse> =
+        remote.createExpense(request)
+
+    override suspend fun fetchIncomeOptions(): ApiResult<IncomeOptionsResponse> =
+        remote.fetchIncomeOptions()
+
+    override suspend fun fetchIncome(): ApiResult<List<IncomeResponse>> = remote.fetchIncome()
+
+    override suspend fun createIncome(request: CreateIncomeRequest): ApiResult<IncomeResponse> =
+        remote.createIncome(request)
+
+    override suspend fun fetchInvoiceClients(): ApiResult<List<InvoiceClient>> =
+        remote.fetchInvoiceClients()
+
+    override suspend fun fetchInvoiceJobs(clientId: String): ApiResult<List<InvoiceJob>> =
+        remote.fetchInvoiceJobs(clientId)
+
+    override suspend fun fetchInvoices(): ApiResult<List<InvoiceResponse>> = remote.fetchInvoices()
+
+    override suspend fun createInvoice(request: CreateInvoiceRequest): ApiResult<InvoiceResponse> =
+        remote.createInvoice(request)
+
+    override suspend fun updateInvoiceStatus(invoiceId: String, status: String): ApiResult<InvoiceResponse> =
+        remote.updateInvoiceStatus(invoiceId, status)
 }
