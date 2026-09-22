@@ -65,8 +65,41 @@
     <string name="invoices_placeholder">Invoices will appear here. Open expenses to reach the other finance screen.</string>
     <string name="expenses_title">Expenses</string>
     <string name="expenses_placeholder">Expense records will appear here.</string>
+    <string name="expenses_add_title">Add an expense</string>
+    <string name="expenses_amount_hint">Amount</string>
+    <string name="expenses_date_hint">Date (tap to choose)</string>
+    <string name="expenses_description_hint">Description (optional)</string>
+    <string name="expenses_save">Save expense</string>
+    <string name="expenses_saving">Saving…</string>
+    <string name="expenses_list_title">Recent expenses</string>
+    <string name="expenses_empty">No expenses recorded yet.</string>
+    <string name="expenses_amount_error">Enter an amount greater than 0.</string>
+    <string name="expenses_date_error">Choose an expense date.</string>
+    <string name="expenses_category_error">Choose an expense category.</string>
+    <string name="expenses_category_prompt">Choose a category</string>
+    <string name="expenses_saved">Expense saved.</string>
+    <string-array name="expense_categories">
+        <item>@string/expenses_category_prompt</item>
+        <item>Transport</item>
+        <item>Materials</item>
+        <item>Software</item>
+        <item>Other</item>
+    </string-array>
     <string name="settings_title">Settings</string>
     <string name="settings_placeholder">Profile and app preferences will appear here.</string>
+    <string name="settings_section_profile">Profile</string>
+    <string name="settings_section_preferences">Preferences</string>
+    <string name="hint_phone">Phone number</string>
+    <string name="hint_currency">Default currency</string>
+    <string name="hint_language">Language</string>
+    <string name="settings_notifications_label">Notifications enabled</string>
+    <string name="settings_notifications_hint">Get reminders about jobs, invoices, and payments.</string>
+    <string name="action_save">Save changes</string>
+    <string name="action_save_loading">Saving…</string>
+    <string name="settings_load_error">Couldn\'t load your settings. Pull to refresh or try again.</string>
+    <string name="settings_saved_message">Settings saved.</string>
+    <string name="error_phone_invalid">Enter a valid phone number.</string>
+    <string name="action_retry">Retry</string>
 
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_clients">Clients</string>

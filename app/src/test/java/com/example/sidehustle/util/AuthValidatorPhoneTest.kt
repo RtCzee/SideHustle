@@ -9,6 +9,8 @@ import org.junit.Test
  * details save flows. emailError/optionalEmailError/passwordError aren't tested here
  * since they call android.util.Patterns, which needs an Android runtime
  * (Robolectric/instrumented test), not a plain JVM test.
+ * Covers AuthValidator.phoneError, used by the Settings screen save flow.
+ * (nameError is covered indirectly here too since Settings reuses it for the name field.)
  */
 class AuthValidatorPhoneTest {
 

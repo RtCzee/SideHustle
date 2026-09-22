@@ -1,5 +1,6 @@
 const { getPool } = require('./pool');
 const { findUserById } = require('./users');
+const { SideHustleScoreCalculator } = require('../services/SideHustleScoreCalculator');
 
 async function getDashboardMetrics(userId) {
   const profile = await findUserById(userId);
@@ -42,8 +43,12 @@ async function getDashboardMetrics(userId) {
   const outstandingPayments = Number(outstandingRow.rows[0].total);
   const completedJobsThisMonth = jobsRow.rows[0].count;
 
-  // Placeholder until issue #19 — score formula will replace this
-  const sideHustleScore = Math.max(0, Math.min(100, Math.round(netProfit / 50)));
+  const sideHustleScore = SideHustleScoreCalculator.calculate({
+    totalIncome,
+    totalExpenses,
+    completedJobs: completedJobsThisMonth,
+    outstandingPayments,
+  });
 
   return {
     full_name: profile.full_name,
