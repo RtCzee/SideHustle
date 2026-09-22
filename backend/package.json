@@ -9,6 +9,7 @@
     "db:schema": "node src/db/applySchema.js",
     "db:seed": "node src/db/applySeed.js",
     "db:verify": "node src/db/verifyDb.js"
+    ,"test": "node --test"
   },
   "engines": {
     "node": ">=18"

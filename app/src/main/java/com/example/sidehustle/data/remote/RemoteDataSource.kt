@@ -2,13 +2,16 @@ package com.example.sidehustle.data.remote
 
 import android.util.Log
 import com.example.sidehustle.data.model.CreateProfileRequest
+import com.example.sidehustle.data.model.CreateExpenseRequest
 import com.example.sidehustle.data.model.DashboardResponse
+import com.example.sidehustle.data.model.ExpenseResponse
 import com.example.sidehustle.data.model.HealthResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.network.ApiClient
 import com.example.sidehustle.network.SideHustleApi
 import retrofit2.HttpException
+import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -29,13 +32,18 @@ class RemoteDataSource(
 
     suspend fun fetchDashboard(): ApiResult<DashboardResponse> = safeApiCall { api.getDashboard() }
 
+    suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>> = safeApiCall { api.getExpenses() }
+
+    suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse> =
+        safeApiCall { api.createExpense(request) }
+
     private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
         return try {
             ApiResult.Success(block())
         } catch (error: HttpException) {
             val body = error.response()?.errorBody()?.string()?.take(120)
             Log.e("SideHustle", "API HTTP ${error.code()}: $body")
-            ApiResult.Error(mapHttpError(error.code()), error.code())
+            ApiResult.Error(apiErrorMessage(body) ?: mapHttpError(error.code()), error.code())
         } catch (_: SocketTimeoutException) {
             ApiResult.Error("The server took too long to respond. Try again.")
         } catch (_: UnknownHostException) {
@@ -56,5 +64,12 @@ class RemoteDataSource(
             in 500..599 -> "The server had a problem. Try again later."
             else -> "The request failed (HTTP $code)."
         }
+    }
+
+    /** Uses the API's useful error text instead of assigning every 404 to a missing profile. */
+    private fun apiErrorMessage(body: String?): String? = try {
+        JSONObject(body.orEmpty()).optString("error").takeIf { it.isNotBlank() }
+    } catch (_: Exception) {
+        null
     }
 }

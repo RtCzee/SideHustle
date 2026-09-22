@@ -70,3 +70,22 @@ data class DashboardResponse(
     @SerializedName("side_hustle_score")
     val sideHustleScore: Int,
 )
+
+data class CreateExpenseRequest(
+    val amount: Double,
+    @SerializedName("expense_date")
+    val expenseDate: String,
+    val category: String,
+    val description: String? = null,
+)
+
+data class ExpenseResponse(
+    @SerializedName("expense_id")
+    val expenseId: String,
+    val amount: Double,
+    val currency: String,
+    @SerializedName("expense_date")
+    val expenseDate: String,
+    val category: String,
+    val description: String? = null,
+)

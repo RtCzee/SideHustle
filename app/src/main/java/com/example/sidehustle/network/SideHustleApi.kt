@@ -4,6 +4,8 @@ import com.example.sidehustle.data.model.CreateProfileRequest
 import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.HealthResponse
 import com.example.sidehustle.data.model.UpdateProfileRequest
+import com.example.sidehustle.data.model.CreateExpenseRequest
+import com.example.sidehustle.data.model.ExpenseResponse
 import com.example.sidehustle.data.model.UserProfileResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -26,4 +28,10 @@ interface SideHustleApi {
 
     @GET("dashboard")
     suspend fun getDashboard(): DashboardResponse
+
+    @GET("expenses")
+    suspend fun getExpenses(): List<ExpenseResponse>
+
+    @POST("expenses")
+    suspend fun createExpense(@Body body: CreateExpenseRequest): ExpenseResponse
 }
