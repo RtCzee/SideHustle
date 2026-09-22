@@ -56,6 +56,10 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
 
+    // Lists and pull-to-refresh (shared loading patterns, see docs/LOADING_STATES.md)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.swiperefreshlayout)
+
     // Firebase BOM + Auth SDK — hashes passwords and hosts the user list for the demo
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)

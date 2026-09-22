@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Inline / background loading: a thin indeterminate bar. Put it at the top of a form or list
+    for work that should not hide the content (saving a draft, background sync).
+
+    It has no label, so it carries its own content description for TalkBack.
+    Drive it with show() / hide(): the Material indicator waits showDelay before appearing and
+    stays at least minHideDelay once visible, so fast responses never flash a bar.
+-->
+<com.google.android.material.progressindicator.LinearProgressIndicator xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/loading_inline"
+    style="@style/Widget.SideHustle.LinearProgressIndicator"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/cd_loading"
+    android:indeterminate="true"
+    android:visibility="invisible"
+    app:minHideDelay="400"
+    app:showDelay="150" />

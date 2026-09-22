@@ -24,4 +24,10 @@
     <color name="dashboard_text">#FF374151</color>
     <color name="dashboard_text_muted">#FF6B7280</color>
     <color name="dashboard_card_stroke">#FFE2F0C4</color>
+
+    <!-- Loading states: skeleton placeholders, indicator track, blocking-overlay scrim -->
+    <color name="skeleton_base">#FFE6F0D9</color>
+    <color name="skeleton_highlight">#FFFFFFFF</color>
+    <color name="loading_track">#4DA3E635</color>
+    <color name="loading_scrim">#6614221B</color>
 </resources>
