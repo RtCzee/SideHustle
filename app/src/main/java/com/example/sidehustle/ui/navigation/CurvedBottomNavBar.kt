@@ -104,7 +104,12 @@ class CurvedBottomNavBar @JvmOverloads constructor(
         this.navController = navController
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            val index = tabs.indexOfFirst { it.destinationId == destination.id }
+            // Expenses and income belong to the Finance bottom-navigation section.
+            val selectedDestination = when (destination.id) {
+                R.id.expensesFragment, R.id.incomeFragment -> R.id.invoicesFragment
+                else -> destination.id
+            }
+            val index = tabs.indexOfFirst { it.destinationId == selectedDestination }
             if (index >= 0 && index != selectedIndex) selectTab(index, animate = true)
         }
 
