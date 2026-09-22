@@ -6,6 +6,7 @@ import com.example.sidehustle.data.model.CreateExpenseRequest
 import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.ExpenseResponse
 import com.example.sidehustle.data.model.HealthResponse
+import com.example.sidehustle.data.model.UpdateProfileRequest
 import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.network.ApiClient
 import com.example.sidehustle.network.SideHustleApi
@@ -25,6 +26,9 @@ class RemoteDataSource(
 
     suspend fun createProfile(request: CreateProfileRequest): ApiResult<UserProfileResponse> =
         safeApiCall { api.createProfile(request) }
+
+    suspend fun updateProfile(request: UpdateProfileRequest): ApiResult<UserProfileResponse> =
+        safeApiCall { api.updateProfile(request) }
 
     suspend fun fetchDashboard(): ApiResult<DashboardResponse> = safeApiCall { api.getDashboard() }
 
@@ -53,6 +57,7 @@ class RemoteDataSource(
 
     private fun mapHttpError(code: Int): String {
         return when (code) {
+            400 -> "Some details weren't valid. Check the form and try again."
             401 -> "Your session expired. Please log in again."
             404 -> "Profile not found."
             409 -> "A profile already exists for this account."
