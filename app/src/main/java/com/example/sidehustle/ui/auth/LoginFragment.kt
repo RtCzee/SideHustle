@@ -14,6 +14,7 @@ import com.example.sidehustle.data.model.CreateProfileRequest
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.data.repository.SideHustleRepository
 import com.example.sidehustle.databinding.FragmentLoginBinding
+import com.example.sidehustle.ui.common.loading.setLoading
 import com.example.sidehustle.util.AuthValidator
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -134,14 +135,12 @@ class LoginFragment : Fragment() {
     }
 
     private fun setLoading(loading: Boolean) {
-        binding.loginButton.isEnabled = !loading
-        binding.googleButton.isEnabled = !loading
-        binding.registerLink.isEnabled = !loading
-        binding.loginButton.text = getString(
-            if (loading) R.string.action_login_loading else R.string.action_login
-        )
+        // Firebase callbacks can arrive after the view is gone; there is nothing to update then.
+        val b = _binding ?: return
+        b.loginButton.setLoading(loading, R.string.action_login_loading)
+        b.googleButton.isEnabled = !loading
+        b.registerLink.isEnabled = !loading
     }
-
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()

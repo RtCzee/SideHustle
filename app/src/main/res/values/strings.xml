@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">SideHustle</string>
     <string name="placeholder_body">This is a placeholder screen. Real content will be added in later issues.</string>
 
@@ -153,4 +154,15 @@
     <string name="action_open_project_details">Open project details</string>
     <string name="action_open_expenses">Open expenses</string>
     <string name="action_back">Back</string>
+
+    <!-- Loading states -->
+    <string name="loading_default">Loading…</string>
+    <string name="loading_please_wait">Please wait…</string>
+    <string name="loading_clients">Loading clients…</string>
+    <string name="cd_loading">Loading</string>
+    <string name="cd_loading_list">Loading list</string>
+    <string name="action_save">Save</string>
+    <string name="action_saving">Saving…</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="client_row_updated">Updated %1$s</string>
 </resources>
