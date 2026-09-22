@@ -40,6 +40,7 @@ class ExpensesFragment : Fragment() {
         binding.dateInput.setOnClickListener { showDatePicker() }
         binding.saveExpenseButton.setOnClickListener { saveExpense() }
         binding.invoicesTab.setOnClickListener { findNavController().navigateUp() }
+        binding.incomeTab.setOnClickListener { findNavController().navigate(R.id.action_expensesFragment_to_incomeFragment) }
         loadExpenses()
     }
 
