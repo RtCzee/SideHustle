@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:orientation="vertical">
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
+    <!-- Glass curved nav — hidden on auth/detail screens via MainActivity -->
+    <com.example.sidehustle.ui.navigation.CurvedBottomNavBar
+        android:id="@+id/floating_nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/menu_bottom_nav" />
+        android:layout_height="@dimen/curved_nav_total_height"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="@dimen/curved_nav_margin_horizontal"
+        android:layout_marginBottom="@dimen/curved_nav_margin_bottom"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="gone" />
 
-</LinearLayout>
+</FrameLayout>

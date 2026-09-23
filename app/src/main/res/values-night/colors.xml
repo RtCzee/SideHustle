@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Clear glass on dark screens — slightly more opaque so cyan stays readable -->
+    <color name="nav_bar_glass_fill">#66FFFFFF</color>
+    <color name="nav_bar_glass_stroke">#B322D3EE</color>
+    <color name="nav_bubble_glass_fill">#B3FFFFFF</color>
+    <color name="nav_label_active">@color/cyan</color>
+    <color name="nav_label_inactive">#9922D3EE</color>
+    <color name="nav_icon_active">@color/cyan</color>
+    <color name="nav_icon_inactive">#8022D3EE</color>
+</resources>

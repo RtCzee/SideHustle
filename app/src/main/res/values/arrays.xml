@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings screen — currency & language pickers. Codes are sent to the API;
+         labels are what the user sees. Arrays must stay the same length and order. -->
+    <string-array name="settings_currency_codes">
+        <item>ZAR</item>
+        <item>USD</item>
+        <item>EUR</item>
+        <item>GBP</item>
+    </string-array>
+    <string-array name="settings_currency_labels">
+        <item>ZAR – South African Rand</item>
+        <item>USD – US Dollar</item>
+        <item>EUR – Euro</item>
+        <item>GBP – British Pound</item>
+    </string-array>
+
+    <string-array name="settings_language_codes">
+        <item>en</item>
+        <item>af</item>
+        <item>zu</item>
+    </string-array>
+    <string-array name="settings_language_labels">
+        <item>English</item>
+        <item>Afrikaans</item>
+        <item>isiZulu</item>
+    </string-array>
+
+    <!-- Job status — values match the backend enum exactly (jobs.status CHECK constraint),
+         so no separate code/label mapping is needed; the label IS the API value. -->
+    <string-array name="job_statuses">
+        <item>Pending</item>
+        <item>In Progress</item>
+        <item>Completed</item>
+        <item>Cancelled</item>
+    </string-array>
+
+    <!-- Payment methods for Income screen -->
+    <string-array name="payment_methods">
+        <item>@string/income_payment_method_prompt</item>
+        <item>EFT / Bank Transfer</item>
+        <item>Cash</item>
+        <item>Card</item>
+        <item>Mobile Payment</item>
+        <item>Other</item>
+    </string-array>
+
+    <!-- Invoice statuses for Invoices screen -->
+    <string-array name="invoice_statuses">
+        <item>Draft</item>
+        <item>Sent</item>
+        <item>Paid</item>
+        <item>Overdue</item>
+        <item>Cancelled</item>
+    </string-array>
+</resources>

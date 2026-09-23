@@ -10,6 +10,7 @@
         <item name="android:colorBackground">#FF0F1A12</item>
         <item name="android:windowBackground">#FF0F1A12</item>
         <item name="android:statusBarColor">@color/lime_dark</item>
-        <item name="android:navigationBarColor">#FF0F1A12</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 </resources>

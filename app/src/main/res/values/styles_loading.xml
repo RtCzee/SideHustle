@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Loading indicator styles for SideHustle (lime / cyan, not default purple Material).
+        Use these instead of the stock Widget.Material3.* progress indicator styles.
+
+        The indicator colour is lime_dark (the theme's colorPrimaryVariant) rather than the bright
+        lime: plain lime on the light surface has too little contrast to read as a spinner.
+    -->
+
+    <!-- Centred spinner: screen loading and the blocking overlay. -->
+    <style name="Widget.SideHustle.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="indicatorColor">@color/lime_dark</item>
+        <item name="trackColor">@android:color/transparent</item>
+    </style>
+
+    <!-- Spinner drawn inside a MaterialButton (see ButtonLoading.kt). Sized to sit beside the label. -->
+    <style name="Widget.SideHustle.CircularProgressIndicator.Button">
+        <item name="indicatorColor">?attr/colorOnPrimary</item>
+        <item name="trackColor">@android:color/transparent</item>
+        <item name="indicatorSize">18dp</item>
+        <item name="indicatorInset">0dp</item>
+        <item name="trackThickness">2dp</item>
+    </style>
+
+    <!-- Thin bar for inline / background work (e.g. under a form while saving). -->
+    <style name="Widget.SideHustle.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="indicatorColor">@color/lime_dark</item>
+        <item name="trackColor">@color/loading_track</item>
+        <item name="trackThickness">4dp</item>
+    </style>
+
+</resources>

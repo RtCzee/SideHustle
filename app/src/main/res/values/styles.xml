@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Styles for the custom curved bottom nav tabs -->
+<resources>
+
+    <!-- Single tab column: icon on top, cyan label below -->
+    <style name="CurvedNavItem">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <!-- Extra top padding leaves room for the floating bubble -->
+        <item name="android:paddingTop">34dp</item>
+    </style>
+
+    <style name="CurvedNavIcon">
+        <item name="android:layout_width">@dimen/curved_nav_icon_size</item>
+        <item name="android:layout_height">@dimen/curved_nav_icon_size</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="CurvedNavLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:textColor">@color/nav_label_inactive</item>
+        <item name="android:textSize">@dimen/curved_nav_label_size</item>
+    </style>
+
+</resources>

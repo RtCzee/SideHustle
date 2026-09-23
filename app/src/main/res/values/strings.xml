@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">SideHustle</string>
     <string name="placeholder_body">This is a placeholder screen. Real content will be added in later issues.</string>
 
@@ -36,30 +37,157 @@
     <string name="logged_out_message">You have been logged out.</string>
 
     <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_greeting">Welcome back</string>
+    <string name="dashboard_welcome_subtitle">Here\'s how your side hustle is doing.</string>
+    <string name="dashboard_name_placeholder">SideHustler</string>
+    <string name="dashboard_zero">0</string>
+    <string name="dashboard_money_placeholder">R 0.00</string>
+    <string name="dashboard_loading">Loading your dashboard…</string>
+    <string name="dashboard_metrics_unavailable">Profile loaded. Full metrics will appear once the dashboard API is deployed.</string>
+    <string name="dashboard_metrics_title">This month</string>
+    <string name="dashboard_score_label">SideHustle Score</string>
+    <string name="dashboard_score_hint">Grows as income and completed jobs increase.</string>
+    <string name="dashboard_income_label">Total income</string>
+    <string name="dashboard_expenses_label">Total expenses</string>
+    <string name="dashboard_profit_label">Net profit</string>
+    <string name="dashboard_outstanding_label">Outstanding</string>
+    <string name="dashboard_jobs_label">Completed jobs this month</string>
     <string name="dashboard_placeholder">Business metrics and the SideHustle Score will appear here.</string>
-    <string name="dashboard_loading_api">Loading your profile…</string>
-    <string name="dashboard_profile_loaded">Welcome, %1$s. Business metrics will appear here.</string>
-    <string name="dashboard_api_connected">Connected to the API as %1$s. Business metrics will appear here.</string>
-    <string name="dashboard_api_unknown_email">your account</string>
     <string name="error_profile_not_found">Your account has no profile yet. Register again or contact support.</string>
     <string name="clients_title">Clients</string>
     <string name="clients_placeholder">Your client list will appear here. Open details to check that navigation works.</string>
     <string name="client_details_title">Client details</string>
     <string name="client_details_placeholder">A single client’s profile will appear here.</string>
-    <string name="projects_title">Projects</string>
+    <string name="projects_title">Jobs</string>
     <string name="projects_placeholder">Your jobs and projects will appear here. Open details to check that navigation works.</string>
-    <string name="project_details_title">Project details</string>
+    <string name="project_details_title">Job details</string>
     <string name="project_details_placeholder">A single job’s status and amount will appear here.</string>
     <string name="invoices_title">Invoices</string>
     <string name="invoices_placeholder">Invoices will appear here. Open expenses to reach the other finance screen.</string>
     <string name="expenses_title">Expenses</string>
+    <string name="income_title">Income</string>
+    <string name="income_add_title">Add income</string>
+    <string name="income_amount_hint">Amount</string>
+    <string name="income_date_hint">Date received (tap to choose)</string>
+    <string name="income_description_hint">Description (optional)</string>
+    <string name="income_optional_links">Optional links</string>
+    <string name="income_save">Save income</string>
+    <string name="income_list_title">Recent income</string>
+    <string name="income_empty">No income recorded yet.</string>
+    <string name="income_amount_error">Enter an amount greater than 0.</string>
+    <string name="income_date_error">Choose the date received.</string>
+    <string name="income_saved">Income saved.</string>
+    <string name="income_no_client">No client linked</string>
+    <string name="income_no_job">No job linked</string>
+    <string name="income_no_invoice">No invoice linked</string>
+    <string name="income_payment_method_label">Payment method</string>
+    <string name="income_client_label">Client (optional)</string>
+    <string name="income_job_label">Job (optional)</string>
+    <string name="income_invoice_label">Invoice (optional)</string>
+    <string name="income_payment_method_prompt">Select payment method</string>
+    <string name="income_payment_method_error">Choose a payment method.</string>
+    <string name="invoice_create_title">Create invoice</string>
+    <string name="invoice_create_action">Create invoice</string>
+    <string name="invoice_list_title">Invoices</string>
+    <string name="invoice_select_client">Select a client</string>
+    <string name="invoice_select_job">Select a job</string>
+    <string name="invoice_client_label">Client</string>
+    <string name="invoice_job_label">Job</string>
+    <string name="invoice_total_placeholder">Total: select a job</string>
+    <string name="invoice_selection_error">Select a client and a job.</string>
+    <string name="invoice_created">Invoice created.</string>
     <string name="expenses_placeholder">Expense records will appear here.</string>
+    <string name="expenses_add_title">Add an expense</string>
+    <string name="expenses_amount_hint">Amount</string>
+    <string name="expenses_date_hint">Date (tap to choose)</string>
+    <string name="expenses_description_hint">Description (optional)</string>
+    <string name="expenses_save">Save expense</string>
+    <string name="expenses_saving">Saving…</string>
+    <string name="expenses_list_title">Recent expenses</string>
+    <string name="expenses_empty">No expenses recorded yet.</string>
+    <string name="expenses_amount_error">Enter an amount greater than 0.</string>
+    <string name="expenses_date_error">Choose an expense date.</string>
+    <string name="expenses_category_error">Choose an expense category.</string>
+    <string name="expenses_category_prompt">Choose a category</string>
+    <string name="expenses_category_label">Expense category</string>
+    <string name="expenses_saved">Expense saved.</string>
+    <string-array name="expense_categories">
+        <item>@string/expenses_category_prompt</item>
+        <item>Transport</item>
+        <item>Materials</item>
+        <item>Software</item>
+        <item>Other</item>
+    </string-array>
     <string name="settings_title">Settings</string>
     <string name="settings_placeholder">Profile and app preferences will appear here.</string>
+    <string name="settings_section_profile">Profile</string>
+    <string name="settings_section_preferences">Preferences</string>
+    <string name="hint_phone">Phone number</string>
+    <string name="hint_currency">Default currency</string>
+    <string name="hint_language">Language</string>
+    <string name="settings_notifications_label">Notifications enabled</string>
+    <string name="settings_notifications_hint">Get reminders about jobs, invoices, and payments.</string>
+    <string name="action_save">Save changes</string>
+    <string name="action_save_loading">Saving…</string>
+    <string name="settings_load_error">Couldn\'t load your settings. Pull to refresh or try again.</string>
+    <string name="settings_saved_message">Settings saved.</string>
+    <string name="error_phone_invalid">Enter a valid phone number.</string>
+    <string name="action_retry">Retry</string>
+
+    <!-- Clients list -->
+    <string name="action_add_client">+ Add</string>
+    <string name="clients_empty_title">No clients yet</string>
+    <string name="clients_empty_subtitle">Add your first client to start linking jobs to them.</string>
+    <string name="clients_no_contact_info">No contact info</string>
+    <string name="clients_load_error">Couldn\'t load your clients. Pull to refresh or try again.</string>
+
+    <!-- Client details (add/edit) -->
+    <string name="client_details_add_title">Add client</string>
+    <string name="client_details_edit_title">Edit client</string>
+    <string name="hint_address">Address</string>
+    <string name="hint_notes">Notes</string>
+    <string name="action_delete_client">Delete client</string>
+    <string name="dialog_delete_client_title">Delete this client?</string>
+    <string name="dialog_delete_client_message">This removes %1$s and can\'t be undone.</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="client_added_message">Client added.</string>
+    <string name="client_saved_message">Client updated.</string>
+    <string name="client_deleted_message">Client deleted.</string>
+    <string name="client_load_error">Couldn\'t load this client.</string>
+
+    <!-- Jobs list -->
+    <string name="action_add_job">+ Add</string>
+    <string name="jobs_empty_title">No jobs yet</string>
+    <string name="jobs_empty_subtitle">Add a job to start tracking work for a client.</string>
+    <string name="jobs_load_error">Couldn\'t load your jobs. Pull to refresh or try again.</string>
+    <string name="jobs_no_due_date">No due date</string>
+    <string name="jobs_due_date_label">Due %1$s</string>
+
+    <!-- Job details (add/edit) -->
+    <string name="job_details_add_title">Add job</string>
+    <string name="job_details_edit_title">Edit job</string>
+    <string name="job_load_error">Couldn\'t load this job.</string>
+    <string name="hint_job_title">Job title</string>
+    <string name="hint_description">Description (optional)</string>
+    <string name="hint_client">Client</string>
+    <string name="hint_status">Status</string>
+    <string name="hint_start_date">Start date</string>
+    <string name="hint_due_date">Due date</string>
+    <string name="hint_completed_date">Completed date</string>
+    <string name="hint_agreed_amount">Agreed amount</string>
+    <string name="hint_agreed_amount_with_currency">Agreed amount (%1$s)</string>
+    <string name="error_title_required">Enter a title for this job.</string>
+    <string name="error_amount_invalid">Enter an amount of 0 or more.</string>
+    <string name="error_client_required">Choose a client.</string>
+    <string name="job_added_message">Job added.</string>
+    <string name="job_saved_message">Job updated.</string>
+    <string name="jobs_needs_client_title">Add a client first</string>
+    <string name="jobs_needs_client_subtitle">Jobs must be linked to a client. Add one, then come back to create this job.</string>
 
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_clients">Clients</string>
-    <string name="nav_projects">Projects</string>
+    <string name="nav_projects">Jobs</string>
     <string name="nav_finances">Finances</string>
     <string name="nav_settings">Settings</string>
 
@@ -70,4 +198,13 @@
     <string name="action_open_project_details">Open project details</string>
     <string name="action_open_expenses">Open expenses</string>
     <string name="action_back">Back</string>
+
+    <!-- Loading states -->
+    <string name="loading_default">Loading…</string>
+    <string name="loading_please_wait">Please wait…</string>
+    <string name="loading_clients">Loading clients…</string>
+    <string name="cd_loading">Loading</string>
+    <string name="cd_loading_list">Loading list</string>
+    <string name="action_saving">Saving…</string>
+    <string name="client_row_updated">Updated %1$s</string>
 </resources>

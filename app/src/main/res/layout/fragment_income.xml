@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/background" android:clipToPadding="false" android:paddingBottom="110dp">
+ <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+   <Button android:id="@+id/invoices_tab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/invoices_title" />
+   <Button android:id="@+id/expenses_tab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/expenses_title" />
+   <Button android:id="@+id/income_tab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:enabled="false" android:text="@string/income_title" />
+  </LinearLayout>
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:text="@string/income_add_title" android:textColor="@color/dashboard_text" android:textSize="22sp" android:textStyle="bold" />
+  <EditText android:id="@+id/income_amount" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:hint="@string/income_amount_hint" android:inputType="numberDecimal" />
+  <EditText android:id="@+id/income_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:focusable="false" android:hint="@string/income_date_hint" android:inputType="none" />
+
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/income_payment_method_label" android:textStyle="bold" />
+  <Spinner
+      android:id="@+id/payment_method"
+      android:layout_width="match_parent"
+      android:layout_height="33dp"
+      android:layout_marginTop="4dp" />
+  <EditText android:id="@+id/income_description" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:hint="@string/income_description_hint" android:maxLength="255" />
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/income_optional_links" android:textStyle="bold" />
+
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/income_client_label" android:textStyle="bold" />
+  <Spinner
+      android:id="@+id/income_client"
+      android:layout_width="match_parent"
+      android:layout_height="33dp" />
+
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/income_job_label" android:textStyle="bold" />
+  <Spinner
+      android:id="@+id/income_job"
+      android:layout_width="match_parent"
+      android:layout_height="43dp" />
+
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/income_invoice_label" android:textStyle="bold" />
+  <Spinner
+      android:id="@+id/income_invoice"
+      android:layout_width="match_parent"
+      android:layout_height="38dp" />
+  <Button android:id="@+id/save_income" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/income_save" />
+  <TextView android:id="@+id/income_status" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/cyan_dark" android:visibility="gone" />
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="@string/income_list_title" android:textColor="@color/dashboard_text" android:textSize="20sp" android:textStyle="bold" />
+  <TextView android:id="@+id/income_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/income_empty" />
+  <LinearLayout android:id="@+id/income_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+ </LinearLayout>
+</ScrollView>
