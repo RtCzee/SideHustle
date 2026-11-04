@@ -244,4 +244,25 @@
     <string name="action_open_projects">Open Projects</string>
     <string name="invoice_row">%1$s · %2$s · %3$s</string>
     <string name="client_name_fallback">Client</string>
+    <string name="attachments_title">Attachments</string>
+    <string name="attachment_close">Close</string>
+    <string name="attachment_expense_action">View details and attachments</string>
+    <string name="attachment_add">Attach a file or image</string>
+    <string name="attachment_retry">Retry</string>
+    <string name="attachment_cancelled">No file selected. Choose a file to try again.</string>
+    <string name="attachment_picker_failed">Could not open the file picker. Please try again.</string>
+    <string name="attachment_loading">Loading attachments…</string>
+    <string name="attachment_empty">No attachments yet. Files up to 20 MB are supported.</string>
+    <string name="attachment_ready">Select an attachment to open it.</string>
+    <string name="attachment_uploading">Uploading file and saving attachment…</string>
+    <string name="attachment_saved">Attachment saved.</string>
+    <string name="attachment_upload_failed">Upload failed. Check your connection and select the file again.</string>
+    <string name="attachment_save_failed">File uploaded, but its attachment could not be saved. Tap Retry.</string>
+    <string name="attachment_load_failed">Could not load attachments. Tap Retry.</string>
+    <string name="attachment_too_large">Choose a file smaller than 20 MB.</string>
+    <string name="attachment_open">Open %1$s</string>
+    <string name="attachment_open_failed">Could not open this attachment. Install a browser and try again.</string>
+    <string name="attachment_default_name">Attachment</string>
+    <string name="attachment_save_job_first">Save job to attach files</string>
+    <string name="attachment_expense_details">Open %1$s expense details and attachments</string>
 </resources>

@@ -99,6 +99,14 @@ class ProjectDetailsFragment : Fragment() {
         }
 
         binding.saveButton.setOnClickListener { submitSave() }
+        binding.attachmentsButton.isEnabled = isEditMode
+        if (!isEditMode) binding.attachmentsButton.setText(R.string.attachment_save_job_first)
+        binding.attachmentsButton.setOnClickListener {
+            jobId?.let { id ->
+                com.example.sidehustle.ui.attachments.AttachmentsDialog.show(
+                    parentFragmentManager, "jobs", id, binding.titleInput.text.toString())
+            }
+        }
 
         binding.needsClientAddButton.setOnClickListener {
             findNavController().navigateSafely(R.id.clientDetailsFragment, bundleOf("isCreating" to true))
@@ -288,7 +296,10 @@ class ProjectDetailsFragment : Fragment() {
                     } else {
                         Log.d(TAG, "Created job ${result.data.jobId}")
                         Snackbar.make(binding.root, R.string.job_added_message, Snackbar.LENGTH_SHORT).show()
-                        findNavController().navigateUp()
+                        findNavController().navigateSafely(R.id.projectDetailsFragment,
+                            bundleOf(ARG_JOB_ID to result.data.jobId),
+                            androidx.navigation.NavOptions.Builder()
+                                .setPopUpTo(R.id.projectDetailsFragment, true).build())
                     }
                 }
                 is ApiResult.Error -> {

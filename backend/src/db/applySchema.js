@@ -11,6 +11,7 @@ async function applySchema() {
 
   console.log('Applying schema from schema.sql...');
   await pool.query(sql);
+  await pool.query(fs.readFileSync(path.join(__dirname, 'attachments.sql'), 'utf8'));
   console.log('Schema applied successfully.');
   await pool.end();
 }

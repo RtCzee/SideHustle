@@ -63,6 +63,8 @@ dependencies {
     // Firebase BOM + Auth SDK — hashes passwords and hosts the user list for the demo
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Retrofit — REST client for the hosted API (issue #10)
     implementation(libs.retrofit)

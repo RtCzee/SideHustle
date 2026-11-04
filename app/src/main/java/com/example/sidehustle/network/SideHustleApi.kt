@@ -30,6 +30,13 @@ import retrofit2.http.Query
 
 interface SideHustleApi {
 
+    @GET("attachments/{type}/{id}")
+    suspend fun getAttachments(@Path("type") type: String, @Path("id") id: String): List<com.example.sidehustle.data.model.Attachment>
+
+    @POST("attachments/{type}/{id}")
+    suspend fun addAttachment(@Path("type") type: String, @Path("id") id: String,
+        @Body body: com.example.sidehustle.data.model.AttachmentRequest): com.example.sidehustle.data.model.Attachment
+
     @GET("health")
     suspend fun getHealth(): HealthResponse
 
