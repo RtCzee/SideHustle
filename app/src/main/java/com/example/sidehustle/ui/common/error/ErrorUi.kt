@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.R
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.ui.navigation.navigateSafely
+import com.example.sidehustle.ui.navigation.resetSession
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -65,8 +66,7 @@ private fun Fragment.performErrorAction(action: ErrorAction, retry: () -> Unit, 
         ErrorAction.LOGIN -> {
             FirebaseAuth.getInstance().signOut()
             val nav = findNavController()
-            nav.navigateSafely(R.id.loginFragment, options = NavOptions.Builder()
-                .setPopUpTo(nav.graph.id, true).setLaunchSingleTop(true).build())
+            nav.resetSession(R.id.loginFragment)
         }
         ErrorAction.BACK -> goBackFromError()
         ErrorAction.DISMISS -> if (!inline) goBackFromError()

@@ -28,6 +28,8 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 
 import com.example.sidehustle.data.model.ExpenseResponse
 
@@ -99,7 +101,7 @@ class RemoteDataSource(
         safeApiCall { api.updateInvoiceStatus(invoiceId, UpdateInvoiceStatusRequest(status)) }
 
     internal suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
-        return try {
+        val result = try {
             ApiResult.Success(block())
         } catch (error: CancellationException) {
             throw error
@@ -120,6 +122,10 @@ class RemoteDataSource(
         } catch (_: Exception) {
             ApiResult.Error("Something went wrong. Please try again.")
         }
+        // Retrofit can deliver an HTTP/IO failure as the view's request is cancelled.
+        // Never turn that late result into UI work for a destroyed Fragment view.
+        currentCoroutineContext().ensureActive()
+        return result
     }
 
     /** The backend returns validation failures as {"error": "..."} — prefer that specific

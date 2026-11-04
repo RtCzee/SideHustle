@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -100,7 +101,7 @@ class ProjectDetailsFragment : Fragment() {
         binding.saveButton.setOnClickListener { submitSave() }
 
         binding.needsClientAddButton.setOnClickListener {
-            findNavController().navigateSafely(R.id.clientDetailsFragment)
+            findNavController().navigateSafely(R.id.clientDetailsFragment, bundleOf("isCreating" to true))
         }
     }
 

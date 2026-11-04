@@ -19,6 +19,8 @@ import com.example.sidehustle.ui.common.error.showInlineError
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -72,7 +74,10 @@ class DashboardFragment : Fragment() {
 
     private suspend fun loadProfileFallback(dashboardError: ApiResult.Error) {
         val repository = (requireActivity().application as SideHustleApp).repository
-        when (val result = repository.fetchProfile()) {
+        val result = repository.fetchProfile()
+        currentCoroutineContext().ensureActive()
+        if (_binding == null) return
+        when (result) {
             is ApiResult.Success -> {
                 showProfileOnly(result.data)
                 hasContent = true

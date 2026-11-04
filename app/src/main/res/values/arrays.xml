@@ -38,19 +38,17 @@
     <!-- Payment methods for Income screen -->
     <string-array name="payment_methods">
         <item>@string/income_payment_method_prompt</item>
-        <item>EFT / Bank Transfer</item>
+        <item>EFT</item>
         <item>Cash</item>
         <item>Card</item>
-        <item>Mobile Payment</item>
-        <item>Other</item>
     </string-array>
 
     <!-- Invoice statuses for Invoices screen -->
     <string-array name="invoice_statuses">
         <item>Draft</item>
         <item>Sent</item>
+        <item>Partially Paid</item>
         <item>Paid</item>
         <item>Overdue</item>
-        <item>Cancelled</item>
     </string-array>
 </resources>

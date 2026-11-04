@@ -78,3 +78,28 @@ Use `background` for pages, `surface` for controls and dialogs, `card_surface` f
 `on_background` for primary text, and `on_surface_variant` for secondary text. Filled action
 buttons retain lime with `on_primary` text; `primary` is the contrast-safe accent for text actions,
 focused fields, and selections. Status badges pair their status color with `on_status`.
+
+## Prototype navigation and list states
+
+After login, the visible bottom bar opens Dashboard, Clients, Projects, Finances, and Settings.
+Finances has labeled Invoices / Expenses / Income tabs. Each opens its list immediately;
+Create invoice / Add expense / Record income opens the corresponding form. Empty states offer
+the same action. Client creation is available from Clients; project creation is in Projects.
+Invoices guide a new account to create a client and a project first. Refresh and Retry are visible.
+
+Login/registration clear the auth stack. Logout in Settings and expired-session recovery clear
+both the active stack and saved bottom-tab stacks. Auth destinations redirect an existing session
+back to Dashboard; protected destinations require login. Missing detail IDs remain 404 states.
+
+`ListStateHandler` in `ui/common/list` is the shared first-load / empty / error / refresh pattern
+used by Clients and all three finance lists. Projects retains its existing equivalent pattern.
+Only a successful zero-item response shows Empty. Initial failures replace the list with an
+actionable error; refresh failures keep the last result and show an inline recovery action.
+Use the Fragment view lifecycle and cancel superseded loads. Never use demo rows to hide failure.
+
+MainActivity owns system-bar, keyboard, and bottom-navigation clearance. Do not add fixed 110dp
+navigation padding to individual screens. Scrollable forms and navigation labels can grow with
+phone font settings; the bottom bar hides while the keyboard is open. Device checks in
+`PrototypeNavigationTest` never sign out the actual Firebase session. Stack-reset checks use an
+isolated graph; the rapid-tab regression check uses the existing session for read-only requests
+and skips when signed out.

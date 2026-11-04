@@ -42,9 +42,7 @@
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/light_system_bars</item>
-        <item name="android:windowLightNavigationBar">@bool/light_system_bars</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:forceDarkAllowed">false</item>
         <item name="materialButtonStyle">@style/Widget.SideHustle.Button</item>
     </style>
 

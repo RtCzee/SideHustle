@@ -10,7 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.sidehustle.ui.navigation.navigateSafely
+import com.example.sidehustle.ui.navigation.resetSession
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.UpdateProfileRequest
@@ -71,7 +71,7 @@ class SettingsFragment : Fragment() {
             auth.signOut()
             Log.d(TAG, "User signed out")
             Snackbar.make(binding.root, R.string.logged_out_message, Snackbar.LENGTH_SHORT).show()
-            findNavController().navigateSafely(R.id.action_settingsFragment_to_loginFragment)
+            findNavController().resetSession(R.id.loginFragment)
         }
 
         loadProfile()

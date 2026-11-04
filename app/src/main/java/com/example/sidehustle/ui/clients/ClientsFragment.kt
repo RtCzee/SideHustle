@@ -4,114 +4,76 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
+import com.example.sidehustle.SideHustleApp
+import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentClientsBinding
-import com.example.sidehustle.ui.common.loading.LoadingStateHandler
+import com.example.sidehustle.ui.common.list.ListStateHandler
 import com.example.sidehustle.ui.common.loading.applySideHustleStyle
-import com.example.sidehustle.ui.common.loading.forViews
+import com.example.sidehustle.ui.navigation.navigateSafely
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.text.DateFormat
-import java.util.Date
 
-/**
- * Clients list. For now this shows DEMO data (see [fetchClientsDemo]) so the shared loading
- * patterns can be seen working on a real list screen:
- *
- *  - first load  -> list skeleton (shimmer)
- *  - pull down   -> pull-to-refresh indicator, existing rows stay visible
- *
- * TODO(#14): replace [fetchClientsDemo] with the repository call and the real client model.
- * The loading wiring below should not need to change.
- */
 class ClientsFragment : Fragment() {
-
     private var _binding: FragmentClientsBinding? = null
     private val binding get() = _binding!!
-
-    private var loading: LoadingStateHandler? = null
-
-    private val adapter = ClientRowAdapter {
-        findNavController().navigateSafely(R.id.action_clientsFragment_to_clientDetailsFragment)
-    }
-
-    // Each load gets a number; only the newest load is allowed to clear the indicators.
-    private var loadGeneration = 0
+    private var state: ListStateHandler? = null
     private var loadJob: Job? = null
+    private lateinit var adapter: ClientsAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentClientsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        adapter = ClientsAdapter { openDetails(it.clientId) }
         binding.clientsList.adapter = adapter
-
-        loading = LoadingStateHandler.forViews(
-            loadingView = binding.listLoading.root,
-            contentView = binding.swipeRefresh,
-            lifecycleOwner = viewLifecycleOwner,
-        )
-
+        state = ListStateHandler(this, binding.listState, binding.swipeRefresh,
+            R.string.clients_empty_title, R.string.clients_empty_subtitle, R.string.action_add_client,
+            onEmptyAction = { openDetails(null) })
+        binding.addButton.setOnClickListener { openDetails(null) }
         binding.swipeRefresh.applySideHustleStyle()
-        binding.swipeRefresh.setOnRefreshListener { loadClients(fromPullToRefresh = true) }
-
-        if (adapter.itemCount == 0) loadClients(fromPullToRefresh = false)
+        binding.swipeRefresh.setOnRefreshListener { loadClients() }
     }
 
-    private fun loadClients(fromPullToRefresh: Boolean) {
-        val generation = ++loadGeneration
-        loadJob?.cancel() // a newer request supersedes any load still in flight
-        // First load has nothing to show yet, so use the skeleton. A pull-to-refresh already
-        // shows its own indicator over the existing rows.
-        if (!fromPullToRefresh) loading?.setLoading(true)
+    override fun onResume() {
+        super.onResume()
+        loadClients()
+    }
 
+    private fun loadClients() {
+        loadJob?.cancel()
+        state?.loading()
         loadJob = viewLifecycleOwner.lifecycleScope.launch {
             try {
-                adapter.submitList(fetchClientsDemo())
-            } finally {
-                // Runs on success, failure and cancellation. A newer load owns the indicators.
-                // The view may already be gone (late response), so never touch `binding` here.
-                if (generation == loadGeneration) {
-                    loading?.setLoading(false)
-                    _binding?.swipeRefresh?.isRefreshing = false
+                when (val result = (requireActivity().application as SideHustleApp).repository.fetchClients()) {
+                    is ApiResult.Success -> {
+                        adapter.submitList(result.data)
+                        state?.success(result.data.isEmpty())
+                    }
+                    is ApiResult.Error -> state?.error(result, ::loadClients)
                 }
+            } finally {
+                if (isActive) _binding?.swipeRefresh?.isRefreshing = false
             }
         }
     }
 
-    /** Simulates a network call. TODO(#14): remove. */
-    private suspend fun fetchClientsDemo(): List<DemoClient> {
-        delay(DEMO_NETWORK_DELAY_MS)
-        val updatedAt = DateFormat.getTimeInstance(DateFormat.MEDIUM).format(Date())
-        return DEMO_NAMES.mapIndexed { index, name ->
-            DemoClient(id = index.toLong(), name = name, updatedAt = updatedAt)
-        }
+    private fun openDetails(id: String?) {
+        findNavController().navigateSafely(R.id.action_clientsFragment_to_clientDetailsFragment,
+            bundleOf(ClientDetailsFragment.ARG_CLIENT_ID to id, "isCreating" to (id == null)))
     }
 
     override fun onDestroyView() {
-        loading = null
+        loadJob?.cancel()
+        state = null
         _binding = null
         super.onDestroyView()
-    }
-
-    private companion object {
-        const val DEMO_NETWORK_DELAY_MS = 1500L
-        val DEMO_NAMES = listOf(
-            "Thabo Mokoena", "Lerato Dlamini", "Pieter van der Merwe", "Ayesha Patel",
-            "Sipho Nkosi", "Karen Botha", "Naledi Khumalo", "Johan Pretorius",
-            "Zanele Mahlangu", "Ruan Steyn", "Fatima Essop", "Bongani Zulu",
-        )
     }
 }
