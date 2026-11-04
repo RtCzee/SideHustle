@@ -10,6 +10,16 @@ data class HealthResponse(
     val databaseError: String? = null,
 )
 
+data class SyncOperation(
+    @SerializedName("operation_id") val operationId: String,
+    val kind: String,
+    val action: String,
+    @SerializedName("record_id") val recordId: String,
+    val payload: Map<String, Any?>,
+)
+data class SyncRequest(val operations: List<SyncOperation>)
+data class SyncResponse(@SerializedName("accepted_operation_ids") val acceptedOperationIds: List<String>)
+
 data class UserProfileResponse(
     @SerializedName("user_id")
     val userId: String,
