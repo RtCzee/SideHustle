@@ -27,6 +27,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlinx.coroutines.CancellationException
 
 import com.example.sidehustle.data.model.ExpenseResponse
 
@@ -97,20 +98,25 @@ class RemoteDataSource(
     suspend fun updateInvoiceStatus(invoiceId: String, status: String): ApiResult<InvoiceResponse> =
         safeApiCall { api.updateInvoiceStatus(invoiceId, UpdateInvoiceStatusRequest(status)) }
 
-    private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
+    internal suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
         return try {
             ApiResult.Success(block())
+        } catch (error: CancellationException) {
+            throw error
         } catch (error: HttpException) {
-            val body = error.response()?.errorBody()?.string()
-            Log.e("SideHustle", "API HTTP ${error.code()}: ${body?.take(200)}")
-            val serverMessage = body?.let { extractErrorMessage(it) }
+            val body = try { error.response()?.errorBody()?.string() } catch (_: IOException) { null }
+            Log.e("SideHustle", "API HTTP ${error.code()}")
+            // Only input errors may expose a server message. Other responses can contain internals.
+            val serverMessage = if (error.code() in listOf(400, 409, 422)) {
+                body?.let { extractErrorMessage(it) }
+            } else null
             ApiResult.Error(serverMessage ?: mapHttpError(error.code()), error.code())
         } catch (_: SocketTimeoutException) {
-            ApiResult.Error("The server took too long to respond. Try again.")
+            ApiResult.Error("The server took too long to respond. Try again.", kind = ErrorKind.TIMEOUT)
         } catch (_: UnknownHostException) {
-            ApiResult.Error("No internet connection. Check your network and try again.")
+            ApiResult.Error("Could not reach the server. Check your connection and try again.", kind = ErrorKind.NETWORK)
         } catch (_: IOException) {
-            ApiResult.Error("Could not reach the server. Check your connection and try again.")
+            ApiResult.Error("Could not reach the server. Check your connection and try again.", kind = ErrorKind.NETWORK)
         } catch (_: Exception) {
             ApiResult.Error("Something went wrong. Please try again.")
         }
@@ -119,7 +125,7 @@ class RemoteDataSource(
     /** The backend returns validation failures as {"error": "..."} — prefer that specific
      *  message over a generic one when it's present and readable. */
     private fun extractErrorMessage(body: String): String? = try {
-        JSONObject(body).optString("error").takeIf { it.isNotBlank() }
+        (JSONObject(body).opt("error") as? String)?.takeIf { it.isNotBlank() }
     } catch (_: Exception) {
         null
     }
@@ -127,11 +133,11 @@ class RemoteDataSource(
     private fun mapHttpError(code: Int): String {
         return when (code) {
             400 -> "Some details weren't valid. Check the form and try again."
-            401 -> "Your session expired. Please log in again."
-            404 -> "Profile not found."
+            401 -> "Session expired. Please log in again."
+            404 -> "We could not find that item."
             409 -> "A profile already exists for this account."
-            in 500..599 -> "The server had a problem. Try again later."
-            else -> "The request failed (HTTP $code)."
+            in 500..599 -> "Something went wrong on our side. Please try again."
+            else -> "Something went wrong. Please try again."
         }
     }
 }

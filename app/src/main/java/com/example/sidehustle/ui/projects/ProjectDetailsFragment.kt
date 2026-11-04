@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.ClientResponse
@@ -17,7 +18,13 @@ import com.example.sidehustle.data.model.JobRequest
 import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentJobDetailsBinding
+import com.example.sidehustle.ui.common.error.dismissInlineError
+import com.example.sidehustle.ui.common.error.showFullPageError
+import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.navigation.isValidDetailRequest
 import com.example.sidehustle.util.AuthValidator
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -27,21 +34,21 @@ import java.util.Locale
 import java.util.TimeZone
 
 /**
- * Add/edit a single job (issue: Build Job Management). With no jobId argument this is
- * "add job" (blank form, POST on save, must pick an existing client). With a jobId it
- * loads GET /jobs/{id}, allows editing every field including status (PUT).
+ * Explicit isCreating opens the add form. Otherwise a valid jobId is required;
+ * missing or malformed IDs show the shared 404 state.
  */
 class ProjectDetailsFragment : Fragment() {
 
     private var _binding: FragmentJobDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val jobId: String? by lazy { arguments?.getString(ARG_JOB_ID) }
+    private val jobId: String? get() = arguments?.get(ARG_JOB_ID) as? String
     private val isEditMode: Boolean get() = jobId != null
 
     private var clients: List<ClientResponse> = emptyList()
     private var selectedClientId: String? = null
-    private var hasLoadedOnce = false
+    private val isCreating: Boolean get() = arguments?.get(ARG_IS_CREATING) == true
+    private var loadJob: Job? = null
 
     private val statuses: List<String> by lazy { resources.getStringArray(R.array.job_statuses).toList() }
     private val isoDateFormat: SimpleDateFormat by lazy {
@@ -61,7 +68,11 @@ class ProjectDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.title.setText(
-            if (isEditMode) R.string.job_details_edit_title else R.string.job_details_add_title
+            when {
+                !isValidDetailRequest(jobId, isCreating) -> R.string.project_details_title
+                isEditMode -> R.string.job_details_edit_title
+                else -> R.string.job_details_add_title
+            }
         )
 
         binding.statusInput.setAdapter(
@@ -87,107 +98,80 @@ class ProjectDetailsFragment : Fragment() {
         }
 
         binding.saveButton.setOnClickListener { submitSave() }
-        binding.retryButton.setOnClickListener { load() }
+
         binding.needsClientAddButton.setOnClickListener {
-            findNavController().navigate(R.id.clientDetailsFragment)
+            findNavController().navigateSafely(R.id.clientDetailsFragment)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (!hasLoadedOnce) {
-            hasLoadedOnce = true
-            load()
-        } else {
-            // Covers returning from "add a client" — refresh the picker without
-            // disturbing whatever the user has already typed into the form.
-            refreshClientsOnly()
-        }
+        if (binding.formGroup.isVisible) refreshClientsOnly() else load()
     }
 
     private fun load() {
-        val repository = (requireActivity().application as SideHustleApp).repository
-
-        binding.errorGroup.isVisible = false
+        loadJob?.cancel()
+        dismissInlineError()
+        binding.errorState.isVisible = false
         binding.needsClientGroup.isVisible = false
         binding.formGroup.isVisible = false
+        if (!isValidDetailRequest(jobId, isCreating)) {
+            showLoadError(ApiResult.Error("", 404))
+            return
+        }
         binding.loadingIndicator.isVisible = true
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            when (val clientsResult = repository.fetchClients()) {
-                is ApiResult.Success -> {
-                    clients = clientsResult.data
-                    bindClientAdapter()
-
-                    if (clients.isEmpty() && !isEditMode) {
-                        binding.loadingIndicator.isVisible = false
-                        binding.needsClientGroup.isVisible = true
-                        return@launch
-                    }
-
-                    if (isEditMode) {
-                        loadJob()
-                    } else {
-                        binding.loadingIndicator.isVisible = false
-                        applyCreateDefaults()
-                        binding.formGroup.isVisible = true
+        val repository = (requireActivity().application as SideHustleApp).repository
+        loadJob = viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                // Resolve the resource first, so a missing job always gets a 404 state.
+                if (isEditMode) {
+                    when (val result = repository.fetchJob(jobId!!)) {
+                        is ApiResult.Success -> populateFields(result.data)
+                        is ApiResult.Error -> {
+                            showLoadError(result)
+                            return@launch
+                        }
                     }
                 }
-                is ApiResult.Error -> {
-                    Log.e(TAG, "Failed to load clients: ${clientsResult.message}")
-                    binding.loadingIndicator.isVisible = false
-                    binding.errorMessage.text = clientsResult.message.ifBlank {
-                        getString(R.string.clients_load_error)
+                when (val result = repository.fetchClients()) {
+                    is ApiResult.Success -> {
+                        clients = result.data
+                        bindClientAdapter()
+                        if (clients.isEmpty() && !isEditMode) {
+                            binding.needsClientGroup.isVisible = true
+                        } else {
+                            if (!isEditMode) applyCreateDefaults()
+                            binding.formGroup.isVisible = true
+                        }
                     }
-                    binding.errorGroup.isVisible = true
+                    is ApiResult.Error -> showLoadError(result)
                 }
+            } finally {
+                if (isActive) _binding?.loadingIndicator?.isVisible = false
             }
         }
     }
 
-    private suspend fun loadJob() {
-        val id = jobId ?: return
-        val repository = (requireActivity().application as SideHustleApp).repository
-
-        when (val result = repository.fetchJob(id)) {
-            is ApiResult.Success -> {
-                Log.d(TAG, "Loaded job $id")
-                populateFields(result.data)
-                binding.loadingIndicator.isVisible = false
-                binding.formGroup.isVisible = true
-            }
-            is ApiResult.Error -> {
-                Log.e(TAG, "Failed to load job $id: ${result.message}")
-                binding.loadingIndicator.isVisible = false
-                binding.errorMessage.text = result.message.ifBlank {
-                    getString(R.string.job_load_error)
-                }
-                binding.errorGroup.isVisible = true
-            }
-        }
+    private fun showLoadError(error: ApiResult.Error) {
+        binding.loadingIndicator.isVisible = false
+        binding.formGroup.isVisible = false
+        showFullPageError(binding.errorState, error, ::load)
     }
 
     private fun refreshClientsOnly() {
+        loadJob?.cancel()
+        dismissInlineError()
         val repository = (requireActivity().application as SideHustleApp).repository
-        viewLifecycleOwner.lifecycleScope.launch {
+        loadJob = viewLifecycleOwner.lifecycleScope.launch {
             when (val result = repository.fetchClients()) {
                 is ApiResult.Success -> {
                     clients = result.data
                     bindClientAdapter()
-                    if (clients.isNotEmpty() && binding.needsClientGroup.isVisible) {
-                        binding.needsClientGroup.isVisible = false
-                        applyCreateDefaults()
-                        binding.formGroup.isVisible = true
-                    }
                 }
-                is ApiResult.Error -> {
-                    Log.e(TAG, "Background client refresh failed: ${result.message}")
-                    // Keep whatever was already on screen — this is a best-effort refresh.
-                }
+                is ApiResult.Error -> showInlineError(result, ::refreshClientsOnly)
             }
         }
     }
-
     private fun bindClientAdapter() {
         binding.clientInput.setAdapter(
             ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, clients.map { it.name })
@@ -248,6 +232,7 @@ class ProjectDetailsFragment : Fragment() {
     }
 
     private fun submitSave() {
+        dismissInlineError()
         val title = binding.titleInput.text?.toString()?.trim().orEmpty()
         val description = binding.descriptionInput.text?.toString()?.trim().orEmpty()
         val status = binding.statusInput.text?.toString()?.trim()?.ifBlank { null } ?: statuses.first()
@@ -308,7 +293,7 @@ class ProjectDetailsFragment : Fragment() {
                 is ApiResult.Error -> {
                     Log.e(TAG, "Failed to save job: ${result.message}")
                     setSaving(false)
-                    Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
+                    showInlineError(result, ::submitSave)
                 }
             }
         }
@@ -322,6 +307,7 @@ class ProjectDetailsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        loadJob?.cancel()
         _binding = null
         super.onDestroyView()
     }
@@ -329,5 +315,6 @@ class ProjectDetailsFragment : Fragment() {
     companion object {
         private const val TAG = "SideHustle"
         const val ARG_JOB_ID = "jobId"
+        const val ARG_IS_CREATING = "isCreating"
     }
 }

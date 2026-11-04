@@ -5,7 +5,7 @@
         Loading indicator styles for SideHustle (lime / cyan, not default purple Material).
         Use these instead of the stock Widget.Material3.* progress indicator styles.
 
-        The indicator colour is lime_dark (the theme's colorPrimaryVariant) rather than the bright
+        The adaptive indicator colour is lime_dark (the theme's colorPrimaryVariant) rather than the bright
         lime: plain lime on the light surface has too little contrast to read as a spinner.
     -->
 
@@ -17,7 +17,7 @@
 
     <!-- Spinner drawn inside a MaterialButton (see ButtonLoading.kt). Sized to sit beside the label. -->
     <style name="Widget.SideHustle.CircularProgressIndicator.Button">
-        <item name="indicatorColor">?attr/colorOnPrimary</item>
+        <item name="indicatorColor">@color/on_primary</item>
         <item name="trackColor">@android:color/transparent</item>
         <item name="indicatorSize">18dp</item>
         <item name="indicatorInset">0dp</item>

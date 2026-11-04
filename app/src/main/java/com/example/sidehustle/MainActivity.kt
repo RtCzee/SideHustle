@@ -1,6 +1,7 @@
 package com.example.sidehustle
 
 import android.os.Bundle
+import android.content.Intent
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -8,6 +9,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.NavDeepLinkRequest
+import com.example.sidehustle.ui.navigation.navigateSafely
+import com.example.sidehustle.ui.navigation.showNotFound
 import com.example.sidehustle.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 
@@ -44,9 +48,25 @@ class MainActivity : AppCompatActivity() {
             binding.floatingNav.isVisible = destination.id in topLevelDestinations
         }
 
-        if (savedInstanceState == null && auth.currentUser != null) {
+        if (savedInstanceState == null && intent?.data != null) {
+            // Matching links are already handled by NavHost when its graph is created.
+            val request = NavDeepLinkRequest.Builder.fromUri(intent.data!!).build()
+            if (!navController.graph.hasDeepLink(request)) navController.showNotFound()
+        } else if (savedInstanceState == null && auth.currentUser != null) {
             Log.d(TAG, "Existing session for ${auth.currentUser?.email}")
-            navController.navigate(R.id.action_loginFragment_to_dashboardFragment)
+            navController.navigateSafely(R.id.action_loginFragment_to_dashboardFragment)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.data == null) return
+        val nav = (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+        try {
+            if (!nav.handleDeepLink(intent)) nav.showNotFound()
+        } catch (_: IllegalArgumentException) {
+            nav.showNotFound()
         }
     }
 

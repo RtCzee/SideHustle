@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.databinding.FragmentClientsBinding
 import com.example.sidehustle.ui.common.loading.LoadingStateHandler
@@ -36,7 +37,7 @@ class ClientsFragment : Fragment() {
     private var loading: LoadingStateHandler? = null
 
     private val adapter = ClientRowAdapter {
-        findNavController().navigate(R.id.action_clientsFragment_to_clientDetailsFragment)
+        findNavController().navigateSafely(R.id.action_clientsFragment_to_clientDetailsFragment)
     }
 
     // Each load gets a number; only the newest load is allowed to clear the indicators.

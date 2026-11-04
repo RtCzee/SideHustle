@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateIncomeRequest
@@ -38,8 +39,8 @@ class IncomeFragment : Fragment() {
     override fun onViewCreated(view: View, state: Bundle?) {
         binding.paymentMethod.adapter = ArrayAdapter.createFromResource(requireContext(), R.array.payment_methods, android.R.layout.simple_spinner_dropdown_item)
         binding.incomeDate.setOnClickListener { pickDate() }
-        binding.invoicesTab.setOnClickListener { findNavController().navigate(R.id.action_incomeFragment_to_invoicesFragment) }
-        binding.expensesTab.setOnClickListener { findNavController().navigate(R.id.action_incomeFragment_to_expensesFragment) }
+        binding.invoicesTab.setOnClickListener { findNavController().navigateSafely(R.id.action_incomeFragment_to_invoicesFragment) }
+        binding.expensesTab.setOnClickListener { findNavController().navigateSafely(R.id.action_incomeFragment_to_expensesFragment) }
         binding.saveIncome.setOnClickListener { saveIncome() }
         loadOptions(); loadIncome()
     }

@@ -1,16 +1,3 @@
 <resources>
-    <style name="Theme.SideHustle" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/lime</item>
-        <item name="colorPrimaryVariant">@color/lime_dark</item>
-        <item name="colorOnPrimary">@color/on_primary</item>
-        <item name="colorSecondary">@color/cyan</item>
-        <item name="colorSecondaryVariant">@color/cyan_dark</item>
-        <item name="colorOnSecondary">@color/on_primary</item>
-        <item name="colorSurface">#FF14221B</item>
-        <item name="android:colorBackground">#FF0F1A12</item>
-        <item name="android:windowBackground">#FF0F1A12</item>
-        <item name="android:statusBarColor">@color/lime_dark</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-    </style>
+    <style name="Theme.SideHustle" parent="Theme.SideHustle.Base" />
 </resources>

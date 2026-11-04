@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateInvoiceRequest
@@ -36,8 +37,8 @@ class InvoicesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, state: Bundle?) {
-        binding.expensesTab.setOnClickListener { findNavController().navigate(R.id.action_invoicesFragment_to_expensesFragment) }
-        binding.incomeTab.setOnClickListener { findNavController().navigate(R.id.action_invoicesFragment_to_incomeFragment) }
+        binding.expensesTab.setOnClickListener { findNavController().navigateSafely(R.id.action_invoicesFragment_to_expensesFragment) }
+        binding.incomeTab.setOnClickListener { findNavController().navigateSafely(R.id.action_invoicesFragment_to_incomeFragment) }
         binding.invoiceClient.onItemSelectedListener = selectionListener { loadJobsForSelectedClient() }
         binding.invoiceJob.onItemSelectedListener = selectionListener { showSelectedTotal() }
         binding.createInvoice.setOnClickListener { createInvoice() }

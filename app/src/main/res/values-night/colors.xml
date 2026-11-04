@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Clear glass on dark screens — slightly more opaque so cyan stays readable -->
-    <color name="nav_bar_glass_fill">#66FFFFFF</color>
-    <color name="nav_bar_glass_stroke">#B322D3EE</color>
-    <color name="nav_bubble_glass_fill">#B3FFFFFF</color>
+    <!-- Every screen and shared drawable resolves these roles in system dark mode. -->
+    <color name="lime_dark">#FFBEF264</color>
+    <color name="cyan_dark">#FF67E8F9</color>
+    <color name="background">#FF0F1A12</color>
+    <color name="surface">#FF17251C</color>
+    <color name="card_surface">#FF1D2E22</color>
+    <color name="surface_variant">#FF26382B</color>
+    <color name="on_background">#FFE7F1E8</color>
+    <color name="on_surface_variant">#FFB7C8BC</color>
+    <color name="primary">@color/lime</color>
+    <color name="on_theme_primary">@color/on_primary</color>
+    <color name="primary_container">#FF2F4515</color>
+    <color name="on_primary_container">#FFD9F99D</color>
+    <color name="secondary">@color/cyan</color>
+    <color name="on_secondary">#FF083344</color>
+    <color name="secondary_container">#FF164E63</color>
+    <color name="on_secondary_container">#FFCFFAFE</color>
+    <color name="outline">#FF899A90</color>
+    <color name="outline_variant">#FF34483B</color>
+    <color name="inverse_surface">#FFE7F1E8</color>
+    <color name="inverse_on_surface">#FF233529</color>
+    <color name="inverse_primary">#FF4D7C0F</color>
+    <color name="disabled_content">#61E7F1E8</color>
+    <color name="disabled_background">#1FE7F1E8</color>
+
+    <color name="dashboard_card_stroke">#FF354D3E</color>
+    <color name="info_background">#FF13313A</color>
+    <color name="info_stroke">#6657D8EB</color>
+    <color name="nav_bar_glass_fill">#ED17251C</color>
+    <color name="nav_bar_glass_stroke">#9922D3EE</color>
+    <color name="nav_bubble_glass_fill">#FF263D30</color>
     <color name="nav_label_active">@color/cyan</color>
-    <color name="nav_label_inactive">#9922D3EE</color>
+    <color name="nav_label_inactive">#FFAAC6CA</color>
     <color name="nav_icon_active">@color/cyan</color>
-    <color name="nav_icon_inactive">#8022D3EE</color>
+    <color name="nav_icon_inactive">#FFAAC6CA</color>
+    <color name="nav_shadow">#80000000</color>
+
+    <color name="error">#FFFFB4AB</color>
+    <color name="on_error">#FF690005</color>
+    <color name="error_container">#FF3D181B</color>
+    <color name="on_error_container">#FFFFDAD6</color>
+    <color name="status_pending">#FFCBD5E1</color>
+    <color name="status_in_progress">#FFFBBF24</color>
+    <color name="status_completed">#FFBEF264</color>
+    <color name="status_cancelled">#FFFDA4AF</color>
+    <color name="on_status">#FF14221B</color>
+    <color name="loading_track">#40A3E635</color>
+    <color name="loading_scrim">#B3000000</color>
+    <color name="skeleton_base">#FF26382B</color>
+    <color name="skeleton_highlight">#24FFFFFF</color>
 </resources>
