@@ -97,6 +97,8 @@ class SettingsFragment : Fragment() {
                 is ApiResult.Success -> {
                     Log.d(TAG, "Settings loaded for ${result.data.userId}")
                     populateFields(result.data)
+                    (requireActivity().application as SideHustleApp).pushRegistration
+                        .setEnabled(result.data.userId, result.data.notificationsEnabled)
                     binding.loadingIndicator.isVisible = false
                     binding.formGroup.isVisible = true
                 }
@@ -161,6 +163,10 @@ class SettingsFragment : Fragment() {
             when (val result = repository.updateProfile(request)) {
                 is ApiResult.Success -> {
                     Log.d(TAG, "Settings saved for ${result.data.userId}")
+                    (requireActivity().application as SideHustleApp).pushRegistration
+                        .setEnabled(result.data.userId, result.data.notificationsEnabled)
+                    (requireActivity() as com.example.sidehustle.MainActivity)
+                        .syncPushRegistration(requestPermission = result.data.notificationsEnabled)
                     populateFields(result.data)
                     setSaving(false)
                     Snackbar.make(binding.root, R.string.settings_saved_message, Snackbar.LENGTH_SHORT)

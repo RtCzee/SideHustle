@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.use('/health', healthRouter);
 router.use('/me', meRouter);
+router.use('/me/push-device', require('./pushDevices'));
 router.use('/dashboard', dashboardRouter);
 router.use('/clients', clientsRouter);
 router.use('/jobs', jobsRouter);

@@ -21,6 +21,7 @@ function profilePayload(row) {
     profile_picture_url: row.profile_picture_url,
     preferred_currency: row.preferred_currency,
     preferred_language: row.preferred_language,
+    notifications_enabled: row.notifications_enabled,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -75,6 +76,9 @@ router.post('/', requireAuth, async (req, res, next) => {
 /** PUT /me — update profile for the signed-in user (issue #11). */
 router.put('/', requireAuth, async (req, res, next) => {
   try {
+    if (req.body.notifications_enabled !== undefined && typeof req.body.notifications_enabled !== 'boolean') {
+      return res.status(400).json({ error: 'notifications_enabled must be a boolean.' });
+    }
     const existing = await findUserById(req.user.uid);
     if (!existing) {
       return res.status(404).json({ error: 'Profile not found. Create one with POST /me.' });
@@ -97,6 +101,7 @@ router.put('/', requireAuth, async (req, res, next) => {
       profilePictureUrl: req.body.profile_picture_url ?? req.body.profilePictureUrl,
       preferredCurrency: req.body.preferred_currency ?? req.body.preferredCurrency,
       preferredLanguage: req.body.preferred_language ?? req.body.preferredLanguage,
+      notificationsEnabled: req.body.notifications_enabled,
     });
 
     res.json(profilePayload(profile));

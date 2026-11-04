@@ -8,9 +8,11 @@
     "dev": "node --watch src/index.js",
     "db:schema": "node src/db/applySchema.js",
     "db:seed": "node src/db/applySeed.js",
-    "db:verify": "node src/db/verifyDb.js"
-    ,"db:attachments": "node src/db/applyAttachments.js"
-    ,"test": "node --test"
+    "db:verify": "node src/db/verifyDb.js",
+    "db:attachments": "node src/db/applyAttachments.js",
+    "db:notifications": "node src/db/applyNotifications.js",
+    "reminders:send": "node src/sendReminders.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18"

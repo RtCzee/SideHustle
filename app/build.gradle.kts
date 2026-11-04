@@ -3,6 +3,18 @@ plugins {
     alias(libs.plugins.google.services)
 }
 
+// The web OAuth client is generated when Google is enabled in Firebase Authentication.
+// Keep the email/password build usable with older Firebase configuration files too.
+val firebaseConfig = groovy.json.JsonSlurper().parse(file("google-services.json")) as Map<*, *>
+val firebaseAndroidClient = (firebaseConfig["client"] as? List<*>)?.filterIsInstance<Map<*, *>>()?.firstOrNull {
+    val clientInfo = it["client_info"] as? Map<*, *>
+    (clientInfo?.get("android_client_info") as? Map<*, *>)?.get("package_name") == "com.example.sidehustle"
+}
+val firebaseWebClientId = (firebaseAndroidClient?.get("oauth_client") as? List<*>)
+    ?.filterIsInstance<Map<*, *>>()?.firstOrNull { it["client_type"] == 3 }?.get("client_id") as? String ?: ""
+val googleWebClientId = providers.gradleProperty("GOOGLE_WEB_CLIENT_ID")
+    .orElse(providers.environmentVariable("GOOGLE_WEB_CLIENT_ID")).getOrElse(firebaseWebClientId)
+
 android {
     namespace = "com.example.sidehustle"
     compileSdk {
@@ -17,6 +29,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        resValue("string", "google_web_client_id", googleWebClientId)
 
         buildConfigField(
             "String",
@@ -39,6 +52,7 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        resValues = true
     }
 }
 
@@ -63,7 +77,11 @@ dependencies {
     // Firebase BOM + Auth SDK — hashes passwords and hosts the user list for the demo
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
     implementation(libs.kotlinx.coroutines.play.services)
 
     // Retrofit — REST client for the hosted API (issue #10)
