@@ -244,4 +244,15 @@
     <string name="action_open_projects">Open Projects</string>
     <string name="invoice_row">%1$s · %2$s · %3$s</string>
     <string name="client_name_fallback">Client</string>
+    <string name="error_amount_positive">Enter an amount greater than 0.</string>
+    <string name="error_amount_too_large">Enter an amount no greater than 9,999,999,999.99.</string>
+    <string name="error_amount_precision">Use no more than two decimal places.</string>
+    <string name="error_date_required">Choose a date.</string>
+    <string name="error_date_invalid">Choose a valid date in YYYY-MM-DD format.</string>
+    <string name="error_text_too_long">Use 255 characters or fewer.</string>
+    <string name="error_status_required">Choose a valid job status.</string>
+    <string name="error_currency_required">Choose a currency from the list.</string>
+    <string name="error_language_required">Choose a language from the list.</string>
+    <string name="invoice_job_required">Choose a job for this client.</string>
+    <string name="invoice_amount_invalid">This job has no valid amount. Edit the job before creating an invoice.</string>
 </resources>
