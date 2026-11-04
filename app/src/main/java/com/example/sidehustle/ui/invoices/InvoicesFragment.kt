@@ -12,7 +12,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateInvoiceRequest
@@ -21,6 +20,16 @@ import com.example.sidehustle.data.model.InvoiceJob
 import com.example.sidehustle.data.model.InvoiceResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentInvoicesBinding
+import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.common.list.ListStateHandler
+import com.example.sidehustle.ui.common.loading.setLoading
+import com.example.sidehustle.ui.navigation.navigateSafely
+import com.example.sidehustle.ui.navigation.openFinanceForm
+import com.example.sidehustle.ui.navigation.setupFinanceForm
+import com.example.sidehustle.ui.navigation.setupFinanceNavigation
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -30,6 +39,11 @@ class InvoicesFragment : Fragment() {
     private val binding get() = _binding!!
     private var clients = emptyList<InvoiceClient>()
     private var jobs = emptyList<InvoiceJob>()
+    private var listState: ListStateHandler? = null
+    private var listJob: Job? = null
+    private var clientsJob: Job? = null
+    private var jobsJob: Job? = null
+    private val repository get() = (requireActivity().application as SideHustleApp).repository
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View {
         _binding = FragmentInvoicesBinding.inflate(inflater, container, false)
@@ -37,90 +51,141 @@ class InvoicesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, state: Bundle?) {
-        binding.expensesTab.setOnClickListener { findNavController().navigateSafely(R.id.action_invoicesFragment_to_expensesFragment) }
-        binding.incomeTab.setOnClickListener { findNavController().navigateSafely(R.id.action_invoicesFragment_to_incomeFragment) }
+        setupFinanceNavigation(view, R.id.invoicesFragment)
+        setupFinanceForm(view, R.string.action_new_invoice, ::loadClients)
+        listState = ListStateHandler(this, binding.listState, binding.invoiceList,
+            R.string.invoices_empty_title, R.string.invoices_empty_message, R.string.action_new_invoice,
+            ::openFinanceForm, binding.listRefreshing)
+        binding.refreshList.setOnClickListener { loadInvoices() }
         binding.invoiceClient.onItemSelectedListener = selectionListener { loadJobsForSelectedClient() }
         binding.invoiceJob.onItemSelectedListener = selectionListener { showSelectedTotal() }
+        binding.createInvoice.isEnabled = false
         binding.createInvoice.setOnClickListener { createInvoice() }
-        loadClients()
         loadInvoices()
     }
 
-    private fun loadClients() = viewLifecycleOwner.lifecycleScope.launch {
-        when (val result = repository().fetchInvoiceClients()) {
-            is ApiResult.Success -> {
-                clients = result.data
-                binding.invoiceClient.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_client)) + clients.map { it.name })
+    private fun loadClients() {
+        clientsJob?.cancel()
+        jobsJob?.cancel()
+        binding.optionsState.showLoading()
+        binding.invoiceClient.isEnabled = false
+        binding.invoiceJob.isEnabled = false
+        binding.createInvoice.isEnabled = false
+        clientsJob = viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = repository.fetchInvoiceClients()) {
+                is ApiResult.Success -> {
+                    clients = result.data
+                    binding.invoiceClient.isEnabled = clients.isNotEmpty()
+                    binding.invoiceClient.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_client)) + clients.map { it.name })
+                    if (clients.isEmpty()) binding.optionsState.showEmpty(R.string.invoice_no_clients_title,
+                        R.string.invoice_no_clients_message, R.string.action_open_clients) {
+                        findNavController().navigateSafely(R.id.clientsFragment)
+                    } else binding.optionsState.isVisible = false
+                }
+                is ApiResult.Error -> binding.optionsState.showError(this@InvoicesFragment, result, ::loadClients)
             }
-            is ApiResult.Error -> showMessage(result.message)
         }
     }
 
     private fun loadJobsForSelectedClient() {
+        jobsJob?.cancel()
+        jobs = emptyList()
+        binding.invoiceJob.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_job)))
+        binding.invoiceJob.isEnabled = false
+        showSelectedTotal()
         val client = clients.getOrNull(binding.invoiceClient.selectedItemPosition - 1) ?: run {
-            jobs = emptyList()
-            binding.invoiceJob.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_job)))
-            showSelectedTotal()
+            if (clients.isNotEmpty()) binding.optionsState.isVisible = false
             return
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = repository().fetchInvoiceJobs(client.id)) {
+        binding.optionsState.showLoading()
+        jobsJob = viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = repository.fetchInvoiceJobs(client.id)) {
                 is ApiResult.Success -> {
                     jobs = result.data
                     binding.invoiceJob.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_job)) + jobs.map { it.title })
+                    binding.invoiceJob.isEnabled = jobs.isNotEmpty()
+                    if (jobs.isEmpty()) binding.optionsState.showEmpty(R.string.invoice_no_jobs_title,
+                        R.string.invoice_no_jobs_message, R.string.action_open_projects) {
+                        findNavController().navigateSafely(R.id.projectsFragment)
+                    } else binding.optionsState.isVisible = false
                     showSelectedTotal()
                 }
-                is ApiResult.Error -> showMessage(result.message)
+                is ApiResult.Error -> binding.optionsState.showError(this@InvoicesFragment, result, ::loadJobsForSelectedClient)
             }
         }
     }
 
     private fun showSelectedTotal() {
         val job = jobs.getOrNull(binding.invoiceJob.selectedItemPosition - 1)
-        binding.invoiceTotal.text = job?.let { formatMoney(it.currency, it.agreedAmount) } ?: getString(R.string.invoice_total_placeholder)
+        binding.invoiceTotal.text = job?.let { formatMoney(it.currency, it.agreedAmount) }
+            ?: getString(R.string.invoice_total_placeholder)
+        binding.createInvoice.isEnabled = job != null
     }
 
     private fun createInvoice() {
-        val client = clients.getOrNull(binding.invoiceClient.selectedItemPosition - 1)
-        val job = jobs.getOrNull(binding.invoiceJob.selectedItemPosition - 1)
-        if (client == null || job == null) { showMessage(getString(R.string.invoice_selection_error)); return }
+        val client = clients.getOrNull(binding.invoiceClient.selectedItemPosition - 1) ?: return
+        val job = jobs.getOrNull(binding.invoiceJob.selectedItemPosition - 1) ?: return
+        binding.createInvoice.setLoading(true, R.string.action_saving)
         viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = repository().createInvoice(CreateInvoiceRequest(client.id, job.id))) {
-                is ApiResult.Success -> { showMessage(getString(R.string.invoice_created)); loadInvoices() }
-                is ApiResult.Error -> showMessage(result.message)
+            try {
+                when (val result = repository.createInvoice(CreateInvoiceRequest(client.id, job.id))) {
+                    is ApiResult.Success -> {
+                        binding.entryForm.isVisible = false
+                        binding.toggleForm.setText(R.string.action_new_invoice)
+                        Snackbar.make(binding.root, R.string.invoice_created, Snackbar.LENGTH_SHORT).show()
+                        loadInvoices()
+                    }
+                    is ApiResult.Error -> showInlineError(result, ::createInvoice)
+                }
+            } finally {
+                if (isActive) _binding?.createInvoice?.setLoading(false, R.string.action_saving)
             }
         }
     }
 
-    private fun loadInvoices() = viewLifecycleOwner.lifecycleScope.launch {
-        when (val result = repository().fetchInvoices()) {
-            is ApiResult.Success -> showInvoices(result.data)
-            is ApiResult.Error -> showMessage(result.message)
+    private fun loadInvoices() {
+        listJob?.cancel()
+        listState?.loading()
+        listJob = viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = repository.fetchInvoices()) {
+                is ApiResult.Success -> {
+                    showInvoices(result.data)
+                    listState?.success(result.data.isEmpty())
+                }
+                is ApiResult.Error -> listState?.error(result, ::loadInvoices)
+            }
         }
     }
 
     private fun showInvoices(invoices: List<InvoiceResponse>) {
         binding.invoiceList.removeAllViews()
-        val inflater = LayoutInflater.from(requireContext())
         val statuses = resources.getStringArray(R.array.invoice_statuses)
         invoices.forEach { invoice ->
-            val item = inflater.inflate(R.layout.item_invoice, binding.invoiceList, false)
-            item.findViewById<TextView>(R.id.invoice_info).text = "${invoice.number} • ${invoice.clientName ?: "Client"} • ${formatMoney("ZAR", invoice.total)}"
-            val statusPicker = item.findViewById<Spinner>(R.id.invoice_status)
-            statusPicker.adapter = spinnerAdapter(statuses.toList())
-            statusPicker.setSelection(statuses.indexOf(invoice.status).coerceAtLeast(0))
-            statusPicker.onItemSelectedListener = selectionListener {
-                val newStatus = statusPicker.selectedItem.toString()
-                if (newStatus != invoice.status) updateStatus(invoice.id, newStatus)
+            val item = layoutInflater.inflate(R.layout.item_invoice, binding.invoiceList, false)
+            item.findViewById<TextView>(R.id.invoice_info).text = getString(R.string.invoice_row,
+                invoice.number, invoice.clientName ?: getString(R.string.client_name_fallback), formatMoney("ZAR", invoice.total))
+            val picker = item.findViewById<Spinner>(R.id.invoice_status)
+            // Preserve unknown legacy values on display; loading a row must never update it.
+            val rowStatuses = if (invoice.status in statuses) statuses.toList() else listOf(invoice.status) + statuses
+            picker.adapter = spinnerAdapter(rowStatuses)
+            picker.setSelection(rowStatuses.indexOf(invoice.status))
+            picker.onItemSelectedListener = selectionListener {
+                val newStatus = picker.selectedItem.toString()
+                if (newStatus != invoice.status) updateStatus(invoice.id, newStatus, picker)
             }
             binding.invoiceList.addView(item)
         }
     }
 
-    private fun updateStatus(id: String, status: String) = viewLifecycleOwner.lifecycleScope.launch {
-        when (val result = repository().updateInvoiceStatus(id, status)) {
-            is ApiResult.Success -> loadInvoices()
-            is ApiResult.Error -> showMessage(result.message)
+    private fun updateStatus(id: String, status: String, picker: Spinner) {
+        picker.isEnabled = false
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                when (val result = repository.updateInvoiceStatus(id, status)) {
+                    is ApiResult.Success -> loadInvoices()
+                    is ApiResult.Error -> showInlineError(result) { updateStatus(id, status, picker) }
+                }
+            } finally { picker.isEnabled = true }
         }
     }
 
@@ -129,8 +194,10 @@ class InvoicesFragment : Fragment() {
         override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = action()
     }
-    private fun repository() = (requireActivity().application as SideHustleApp).repository
-    private fun showMessage(message: String) { binding.invoiceMessage.text = message; binding.invoiceMessage.isVisible = true }
     private fun formatMoney(currency: String, amount: Double) = "$currency ${NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)}"
-    override fun onDestroyView() { _binding = null; super.onDestroyView() }
+    override fun onDestroyView() {
+        listJob?.cancel(); clientsJob?.cancel(); jobsJob?.cancel()
+        listState = null; _binding = null
+        super.onDestroyView()
+    }
 }

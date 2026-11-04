@@ -7,6 +7,9 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -52,5 +55,19 @@ class RemoteDataSourceTest {
         assertTrue(remote.safeApiCall(operation) is ApiResult.Error)
         assertEquals(ApiResult.Success("Recovered"), remote.safeApiCall(operation))
         assertEquals(2, requests)
+    }
+
+    @Test fun `late transport failures cannot resume a cancelled screen`() = runBlocking {
+        var delivered = false
+        val request = launch {
+            remote.safeApiCall<String> {
+                currentCoroutineContext().cancel()
+                throw IOException("Request finished after leaving the screen")
+            }
+            delivered = true
+        }
+        request.join()
+        assertTrue(request.isCancelled)
+        assertFalse(delivered)
     }
 }

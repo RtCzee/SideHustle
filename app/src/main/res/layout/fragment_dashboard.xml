@@ -9,7 +9,7 @@
     android:background="@color/background"
     android:clipToPadding="false"
     android:fillViewport="true"
-    android:paddingBottom="110dp">
+    android:paddingBottom="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -296,6 +296,6 @@
         android:id="@+id/error_state"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="110dp"
+        android:paddingBottom="24dp"
         android:visibility="gone" />
 </FrameLayout>

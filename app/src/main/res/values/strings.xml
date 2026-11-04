@@ -58,7 +58,7 @@
     <string name="clients_placeholder">Your client list will appear here. Open details to check that navigation works.</string>
     <string name="client_details_title">Client details</string>
     <string name="client_details_placeholder">A single client’s profile will appear here.</string>
-    <string name="projects_title">Jobs</string>
+    <string name="projects_title">Projects</string>
     <string name="projects_placeholder">Your jobs and projects will appear here. Open details to check that navigation works.</string>
     <string name="project_details_title">Job details</string>
     <string name="project_details_placeholder">A single job’s status and amount will appear here.</string>
@@ -187,7 +187,7 @@
 
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_clients">Clients</string>
-    <string name="nav_projects">Jobs</string>
+    <string name="nav_projects">Projects</string>
     <string name="nav_finances">Finances</string>
     <string name="nav_settings">Settings</string>
 
@@ -224,4 +224,24 @@
     <string name="error_generic_message">We could not complete that request. Please try again.</string>
     <string name="error_action_login">Log in</string>
     <string name="error_action_dismiss">Dismiss</string>
+    <string name="navigation_selected">Selected</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_hide_form">Close form</string>
+    <string name="action_new_invoice">Create invoice</string>
+    <string name="action_new_expense">Add expense</string>
+    <string name="action_new_income">Record income</string>
+    <string name="invoices_empty_title">No invoices yet</string>
+    <string name="invoices_empty_message">Create an invoice for a client and project to track payments.</string>
+    <string name="expenses_empty_title">No expenses yet</string>
+    <string name="expenses_empty_message">Add an expense to track what your business spends.</string>
+    <string name="income_empty_title">No income yet</string>
+    <string name="income_empty_message">Record your first payment to start tracking earnings.</string>
+    <string name="invoice_no_clients_title">Add a client first</string>
+    <string name="invoice_no_clients_message">Invoices need a client and a project. Start in Clients, then add a project.</string>
+    <string name="invoice_no_jobs_title">Add a project first</string>
+    <string name="invoice_no_jobs_message">This client has no projects to invoice. Add one in Projects.</string>
+    <string name="action_open_clients">Open Clients</string>
+    <string name="action_open_projects">Open Projects</string>
+    <string name="invoice_row">%1$s · %2$s · %3$s</string>
+    <string name="client_name_fallback">Client</string>
 </resources>

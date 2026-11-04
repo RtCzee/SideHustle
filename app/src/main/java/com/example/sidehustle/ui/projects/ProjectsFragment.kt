@@ -21,6 +21,7 @@ import com.example.sidehustle.ui.common.error.showInlineError
 import com.example.sidehustle.ui.common.loading.applySideHustleStyle
 import com.example.sidehustle.ui.navigation.navigateSafely
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -61,6 +62,7 @@ class ProjectsFragment : Fragment() {
     }
 
     private fun loadJobs() {
+        val requestBinding = _binding ?: return
         loadJob?.cancel()
         dismissInlineError()
         binding.errorState.isVisible = false
@@ -76,7 +78,10 @@ class ProjectsFragment : Fragment() {
         val repository = (requireActivity().application as SideHustleApp).repository
         loadJob = viewLifecycleOwner.lifecycleScope.launch {
             try {
-                when (val result = repository.fetchJobs()) {
+                val result = repository.fetchJobs()
+                coroutineContext.ensureActive()
+                if (_binding !== requestBinding) return@launch
+                when (result) {
                     is ApiResult.Success -> showJobs(result.data)
                     is ApiResult.Error -> {
                         if (!hasLoaded || result.httpCode == 401) {
@@ -89,8 +94,10 @@ class ProjectsFragment : Fragment() {
                     }
                 }
             } finally {
-                if (isActive) _binding?.loadingIndicator?.isVisible = false
-                if (isActive) _binding?.swipeRefresh?.isRefreshing = false
+                if (isActive && _binding === requestBinding) {
+                    requestBinding.loadingIndicator.isVisible = false
+                    requestBinding.swipeRefresh.isRefreshing = false
+                }
             }
         }
     }

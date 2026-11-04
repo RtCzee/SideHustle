@@ -18,6 +18,12 @@ import com.example.sidehustle.data.model.CreateExpenseRequest
 import com.example.sidehustle.data.model.ExpenseResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentExpensesBinding
+import com.example.sidehustle.ui.common.list.ListStateHandler
+import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.navigation.setupFinanceNavigation
+import com.example.sidehustle.ui.navigation.setupFinanceForm
+import com.example.sidehustle.ui.navigation.openFinanceForm
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Calendar
@@ -27,6 +33,8 @@ import java.util.Locale
 class ExpensesFragment : Fragment() {
     private var _binding: FragmentExpensesBinding? = null
     private val binding get() = _binding!!
+    private var listState: ListStateHandler? = null
+    private var loadJob: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentExpensesBinding.inflate(inflater, container, false)
@@ -40,8 +48,12 @@ class ExpensesFragment : Fragment() {
         )
         binding.dateInput.setOnClickListener { showDatePicker() }
         binding.saveExpenseButton.setOnClickListener { saveExpense() }
-        binding.invoicesTab.setOnClickListener { findNavController().navigateUp() }
-        binding.incomeTab.setOnClickListener { findNavController().navigateSafely(R.id.action_expensesFragment_to_incomeFragment) }
+        setupFinanceNavigation(view, R.id.expensesFragment)
+        setupFinanceForm(view, R.string.action_new_expense)
+        listState = ListStateHandler(this, binding.listState, binding.expensesList,
+            R.string.expenses_empty_title, R.string.expenses_empty_message, R.string.action_new_expense,
+            ::openFinanceForm, binding.listRefreshing)
+        binding.refreshList.setOnClickListener { loadExpenses() }
         loadExpenses()
     }
 
@@ -93,27 +105,29 @@ class ExpensesFragment : Fragment() {
                     binding.expensesStatus.isVisible = true
                     loadExpenses()
                 }
-                is ApiResult.Error -> showError(result.message)
+                is ApiResult.Error -> showInlineError(result, ::saveExpense)
             }
             setSaving(false)
         }
     }
 
     private fun loadExpenses() {
+        loadJob?.cancel()
+        listState?.loading()
         val repository = (requireActivity().application as SideHustleApp).repository
-        binding.expensesLoading.isVisible = true
-        viewLifecycleOwner.lifecycleScope.launch {
+        loadJob = viewLifecycleOwner.lifecycleScope.launch {
             when (val result = repository.fetchExpenses()) {
-                is ApiResult.Success -> showExpenses(result.data)
-                is ApiResult.Error -> showError(result.message)
+                is ApiResult.Success -> {
+                    showExpenses(result.data)
+                    listState?.success(result.data.isEmpty())
+                }
+                is ApiResult.Error -> listState?.error(result, ::loadExpenses)
             }
-            binding.expensesLoading.isVisible = false
         }
     }
-
     private fun showExpenses(expenses: List<ExpenseResponse>) {
         binding.expensesList.removeAllViews()
-        binding.expensesEmpty.isVisible = expenses.isEmpty()
+
         val inflater = LayoutInflater.from(requireContext())
         expenses.forEach { expense ->
             val item = inflater.inflate(R.layout.item_expense, binding.expensesList, false)
@@ -144,6 +158,8 @@ class ExpensesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        loadJob?.cancel()
+        listState = null
         _binding = null
         super.onDestroyView()
     }

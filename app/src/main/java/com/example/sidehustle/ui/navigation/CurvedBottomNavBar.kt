@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
@@ -66,6 +67,8 @@ class CurvedBottomNavBar @JvmOverloads constructor(
         backgroundView = findViewById(R.id.nav_background)
         bubble = findViewById(R.id.nav_bubble)
         bubbleIcon = findViewById(R.id.nav_bubble_icon)
+        bubble.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+
 
         tabs = listOf(
             Tab(R.id.dashboardFragment, findViewById(R.id.nav_item_dashboard),
@@ -85,18 +88,27 @@ class CurvedBottomNavBar @JvmOverloads constructor(
                 R.drawable.ic_nav_settings_outline),
         )
 
+        bubble.setOnClickListener { tabs[selectedIndex].itemView.performClick() }
         tabs.forEachIndexed { index, tab ->
             styleInactive(tab)
             tab.itemView.setOnClickListener {
-                if (index == selectedIndex) return@setOnClickListener
+                if (navController?.currentDestination?.id == tab.destinationId) return@setOnClickListener
                 it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                selectTab(index, animate = true)
+                // Reselecting Finances returns to Invoices rather than restoring its child tab.
+                if (index == selectedIndex) {
+                    val nav = navController ?: return@setOnClickListener
+                    if (!nav.popBackStack(tab.destinationId, false)) {
+                        nav.navigateSafely(tab.destinationId, options = NavOptions.Builder()
+                            .setPopUpTo(R.id.dashboardFragment, false).setLaunchSingleTop(true).build())
+                    }
+                    return@setOnClickListener
+                }
                 navController?.navigateSafely(tab.destinationId, null, buildNavOptions())
             }
         }
 
         doOnLayout {
-            if (bubble.x == 0f && width > 0) selectTab(0, animate = false)
+            if (width > 0) selectTab(selectedIndex, animate = false)
         }
     }
 
@@ -131,6 +143,8 @@ class CurvedBottomNavBar @JvmOverloads constructor(
 
         tabs.forEachIndexed { tabIndex, tab ->
             val selected = tabIndex == index
+            tab.itemView.isSelected = selected
+            ViewCompat.setStateDescription(tab.itemView, if (selected) context.getString(R.string.navigation_selected) else null)
             tab.iconView.isVisible = !selected // active icon lives in the bubble
             if (selected) {
                 tab.labelView.setTextColor(labelActiveColor)
