@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const { getPool } = require('../db/pool');
+const { invoiceTotal } = require('../services/FinancialRules');
 
 const router = express.Router();
 const STATUSES = ['Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue'];
@@ -66,7 +67,7 @@ router.post('/', requireAuth, async (req, res, next) => {
       `INSERT INTO invoices (user_id, client_id, job_id, invoice_number, total_amount, currency, status)
        VALUES ($1, $2, $3, $4, $5, $6, 'Draft')
        RETURNING invoice_id, invoice_number, total_amount::float8 AS total_amount, status`,
-      [req.user.uid, clientId, jobId, number, job.agreed_amount, job.currency]
+      [req.user.uid, clientId, jobId, number, invoiceTotal(job.agreed_amount), job.currency]
     );
     await client.query('COMMIT');
     res.status(201).json(rows[0]);

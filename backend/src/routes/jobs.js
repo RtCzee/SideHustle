@@ -4,17 +4,13 @@ const { listJobs, findJobById, createJob, updateJob, userOwnsClient } = require(
 
 const router = express.Router();
 
-const ALLOWED_STATUSES = ['Pending', 'In Progress', 'Completed', 'Cancelled'];
+const { ALLOWED_STATUSES, normalizeStatus, statusForNewJob } = require('../services/JobRules');
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 function normalizeTitle(value) {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
-}
-
-function normalizeStatus(value) {
-  return ALLOWED_STATUSES.includes(value) ? value : undefined;
 }
 
 /** Returns a finite number >= 0, or undefined if the value isn't a valid amount. */
@@ -94,7 +90,7 @@ router.post('/', requireAuth, async (req, res, next) => {
       return res.status(400).json({ error: 'client_id must be one of your existing clients.' });
     }
 
-    const status = req.body.status === undefined ? 'Pending' : normalizeStatus(req.body.status);
+    const status = statusForNewJob(req.body.status);
     if (status === undefined) {
       return res.status(400).json({ error: `status must be one of: ${ALLOWED_STATUSES.join(', ')}.` });
     }

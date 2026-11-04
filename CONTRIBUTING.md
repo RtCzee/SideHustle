@@ -1,4 +1,25 @@
-# Error states
+# Contributing
+
+## Unit tests
+
+Run `./gradlew test` (`gradlew.bat test` on Windows) from the repository root. This runs
+the app's configured JVM suites and `node --test` in `backend/`. Use JDK 25 and Node.js
+18+ on PATH; `-PnodeExecutable=/absolute/path/to/node` selects a different Node executable.
+The backend suites use Node's built-in test runner and require no database, Firebase account,
+device, API server, or npm dependency installation. A failing backend test fails the Gradle task.
+
+Auth tests call the same validators as the forms, including email syntax, six-character password
+boundaries, exact confirmation, optional contact fields, and finite non-negative job amounts.
+Backend tests call the production rules used by dashboard profit, job status validation, invoice
+creation, and the documented SideHustle Score. Invoices currently bill one job's agreed amount,
+without invented line items or tax. Profit tests include losses and decimal cents; score tests
+isolate the 50/30/20 weights, caps, rounding, zero income, and invalid data.
+
+Run just the API rules with `cd backend && node --test`, or just Android JVM tests with
+`./gradlew :app:test`. Use fixed expected results and boundary cases rather than reproducing a
+formula inside assertions. Add coverage in the language that owns the production calculation.
+
+## Error states
 
 New API screens should use `ApiResult.Error.toUiState()` in `ui/common/error`:
 

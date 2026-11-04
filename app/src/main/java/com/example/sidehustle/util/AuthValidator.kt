@@ -1,6 +1,5 @@
 package com.example.sidehustle.util
 
-import android.util.Patterns
 import com.example.sidehustle.R
 
 /**
@@ -8,12 +7,26 @@ import com.example.sidehustle.R
  */
 object AuthValidator {
 
+    // Conventional email addresses for account/client forms. Pure JVM logic keeps the same
+    // validator testable without Android's Patterns stub, Firebase, or an emulator.
+    private val EMAIL_PATTERN = Regex(
+        "[a-zA-Z0-9.!#\u0024%&'*+/=?^_`{|}~-]+@" +
+            "(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}",
+    )
+
+    private fun isValidEmail(email: String): Boolean {
+        val local = email.substringBefore('@')
+        return email.length <= 254 && local.length <= 64 &&
+            !local.startsWith('.') && !local.endsWith('.') && !local.contains("..") &&
+            EMAIL_PATTERN.matches(email)
+    }
+
     fun nameError(name: String): Int? =
         if (name.isBlank()) R.string.error_name_required else null
 
     fun emailError(email: String): Int? = when {
         email.isBlank() -> R.string.error_email_required
-        !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> R.string.error_email_invalid
+        !isValidEmail(email) -> R.string.error_email_invalid
         else -> null
     }
 
@@ -34,7 +47,7 @@ object AuthValidator {
 
     /** Unlike account email (emailError), a client's email is optional — blank is valid. */
     fun optionalEmailError(email: String): Int? =
-        if (email.isBlank() || Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (email.isBlank() || isValidEmail(email)) {
             null
         } else {
             R.string.error_email_invalid
