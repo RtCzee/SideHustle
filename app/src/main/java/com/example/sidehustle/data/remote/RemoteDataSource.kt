@@ -23,7 +23,6 @@ import com.example.sidehustle.data.model.IncomeResponse
 import com.example.sidehustle.network.ApiClient
 import com.example.sidehustle.network.SideHustleApi
 import retrofit2.HttpException
-import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -108,11 +107,7 @@ class RemoteDataSource(
         } catch (error: HttpException) {
             val body = try { error.response()?.errorBody()?.string() } catch (_: IOException) { null }
             Log.e("SideHustle", "API HTTP ${error.code()}")
-            // Only input errors may expose a server message. Other responses can contain internals.
-            val serverMessage = if (error.code() in listOf(400, 409, 422)) {
-                body?.let { extractErrorMessage(it) }
-            } else null
-            ApiResult.Error(serverMessage ?: mapHttpError(error.code()), error.code())
+            ApiErrorMapper.fromHttp(error.code(), body)
         } catch (_: SocketTimeoutException) {
             ApiResult.Error("The server took too long to respond. Try again.", kind = ErrorKind.TIMEOUT)
         } catch (_: UnknownHostException) {
@@ -128,22 +123,4 @@ class RemoteDataSource(
         return result
     }
 
-    /** The backend returns validation failures as {"error": "..."} — prefer that specific
-     *  message over a generic one when it's present and readable. */
-    private fun extractErrorMessage(body: String): String? = try {
-        (JSONObject(body).opt("error") as? String)?.takeIf { it.isNotBlank() }
-    } catch (_: Exception) {
-        null
-    }
-
-    private fun mapHttpError(code: Int): String {
-        return when (code) {
-            400 -> "Some details weren't valid. Check the form and try again."
-            401 -> "Session expired. Please log in again."
-            404 -> "We could not find that item."
-            409 -> "A profile already exists for this account."
-            in 500..599 -> "Something went wrong on our side. Please try again."
-            else -> "Something went wrong. Please try again."
-        }
-    }
 }

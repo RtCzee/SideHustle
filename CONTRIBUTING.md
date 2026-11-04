@@ -19,6 +19,14 @@ Run just the API rules with `cd backend && node --test`, or just Android JVM tes
 `./gradlew :app:test`. Use fixed expected results and boundary cases rather than reproducing a
 formula inside assertions. Add coverage in the language that owns the production calculation.
 
+JSON contract tests use samples in `app/src/test/resources/api/`, the shared `ApiJson` Gson
+converter, and the response types declared by `SideHustleApi`. Response DTOs are consumed directly
+by the UI, so these assertions cover the actual model mapping: snake-case IDs, dates, money,
+list responses, unknown fields, and omitted/null client contact fields. Add a fixture and fixed
+expected model when adding an endpoint. `ApiErrorMapperTest` covers the production error-body
+mapper and its UI actions, including malformed bodies and safe server-error fallbacks. These
+tests need no device, Firebase login, network connection, or additional test dependency.
+
 ## Error states
 
 New API screens should use `ApiResult.Error.toUiState()` in `ui/common/error`:
