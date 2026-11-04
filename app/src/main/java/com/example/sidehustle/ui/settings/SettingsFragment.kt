@@ -18,9 +18,15 @@ import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentSettingsBinding
 import com.example.sidehustle.util.AuthValidator
+import com.example.sidehustle.util.FormValidator
+import com.example.sidehustle.ui.common.error.dismissInlineError
+import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.common.error.showFullPageError
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 
 
 class SettingsFragment : Fragment() {
@@ -28,6 +34,8 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private var loadJob: Job? = null
+    private var saving = false
 
     private lateinit var currencyCodes: List<String>
     private lateinit var currencyLabels: List<String>
@@ -66,7 +74,6 @@ class SettingsFragment : Fragment() {
         }
 
         binding.saveButton.setOnClickListener { submitSave() }
-        binding.retryButton.setOnClickListener { loadProfile() }
         binding.logoutButton.setOnClickListener {
             auth.signOut()
             Log.d(TAG, "User signed out")
@@ -78,12 +85,14 @@ class SettingsFragment : Fragment() {
     }
 
     private fun loadProfile() {
+        loadJob?.cancel()
+        dismissInlineError()
         val repository = (requireActivity().application as SideHustleApp).repository
-        binding.errorGroup.isVisible = false
+        binding.errorState.isVisible = false
         binding.formGroup.isVisible = false
         binding.loadingIndicator.isVisible = true
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        loadJob = viewLifecycleOwner.lifecycleScope.launch {
             when (val result = repository.fetchProfile()) {
                 is ApiResult.Success -> {
                     Log.d(TAG, "Settings loaded for ${result.data.userId}")
@@ -94,10 +103,7 @@ class SettingsFragment : Fragment() {
                 is ApiResult.Error -> {
                     Log.e(TAG, "Settings load failed: ${result.message}")
                     binding.loadingIndicator.isVisible = false
-                    binding.errorMessage.text = result.message.ifBlank {
-                        getString(R.string.settings_load_error)
-                    }
-                    binding.errorGroup.isVisible = true
+                    showFullPageError(binding.errorState, result, ::loadProfile)
                 }
             }
         }
@@ -119,22 +125,25 @@ class SettingsFragment : Fragment() {
     }
 
     private fun submitSave() {
+        if (saving) return
+        dismissInlineError()
         val name = binding.nameInput.text?.toString()?.trim().orEmpty()
         val phone = binding.phoneInput.text?.toString()?.trim().orEmpty()
 
         binding.nameLayout.error = AuthValidator.nameError(name)?.let { getString(it) }
         binding.phoneLayout.error = AuthValidator.phoneError(phone)?.let { getString(it) }
+        val currency = binding.currencyInput.text.toString()
+        val language = binding.languageInput.text.toString()
+        binding.currencyLayout.error = FormValidator.selectionError(currency, currencyLabels, R.string.error_currency_required)?.let { getString(it) }
+        binding.languageLayout.error = FormValidator.selectionError(language, languageLabels, R.string.error_language_required)?.let { getString(it) }
 
-        if (binding.nameLayout.error != null || binding.phoneLayout.error != null) {
+        if (binding.nameLayout.error != null || binding.phoneLayout.error != null ||
+            binding.currencyLayout.error != null || binding.languageLayout.error != null) {
             return
         }
 
-        val currencyCode = currencyCodes.getOrElse(
-            currencyLabels.indexOf(binding.currencyInput.text?.toString())
-        ) { currencyCodes.first() }
-        val languageCode = languageCodes.getOrElse(
-            languageLabels.indexOf(binding.languageInput.text?.toString())
-        ) { languageCodes.first() }
+        val currencyCode = currencyCodes[currencyLabels.indexOf(currency)]
+        val languageCode = languageCodes[languageLabels.indexOf(language)]
 
         val request = UpdateProfileRequest(
             fullName = name,
@@ -148,6 +157,7 @@ class SettingsFragment : Fragment() {
         setSaving(true)
 
         viewLifecycleOwner.lifecycleScope.launch {
+            try {
             when (val result = repository.updateProfile(request)) {
                 is ApiResult.Success -> {
                     Log.d(TAG, "Settings saved for ${result.data.userId}")
@@ -159,13 +169,17 @@ class SettingsFragment : Fragment() {
                 is ApiResult.Error -> {
                     Log.e(TAG, "Settings save failed: ${result.message}")
                     setSaving(false)
-                    Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
+                    showInlineError(result, ::submitSave)
                 }
+            }
+            } finally {
+                if (isActive && _binding != null) setSaving(false)
             }
         }
     }
 
     private fun setSaving(saving: Boolean) {
+        this.saving = saving
         binding.saveButton.isEnabled = !saving
         binding.logoutButton.isEnabled = !saving
         binding.saveButton.text = getString(
@@ -174,6 +188,8 @@ class SettingsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        loadJob?.cancel()
+        saving = false
         _binding = null
         super.onDestroyView()
     }

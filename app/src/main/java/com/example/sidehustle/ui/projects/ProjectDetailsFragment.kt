@@ -24,6 +24,7 @@ import com.example.sidehustle.ui.common.error.showFullPageError
 import com.example.sidehustle.ui.common.error.showInlineError
 import com.example.sidehustle.ui.navigation.isValidDetailRequest
 import com.example.sidehustle.util.AuthValidator
+import com.example.sidehustle.util.FormValidator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -50,6 +51,7 @@ class ProjectDetailsFragment : Fragment() {
     private var selectedClientId: String? = null
     private val isCreating: Boolean get() = arguments?.get(ARG_IS_CREATING) == true
     private var loadJob: Job? = null
+    private var saving = false
 
     private val statuses: List<String> by lazy { resources.getStringArray(R.array.job_statuses).toList() }
     private val isoDateFormat: SimpleDateFormat by lazy {
@@ -187,9 +189,6 @@ class ProjectDetailsFragment : Fragment() {
         if (binding.statusInput.text.isNullOrBlank()) {
             binding.statusInput.setText(statuses.first(), false)
         }
-        if (binding.amountInput.text.isNullOrBlank()) {
-            binding.amountInput.setText("0")
-        }
     }
 
     private fun populateFields(job: JobResponse) {
@@ -233,10 +232,11 @@ class ProjectDetailsFragment : Fragment() {
     }
 
     private fun submitSave() {
+        if (saving) return
         dismissInlineError()
         val title = binding.titleInput.text?.toString()?.trim().orEmpty()
         val description = binding.descriptionInput.text?.toString()?.trim().orEmpty()
-        val status = binding.statusInput.text?.toString()?.trim()?.ifBlank { null } ?: statuses.first()
+        val status = binding.statusInput.text?.toString()?.trim().orEmpty()
         val amountText = binding.amountInput.text?.toString()?.trim().orEmpty()
         val startDate = binding.startDateInput.text?.toString()?.trim().orEmpty()
         val dueDate = binding.dueDateInput.text?.toString()?.trim().orEmpty()
@@ -244,15 +244,17 @@ class ProjectDetailsFragment : Fragment() {
 
         binding.titleLayout.error = AuthValidator.titleError(title)?.let { getString(it) }
         binding.amountLayout.error = AuthValidator.amountError(amountText)?.let { getString(it) }
-        binding.clientLayout.error = if (selectedClientId == null) {
-            getString(R.string.error_client_required)
-        } else {
-            null
-        }
+        val availableClientIds = clients.filter { it.name == binding.clientInput.text.toString() }.map { it.clientId }
+        binding.clientLayout.error = FormValidator.clientError(selectedClientId, availableClientIds)?.let { getString(it) }
+        binding.statusLayout.error = FormValidator.selectionError(status, statuses, R.string.error_status_required)?.let { getString(it) }
+        binding.startDateLayout.error = FormValidator.dateError(startDate, required = false)?.let { getString(it) }
+        binding.dueDateLayout.error = FormValidator.dateError(dueDate, required = false)?.let { getString(it) }
+        binding.completedDateLayout.error = FormValidator.dateError(completedDate, required = false)?.let { getString(it) }
 
         if (binding.titleLayout.error != null ||
             binding.amountLayout.error != null ||
-            binding.clientLayout.error != null
+            binding.clientLayout.error != null || binding.statusLayout.error != null ||
+            binding.startDateLayout.error != null || binding.dueDateLayout.error != null || binding.completedDateLayout.error != null
         ) {
             return
         }
@@ -272,6 +274,7 @@ class ProjectDetailsFragment : Fragment() {
         setSaving(true)
 
         viewLifecycleOwner.lifecycleScope.launch {
+            try {
             val result = if (isEditMode) {
                 repository.updateJob(jobId!!, request)
             } else {
@@ -297,10 +300,14 @@ class ProjectDetailsFragment : Fragment() {
                     showInlineError(result, ::submitSave)
                 }
             }
+            } finally {
+                if (isActive && _binding != null) setSaving(false)
+            }
         }
     }
 
     private fun setSaving(saving: Boolean) {
+        this.saving = saving
         binding.saveButton.isEnabled = !saving
         binding.saveButton.text = getString(
             if (saving) R.string.action_save_loading else R.string.action_save
@@ -309,6 +316,7 @@ class ProjectDetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         loadJob?.cancel()
+        saving = false
         _binding = null
         super.onDestroyView()
     }

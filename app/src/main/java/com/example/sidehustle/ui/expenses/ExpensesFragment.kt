@@ -20,10 +20,13 @@ import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentExpensesBinding
 import com.example.sidehustle.ui.common.list.ListStateHandler
 import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.common.error.dismissInlineError
+import com.example.sidehustle.util.FormValidator
 import com.example.sidehustle.ui.navigation.setupFinanceNavigation
 import com.example.sidehustle.ui.navigation.setupFinanceForm
 import com.example.sidehustle.ui.navigation.openFinanceForm
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Calendar
@@ -35,6 +38,7 @@ class ExpensesFragment : Fragment() {
     private val binding get() = _binding!!
     private var listState: ListStateHandler? = null
     private var loadJob: Job? = null
+    private var saving = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentExpensesBinding.inflate(inflater, container, false)
@@ -60,25 +64,23 @@ class ExpensesFragment : Fragment() {
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
         DatePickerDialog(requireContext(), { _, year, month, day ->
-            binding.dateInput.setText("%04d-%02d-%02d".format(year, month + 1, day))
+            binding.dateInput.setText(String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day))
             binding.dateInput.error = null
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
     }
 
     private fun saveExpense() {
-        val amount = binding.amountInput.text.toString().trim().toDoubleOrNull()
+        if (saving) return
+        dismissInlineError()
+        val amountText = binding.amountInput.text.toString().trim()
         val date = binding.dateInput.text.toString().trim()
         val category = binding.categoryInput.selectedItem?.toString().orEmpty()
         var valid = true
-        if (amount == null || !amount.isFinite() || amount <= 0) {
-            binding.amountInput.error = getString(R.string.expenses_amount_error)
-            valid = false
-        } else binding.amountInput.error = null
-        if (date.isBlank()) {
-            binding.dateInput.error = getString(R.string.expenses_date_error)
-            valid = false
-        }
-        if (category == getString(R.string.expenses_category_prompt)) {
+        binding.expensesStatus.isVisible = false
+        binding.amountInput.error = FormValidator.moneyError(amountText)?.let { getString(it) }
+        binding.dateInput.error = FormValidator.dateError(date)?.let { getString(it) }
+        if (binding.amountInput.error != null || binding.dateInput.error != null) valid = false
+        if (FormValidator.selectionError(category, resources.getStringArray(R.array.expense_categories).drop(1), R.string.expenses_category_error) != null) {
             binding.expensesStatus.text = getString(R.string.expenses_category_error)
             binding.expensesStatus.isVisible = true
             valid = false
@@ -88,13 +90,14 @@ class ExpensesFragment : Fragment() {
         setSaving(true)
         binding.expensesStatus.isVisible = false
         val request = CreateExpenseRequest(
-            amount = amount ?: return,
+            amount = amountText.toDouble(),
             expenseDate = date,
             category = category,
             description = binding.descriptionInput.text.toString().trim().ifBlank { null },
         )
         val repository = (requireActivity().application as SideHustleApp).repository
         viewLifecycleOwner.lifecycleScope.launch {
+            try {
             when (val result = repository.createExpense(request)) {
                 is ApiResult.Success -> {
                     binding.amountInput.text?.clear()
@@ -107,7 +110,9 @@ class ExpensesFragment : Fragment() {
                 }
                 is ApiResult.Error -> showInlineError(result, ::saveExpense)
             }
-            setSaving(false)
+            } finally {
+                if (isActive && _binding != null) setSaving(false)
+            }
         }
     }
 
@@ -142,12 +147,8 @@ class ExpensesFragment : Fragment() {
         }
     }
 
-    private fun showError(message: String) {
-        binding.expensesStatus.text = message
-        binding.expensesStatus.isVisible = true
-    }
-
     private fun setSaving(saving: Boolean) {
+        this.saving = saving
         binding.saveExpenseButton.isEnabled = !saving
         binding.saveExpenseButton.text = getString(if (saving) R.string.expenses_saving else R.string.expenses_save)
     }
@@ -159,6 +160,7 @@ class ExpensesFragment : Fragment() {
 
     override fun onDestroyView() {
         loadJob?.cancel()
+        saving = false
         listState = null
         _binding = null
         super.onDestroyView()

@@ -21,6 +21,8 @@ import com.example.sidehustle.data.model.InvoiceResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentInvoicesBinding
 import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.common.error.dismissInlineError
+import com.example.sidehustle.util.FormValidator
 import com.example.sidehustle.ui.common.list.ListStateHandler
 import com.example.sidehustle.ui.common.loading.setLoading
 import com.example.sidehustle.ui.navigation.navigateSafely
@@ -43,6 +45,7 @@ class InvoicesFragment : Fragment() {
     private var listJob: Job? = null
     private var clientsJob: Job? = null
     private var jobsJob: Job? = null
+    private var saving = false
     private val repository get() = (requireActivity().application as SideHustleApp).repository
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View {
@@ -59,14 +62,19 @@ class InvoicesFragment : Fragment() {
         binding.refreshList.setOnClickListener { loadInvoices() }
         binding.invoiceClient.onItemSelectedListener = selectionListener { loadJobsForSelectedClient() }
         binding.invoiceJob.onItemSelectedListener = selectionListener { showSelectedTotal() }
-        binding.createInvoice.isEnabled = false
         binding.createInvoice.setOnClickListener { createInvoice() }
         loadInvoices()
     }
 
     private fun loadClients() {
+        if (saving) return
         clientsJob?.cancel()
         jobsJob?.cancel()
+        clients = emptyList()
+        jobs = emptyList()
+        binding.invoiceClient.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_client)))
+        binding.invoiceJob.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_job)))
+        binding.invoiceMessage.isVisible = false
         binding.optionsState.showLoading()
         binding.invoiceClient.isEnabled = false
         binding.invoiceJob.isEnabled = false
@@ -81,6 +89,7 @@ class InvoicesFragment : Fragment() {
                         R.string.invoice_no_clients_message, R.string.action_open_clients) {
                         findNavController().navigateSafely(R.id.clientsFragment)
                     } else binding.optionsState.isVisible = false
+                    binding.createInvoice.isEnabled = true
                 }
                 is ApiResult.Error -> binding.optionsState.showError(this@InvoicesFragment, result, ::loadClients)
             }
@@ -88,8 +97,10 @@ class InvoicesFragment : Fragment() {
     }
 
     private fun loadJobsForSelectedClient() {
+        if (saving) return
         jobsJob?.cancel()
         jobs = emptyList()
+        binding.invoiceMessage.isVisible = false
         binding.invoiceJob.adapter = spinnerAdapter(listOf(getString(R.string.invoice_select_job)))
         binding.invoiceJob.isEnabled = false
         showSelectedTotal()
@@ -119,16 +130,28 @@ class InvoicesFragment : Fragment() {
         val job = jobs.getOrNull(binding.invoiceJob.selectedItemPosition - 1)
         binding.invoiceTotal.text = job?.let { formatMoney(it.currency, it.agreedAmount) }
             ?: getString(R.string.invoice_total_placeholder)
-        binding.createInvoice.isEnabled = job != null
+        binding.createInvoice.isEnabled = !saving
     }
 
     private fun createInvoice() {
-        val client = clients.getOrNull(binding.invoiceClient.selectedItemPosition - 1) ?: return
-        val job = jobs.getOrNull(binding.invoiceJob.selectedItemPosition - 1) ?: return
+        if (saving) return
+        dismissInlineError()
+        val client = clients.getOrNull(binding.invoiceClient.selectedItemPosition - 1)
+        val job = jobs.getOrNull(binding.invoiceJob.selectedItemPosition - 1)
+        val error = FormValidator.invoiceError(client?.id, job?.id, job?.agreedAmount)
+        binding.invoiceMessage.isVisible = error != null
+        if (error != null) {
+            binding.invoiceMessage.setText(error)
+            return
+        }
+        saving = true
+        binding.invoiceClient.isEnabled = false
+        binding.invoiceJob.isEnabled = false
+        binding.toggleForm.isEnabled = false
         binding.createInvoice.setLoading(true, R.string.action_saving)
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                when (val result = repository.createInvoice(CreateInvoiceRequest(client.id, job.id))) {
+                when (val result = repository.createInvoice(CreateInvoiceRequest(client!!.id, job!!.id))) {
                     is ApiResult.Success -> {
                         binding.entryForm.isVisible = false
                         binding.toggleForm.setText(R.string.action_new_invoice)
@@ -138,7 +161,13 @@ class InvoicesFragment : Fragment() {
                     is ApiResult.Error -> showInlineError(result, ::createInvoice)
                 }
             } finally {
-                if (isActive) _binding?.createInvoice?.setLoading(false, R.string.action_saving)
+                if (isActive && _binding != null) {
+                    saving = false
+                    binding.createInvoice.setLoading(false, R.string.action_saving)
+                    binding.invoiceClient.isEnabled = clients.isNotEmpty()
+                    binding.invoiceJob.isEnabled = jobs.isNotEmpty()
+                    binding.toggleForm.isEnabled = true
+                }
             }
         }
     }
@@ -197,6 +226,7 @@ class InvoicesFragment : Fragment() {
     private fun formatMoney(currency: String, amount: Double) = "$currency ${NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)}"
     override fun onDestroyView() {
         listJob?.cancel(); clientsJob?.cancel(); jobsJob?.cancel()
+        saving = false
         listState = null; _binding = null
         super.onDestroyView()
     }
