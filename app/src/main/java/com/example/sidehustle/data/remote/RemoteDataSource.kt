@@ -36,6 +36,11 @@ class RemoteDataSource(
     private val api: SideHustleApi = ApiClient.api,
 ) {
 
+    suspend fun fetchAttachments(type: String, id: String) = safeApiCall { api.getAttachments(type, id) }
+
+    suspend fun addAttachment(type: String, id: String, request: com.example.sidehustle.data.model.AttachmentRequest) =
+        safeApiCall { api.addAttachment(type, id, request) }
+
     suspend fun fetchHealth(): ApiResult<HealthResponse> = safeApiCall { api.getHealth() }
 
     suspend fun fetchProfile(): ApiResult<UserProfileResponse> = safeApiCall { api.getProfile() }

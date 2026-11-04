@@ -13,5 +13,7 @@ router.use('/me', meRouter);
 router.use('/dashboard', dashboardRouter);
 router.use('/clients', clientsRouter);
 router.use('/jobs', jobsRouter);
+router.use('/expenses', require('./expenses'));
+router.use('/attachments', require('./attachments'));
 
 module.exports = router;

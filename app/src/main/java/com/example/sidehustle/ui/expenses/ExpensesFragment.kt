@@ -107,6 +107,9 @@ class ExpensesFragment : Fragment() {
                     binding.expensesStatus.text = getString(R.string.expenses_saved)
                     binding.expensesStatus.isVisible = true
                     loadExpenses()
+                    com.example.sidehustle.ui.attachments.AttachmentsDialog.show(
+                        parentFragmentManager, "expenses", result.data.expenseId,
+                        "${result.data.category} · ${formatMoney(result.data.currency, result.data.amount)} · ${result.data.expenseDate}")
                 }
                 is ApiResult.Error -> showInlineError(result, ::saveExpense)
             }
@@ -144,6 +147,15 @@ class ExpensesFragment : Fragment() {
                 isVisible = !expense.description.isNullOrBlank()
             }
             binding.expensesList.addView(item)
+            item.isClickable = true
+            item.isFocusable = true
+            item.contentDescription = getString(R.string.attachment_expense_details, expense.category)
+            item.setOnClickListener {
+                com.example.sidehustle.ui.attachments.AttachmentsDialog.show(
+                    parentFragmentManager, "expenses", expense.expenseId,
+                    listOfNotNull(expense.category, formatMoney(expense.currency, expense.amount),
+                        expense.expenseDate, expense.description).joinToString("\n"))
+            }
         }
     }
 
