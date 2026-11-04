@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sidehustle.R
 import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.databinding.ItemJobBinding
+import com.example.sidehustle.util.LocalizedLabels
 
 /** Renders the job list — title, client, status, due date (issue: Build Job Management). */
 class JobsAdapter(
@@ -35,7 +36,7 @@ class JobsAdapter(
                 ?.let { context.getString(R.string.jobs_due_date_label, it) }
                 ?: context.getString(R.string.jobs_no_due_date)
 
-            binding.jobStatusBadge.text = job.status
+            binding.jobStatusBadge.text = LocalizedLabels.jobStatus(context, job.status)
             binding.jobStatusBadge.backgroundTintList =
                 ContextCompat.getColorStateList(context, colorForStatus(job.status))
 

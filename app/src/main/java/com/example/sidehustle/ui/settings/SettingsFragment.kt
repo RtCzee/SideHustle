@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -112,6 +114,9 @@ class SettingsFragment : Fragment() {
     }
 
     private fun populateFields(profile: UserProfileResponse) {
+        if (AppCompatDelegate.getApplicationLocales().isEmpty) {
+            applyLanguage(profile.preferredLanguage)
+        }
         binding.nameInput.setText(profile.fullName)
         binding.phoneInput.setText(profile.phoneNumber.orEmpty())
 
@@ -165,6 +170,7 @@ class SettingsFragment : Fragment() {
                     Log.d(TAG, "Settings saved for ${result.data.userId}")
                     (requireActivity().application as SideHustleApp).pushRegistration
                         .setEnabled(result.data.userId, result.data.notificationsEnabled)
+                    applyLanguage(result.data.preferredLanguage)
                     (requireActivity() as com.example.sidehustle.MainActivity)
                         .syncPushRegistration(requestPermission = result.data.notificationsEnabled)
                     populateFields(result.data)
@@ -191,6 +197,12 @@ class SettingsFragment : Fragment() {
         binding.saveButton.text = getString(
             if (saving) R.string.action_save_loading else R.string.action_save
         )
+    }
+
+    private fun applyLanguage(languageCode: String) {
+        val supported = setOf("en", "zu", "af")
+        val locale = languageCode.substringBefore('-').lowercase().takeIf { it in supported }.orEmpty()
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(locale))
     }
 
     override fun onDestroyView() {

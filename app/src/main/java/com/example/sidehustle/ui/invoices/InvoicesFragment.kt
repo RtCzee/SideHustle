@@ -19,6 +19,7 @@ import com.example.sidehustle.data.model.InvoiceClient
 import com.example.sidehustle.data.model.InvoiceJob
 import com.example.sidehustle.data.model.InvoiceResponse
 import com.example.sidehustle.data.remote.ApiResult
+import com.example.sidehustle.util.LocalizedLabels
 import com.example.sidehustle.databinding.FragmentInvoicesBinding
 import com.example.sidehustle.ui.common.error.showInlineError
 import com.example.sidehustle.ui.common.error.dismissInlineError
@@ -195,11 +196,13 @@ class InvoicesFragment : Fragment() {
                 invoice.number, invoice.clientName ?: getString(R.string.client_name_fallback), formatMoney("ZAR", invoice.total))
             val picker = item.findViewById<Spinner>(R.id.invoice_status)
             // Preserve unknown legacy values on display; loading a row must never update it.
-            val rowStatuses = if (invoice.status in statuses) statuses.toList() else listOf(invoice.status) + statuses
+            val localizedStatuses = statuses.map { LocalizedLabels.invoiceStatus(requireContext(), it) }
+            val currentStatusLabel = LocalizedLabels.invoiceStatus(requireContext(), invoice.status)
+            val rowStatuses = if (invoice.status in statuses) localizedStatuses else listOf(invoice.status) + localizedStatuses
             picker.adapter = spinnerAdapter(rowStatuses)
-            picker.setSelection(rowStatuses.indexOf(invoice.status))
+            picker.setSelection(rowStatuses.indexOf(currentStatusLabel))
             picker.onItemSelectedListener = selectionListener {
-                val newStatus = picker.selectedItem.toString()
+                val newStatus = LocalizedLabels.invoiceStatusCode(requireContext(), picker.selectedItem.toString())
                 if (newStatus != invoice.status) updateStatus(invoice.id, newStatus, picker)
             }
             binding.invoiceList.addView(item)
