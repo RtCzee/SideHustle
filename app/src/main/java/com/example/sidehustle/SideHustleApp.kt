@@ -12,10 +12,15 @@ import com.google.firebase.FirebaseApp
 class SideHustleApp : Application() {
 
     val repository: SideHustleRepository by lazy { SideHustleRepositoryImpl() }
+    val pushRegistration by lazy { com.example.sidehustle.notifications.PushRegistration(this) }
 
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+        pushRegistration.createChannel()
+        com.google.firebase.auth.FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            pushRegistration.onSessionChanged(auth.currentUser?.uid)
+        }
         Log.d(TAG, "Firebase initialised")
     }
 

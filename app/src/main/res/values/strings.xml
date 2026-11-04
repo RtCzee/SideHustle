@@ -265,4 +265,8 @@
     <string name="attachment_default_name">Attachment</string>
     <string name="attachment_save_job_first">Save job to attach files</string>
     <string name="attachment_expense_details">Open %1$s expense details and attachments</string>
+    <string name="reminder_channel_name">Job reminders</string>
+    <string name="reminder_job_due_title">Job due soon</string>
+    <string name="reminder_body_fallback">You have an upcoming job. Tap to view its details.</string>
+    <string name="reminder_permission_denied">Notifications are blocked on this device. Allow them in Android app settings to receive reminders.</string>
 </resources>

@@ -30,6 +30,9 @@ import retrofit2.http.Query
 
 interface SideHustleApi {
 
+    @PUT("me/push-device")
+    suspend fun registerPushDevice(@Body body: com.example.sidehustle.data.model.PushDeviceRequest): com.example.sidehustle.data.model.PushDeviceResponse
+
     @GET("attachments/{type}/{id}")
     suspend fun getAttachments(@Path("type") type: String, @Path("id") id: String): List<com.example.sidehustle.data.model.Attachment>
 

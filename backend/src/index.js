@@ -3,6 +3,7 @@ require('dotenv').config();
 
 const { createApp } = require('./app');
 const { initFirebase } = require('./config/firebase');
+const { startReminderWorker } = require('./services/JobReminderSender');
 
 // port number for the server 
 const port = Number(process.env.PORT) || 3000;
@@ -20,4 +21,5 @@ const app = createApp();
 app.listen(port, () => {
   console.log(`SideHustle API listening on http://localhost:${port}`);
   console.log(`Health check: http://localhost:${port}/health`);
+  if (process.env.REMINDERS_ENABLED !== 'false') startReminderWorker();
 });

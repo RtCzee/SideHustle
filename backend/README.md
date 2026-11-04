@@ -2,6 +2,10 @@
 
 Node.js + Express REST API for the SideHustle Android app.
 
+For FCM token registration, notification settings, and scheduled job reminders, see
+[Push reminders](../docs/PUSH_REMINDERS.md). Existing deployments must run
+`npm run db:notifications` before enabling the reminder worker.
+
 - Issue **#7**: health check, Firebase token auth, JSON errors
 - Issue **#8**: PostgreSQL schema + local database setup
 
