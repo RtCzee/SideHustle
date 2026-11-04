@@ -44,8 +44,7 @@ class RegisterFragment : Fragment() {
             findNavController().navigateSafely(R.id.action_registerFragment_to_loginFragment)
         }
         binding.googleButton.setOnClickListener {
-            Snackbar.make(binding.root, R.string.google_sign_in_coming_soon, Snackbar.LENGTH_SHORT)
-                .show()
+            launchGoogleSignIn(::setLoading)
         }
     }
 

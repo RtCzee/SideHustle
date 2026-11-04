@@ -15,7 +15,15 @@
     <string name="action_register">Create account</string>
     <string name="action_register_loading">Creating account…</string>
     <string name="action_google_sign_in">Continue with Google</string>
-    <string name="google_sign_in_coming_soon">Google Sign-In will be added in a later issue.</string>
+    <string name="google_sign_in_cancelled">Google sign-in cancelled. You can try again or use email.</string>
+    <string name="error_google_not_configured">Google sign-in is not configured for this app build. Please use email for now.</string>
+    <string name="error_google_sign_in">Could not sign in with Google. Please try again.</string>
+    <string name="error_google_credential">Google returned an invalid sign-in response. Please try again.</string>
+    <string name="error_google_profile">Signed in with Google, but could not load your profile. Please retry.</string>
+    <string name="error_google_no_account">No Google account is available. Add an account on this device or use email.</string>
+    <string name="error_google_unavailable">Google sign-in is unavailable on this device. Update Google Play services or use email.</string>
+    <string name="error_google_existing_account">This email uses another sign-in method. Sign in using that method.</string>
+    <string name="error_google_disabled">This account has been disabled. Contact support.</string>
     <string name="or_divider">or</string>
 
     <string name="error_name_required">Enter your full name.</string>

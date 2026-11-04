@@ -11,9 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
-import com.example.sidehustle.data.model.CreateProfileRequest
 import com.example.sidehustle.data.remote.ApiResult
-import com.example.sidehustle.data.repository.SideHustleRepository
 import com.example.sidehustle.databinding.FragmentLoginBinding
 import com.example.sidehustle.ui.common.loading.setLoading
 import com.example.sidehustle.util.AuthValidator
@@ -45,8 +43,7 @@ class LoginFragment : Fragment() {
             findNavController().navigateSafely(R.id.action_loginFragment_to_registerFragment)
         }
         binding.googleButton.setOnClickListener {
-            Snackbar.make(binding.root, R.string.google_sign_in_coming_soon, Snackbar.LENGTH_SHORT)
-                .show()
+            launchGoogleSignIn(::setLoading)
         }
     }
 
@@ -80,39 +77,15 @@ class LoginFragment : Fragment() {
         val repository = (requireActivity().application as SideHustleApp).repository
 
         viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = repository.fetchProfile()) {
+            when (val result = AuthProfileLoader(repository).load(auth.currentUser?.displayName, auth.currentUser?.email)) {
                 is ApiResult.Success -> {
                     Log.d(TAG, "Profile loaded for ${result.data.fullName}")
                     navigateToDashboard()
                 }
                 is ApiResult.Error -> {
-                    if (result.httpCode == 404) {
-                        createMissingProfile(repository)
-                    } else {
-                        setLoading(false)
-                        Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
-                    }
+                    setLoading(false)
+                    Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
                 }
-            }
-        }
-    }
-
-    private suspend fun createMissingProfile(repository: SideHustleRepository) {
-        val displayName = auth.currentUser?.displayName?.trim().orEmpty()
-        if (displayName.isEmpty()) {
-            setLoading(false)
-            Snackbar.make(binding.root, R.string.error_profile_not_found, Snackbar.LENGTH_LONG).show()
-            return
-        }
-
-        when (val result = repository.createProfile(CreateProfileRequest(fullName = displayName))) {
-            is ApiResult.Success -> {
-                Log.d(TAG, "Backfilled profile for ${result.data.fullName}")
-                navigateToDashboard()
-            }
-            is ApiResult.Error -> {
-                setLoading(false)
-                Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
             }
         }
     }
