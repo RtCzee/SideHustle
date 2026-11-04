@@ -15,6 +15,18 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
+    <TextView
+        android:id="@+id/sync_status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@color/primary"
+        android:gravity="center"
+        android:padding="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
     <!-- Glass curved nav — hidden on auth/detail screens via MainActivity -->
     <com.example.sidehustle.ui.navigation.CurvedBottomNavBar
         android:id="@+id/floating_nav"
