@@ -32,7 +32,7 @@
 <Spinner android:id="@+id/invoice_job" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:layout_marginTop="4dp" xmlns:android="http://schemas.android.com/apk/res/android" />
 <TextView android:id="@+id/invoice_total" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:layout_marginTop="10dp" android:text="@string/invoice_total_placeholder" android:textColor="@color/cyan_dark" android:textSize="18sp" android:textStyle="bold" xmlns:android="http://schemas.android.com/apk/res/android" />
 <com.google.android.material.button.MaterialButton android:id="@+id/create_invoice" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="@string/invoice_create_action" xmlns:android="http://schemas.android.com/apk/res/android" />
-<TextView android:id="@+id/invoice_message" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/cyan_dark" android:visibility="gone" xmlns:android="http://schemas.android.com/apk/res/android" />
+<TextView android:id="@+id/invoice_message" android:accessibilityLiveRegion="polite" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="?attr/colorError" android:visibility="gone" xmlns:android="http://schemas.android.com/apk/res/android" />
         </LinearLayout>
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="20dp" android:text="@string/invoice_list_title"

@@ -58,6 +58,21 @@ the API's 404 response. `sidehustle://projects/{jobId}` links open details;
 
 ## Demo checks
 
+For a short form-safety demo, show: Clients with a blank name/bad optional email; Projects with
+no client, a blank title, and a negative/empty agreed amount; Income and Expenses with an empty,
+negative, zero, oversized, or fractional-cent amount and a missing date/payment method/category;
+Invoices with no client/job; Settings with a blank name or invalid phone/currency/language.
+Each fails locally before a save request. Invoice totals come from the selected job and are
+read-only: invalid job amounts require editing that job first. Jobs/invoices allow zero under
+the current business rules; income/expenses require a positive amount. Dates must be real
+calendar dates; money is limited to two decimal places and 9,999,999,999.99.
+
+Then disable connectivity and submit a valid form. Input remains available, the save button
+recovers, and the themed message offers Retry (or Log in for 401). Restore connectivity and
+retry. `FormValidatorTest` runs these rules on the JVM. `FormSafetyTest` exercises create/edit
+forms, failed saves, Retry, initial-load recovery, and duplicate-save prevention with a fake
+repository: it never modifies real API data or signs out, and skips when the phone is signed out.
+
 1. Disable connectivity, open Dashboard or Jobs, and verify a connection error and Retry.
    Restore connectivity and tap Retry; content should load without restarting.
 2. Return a delayed response or HTTP 500 from `/dashboard`, `/me`, or `/jobs` and verify the
