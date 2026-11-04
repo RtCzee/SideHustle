@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -16,8 +17,8 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
+import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
-import com.google.android.material.animation.AnimationUtils
 
 /**
  * Custom curved bottom nav used instead of Material BottomNavigationView.
@@ -90,7 +91,7 @@ class CurvedBottomNavBar @JvmOverloads constructor(
                 if (index == selectedIndex) return@setOnClickListener
                 it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 selectTab(index, animate = true)
-                navController?.navigate(tab.destinationId, null, buildNavOptions())
+                navController?.navigateSafely(tab.destinationId, null, buildNavOptions())
             }
         }
 
@@ -161,7 +162,7 @@ class CurvedBottomNavBar @JvmOverloads constructor(
         if (animate) {
             bubbleAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
                 duration = 380L
-                interpolator = AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR
+                interpolator = AnimationUtils.loadInterpolator(context, android.R.interpolator.fast_out_slow_in)
                 val startX = bubble.x
                 val startY = bubble.y
                 addUpdateListener { animator ->

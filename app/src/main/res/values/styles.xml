@@ -30,4 +30,10 @@
         <item name="android:textSize">@dimen/curved_nav_label_size</item>
     </style>
 
+    <!-- Filled buttons keep the brand lime while controls and text actions use contrast-safe primary. -->
+    <style name="Widget.SideHustle.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/button_background</item>
+        <item name="android:textColor">@color/button_content</item>
+        <item name="iconTint">@color/button_content</item>
+    </style>
 </resources>

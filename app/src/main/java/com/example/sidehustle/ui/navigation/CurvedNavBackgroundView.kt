@@ -21,11 +21,11 @@ class CurvedNavBackgroundView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
 
-    // Clear glass — white alpha in nav_bar_glass_fill lets content show through
+    // Adaptive glass surface keeps navigation readable in either system theme.
     private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = ContextCompat.getColor(context, R.color.nav_bar_glass_fill)
-        setShadowLayer(14f, 0f, 8f, 0x40000000)
+        setShadowLayer(14f, 0f, 8f, ContextCompat.getColor(context, R.color.nav_shadow))
     }
 
     // Thin cyan border sells the glass look

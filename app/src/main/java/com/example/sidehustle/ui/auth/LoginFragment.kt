@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateProfileRequest
@@ -41,7 +42,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.loginButton.setOnClickListener { submitLogin() }
         binding.registerLink.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+            findNavController().navigateSafely(R.id.action_loginFragment_to_registerFragment)
         }
         binding.googleButton.setOnClickListener {
             Snackbar.make(binding.root, R.string.google_sign_in_coming_soon, Snackbar.LENGTH_SHORT)
@@ -118,7 +119,7 @@ class LoginFragment : Fragment() {
 
     private fun navigateToDashboard() {
         setLoading(false)
-        findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+        findNavController().navigateSafely(R.id.action_loginFragment_to_dashboardFragment)
     }
 
     private fun mapFirebaseError(error: Exception?): String {

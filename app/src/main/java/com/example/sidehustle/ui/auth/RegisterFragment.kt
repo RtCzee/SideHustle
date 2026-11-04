@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateProfileRequest
@@ -40,7 +41,7 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.registerButton.setOnClickListener { submitRegistration() }
         binding.loginLink.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+            findNavController().navigateSafely(R.id.action_registerFragment_to_loginFragment)
         }
         binding.googleButton.setOnClickListener {
             Snackbar.make(binding.root, R.string.google_sign_in_coming_soon, Snackbar.LENGTH_SHORT)
@@ -104,7 +105,7 @@ class RegisterFragment : Fragment() {
                 is ApiResult.Success -> {
                     Log.d(TAG, "Profile created for uid=${result.data.userId}")
                     setLoading(false)
-                    findNavController().navigate(R.id.action_registerFragment_to_dashboardFragment)
+                    findNavController().navigateSafely(R.id.action_registerFragment_to_dashboardFragment)
                 }
                 is ApiResult.Error -> {
                     setLoading(false)

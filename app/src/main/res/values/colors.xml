@@ -1,42 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Brand colors stay stable; semantic roles below adapt in values-night. -->
     <color name="lime">#FFA3E635</color>
-    <color name="lime_dark">#FF65A30D</color>
+    <color name="lime_dark">#FF4D7C0F</color>
     <color name="cyan">#FF22D3EE</color>
-    <color name="cyan_dark">#FF0891B2</color>
-    <color name="background">#FFFFFFFF</color>
-    <color name="surface">#FFF7FEF0</color>
-    <color name="on_primary">#FF1A2E05</color>
-    <color name="on_background">#FF14221B</color>
+    <color name="cyan_dark">#FF0E7490</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="background">#FFFFFFFF</color>
+    <color name="surface">#FFF7FEF0</color>
+    <color name="card_surface">#FFFFFFFF</color>
+    <color name="surface_variant">#FFE8F0E5</color>
+    <color name="on_background">#FF14221B</color>
+    <color name="on_surface_variant">#FF4D5F51</color>
+    <color name="on_primary">#FF1A2E05</color>
+    <color name="primary">@color/lime_dark</color>
+    <color name="on_theme_primary">@color/white</color>
+    <color name="primary_container">#FFD9F99D</color>
+    <color name="on_primary_container">#FF1A2E05</color>
+    <color name="secondary">@color/cyan_dark</color>
+    <color name="on_secondary">@color/white</color>
+    <color name="secondary_container">#FFCFFAFE</color>
+    <color name="on_secondary_container">#FF164E63</color>
+    <color name="outline">#FF6B7B70</color>
+    <color name="outline_variant">#FFD6E2D8</color>
+    <color name="inverse_surface">#FF253529</color>
+    <color name="inverse_on_surface">#FFF1F5F0</color>
+    <color name="inverse_primary">@color/lime</color>
+    <color name="disabled_content">#6114221B</color>
+    <color name="disabled_background">#1F14221B</color>
 
-    <!-- Curved bottom nav — clear frosted glass + cyan accents only -->
-    <color name="nav_bar_glass_fill">#59FFFFFF</color>
-    <color name="nav_bar_glass_stroke">#9922D3EE</color>
-    <color name="nav_bubble_glass_fill">#A6FFFFFF</color>
-    <color name="nav_label_active">@color/cyan</color>
-    <color name="nav_label_inactive">#9922D3EE</color>
-    <color name="nav_icon_active">@color/cyan</color>
-    <color name="nav_icon_inactive">#8022D3EE</color>
-
-    <!-- Dashboard — light green + white, no dark green -->
-    <color name="dashboard_text">#FF374151</color>
-    <color name="dashboard_text_muted">#FF6B7280</color>
+    <!-- Shared by dashboard, finance rows, and list cards. -->
+    <color name="dashboard_text">@color/on_background</color>
+    <color name="dashboard_text_muted">@color/on_surface_variant</color>
     <color name="dashboard_card_stroke">#FFE2F0C4</color>
+    <color name="info_background">#FFF0FDFF</color>
+    <color name="info_stroke">#6622D3EE</color>
 
-    <!-- Destructive actions (e.g. delete client) -->
-    <color name="error">#FFDC2626</color>
+    <!-- Glass navigation uses readable cyan text on an adaptive surface. -->
+    <color name="nav_bar_glass_fill">#E6FFFFFF</color>
+    <color name="nav_bar_glass_stroke">#6622D3EE</color>
+    <color name="nav_bubble_glass_fill">#F2FDFEFF</color>
+    <color name="nav_label_active">@color/cyan_dark</color>
+    <color name="nav_label_inactive">#FF49676B</color>
+    <color name="nav_icon_active">@color/cyan_dark</color>
+    <color name="nav_icon_inactive">#FF49676B</color>
+    <color name="nav_shadow">#40000000</color>
 
-    <!-- Job status badges -->
-    <color name="status_pending">#FF6B7280</color>
-    <color name="status_in_progress">#FFD97706</color>
-    <color name="status_completed">#FF65A30D</color>
-    <color name="status_cancelled">#FFDC2626</color>
+    <color name="error">#FFB91C1C</color>
+    <color name="on_error">@color/white</color>
+    <color name="error_container">#FFFFDAD6</color>
+    <color name="on_error_container">#FF410002</color>
+    <color name="status_pending">#FF5B6675</color>
+    <color name="status_in_progress">#FF9A4C06</color>
+    <color name="status_completed">#FF4D7C0F</color>
+    <color name="status_cancelled">#FFB91C1C</color>
+    <color name="on_status">@color/white</color>
 
-    <!-- Loading & Skeleton placeholder colors -->
-    <color name="loading_track">#3365A30D</color>
+    <color name="loading_track">#334D7C0F</color>
     <color name="loading_scrim">#99000000</color>
     <color name="skeleton_base">#FFE8F5E9</color>
-    <color name="skeleton_highlight">#33FFFFFF</color>
+    <color name="skeleton_highlight">#66FFFFFF</color>
 </resources>

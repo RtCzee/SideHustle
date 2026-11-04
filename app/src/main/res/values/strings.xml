@@ -207,4 +207,21 @@
     <string name="cd_loading_list">Loading list</string>
     <string name="action_saving">Saving…</string>
     <string name="client_row_updated">Updated %1$s</string>
+    <!-- Shared API error states -->
+    <string name="dashboard_unavailable">—</string>
+    <string name="error_network_title">Connection problem</string>
+    <string name="error_network_message">Could not reach the server. Check your connection and try again.</string>
+    <string name="error_timeout_message">The server took too long to respond. Please try again.</string>
+    <string name="error_session_title">Please log in again</string>
+    <string name="error_session_message">Session expired. Please log in again.</string>
+    <string name="error_not_found_title">Item not found</string>
+    <string name="error_not_found_message">We could not find that item.</string>
+    <string name="error_validation_title">Check your details</string>
+    <string name="error_validation_message">Some details were not valid. Check your input and try again.</string>
+    <string name="error_server_title">Server problem</string>
+    <string name="error_server_message">Something went wrong on our side. Please try again.</string>
+    <string name="error_generic_title">Something went wrong</string>
+    <string name="error_generic_message">We could not complete that request. Please try again.</string>
+    <string name="error_action_login">Log in</string>
+    <string name="error_action_dismiss">Dismiss</string>
 </resources>

@@ -6,5 +6,8 @@ sealed class ApiResult<out T> {
     data class Error(
         val message: String,
         val httpCode: Int? = null,
+        val kind: ErrorKind = ErrorKind.UNKNOWN,
     ) : ApiResult<Nothing>()
 }
+
+enum class ErrorKind { NETWORK, TIMEOUT, UNKNOWN }

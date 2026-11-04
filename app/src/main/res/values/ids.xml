@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="error_snackbar" type="id" />
     <!-- Holds the saved label/icon of a MaterialButton while ButtonLoading is active -->
     <item name="tag_button_loading_state" type="id" />
 </resources>
