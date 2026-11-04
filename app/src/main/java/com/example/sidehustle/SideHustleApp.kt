@@ -20,6 +20,12 @@ class SideHustleApp : Application() {
     val repository: SideHustleRepository by lazy { SideHustleRepositoryImpl() }
     val pushRegistration by lazy { com.example.sidehustle.notifications.PushRegistration(this) }
     private val sessionScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val defaultRepository: SideHustleRepository by lazy { SideHustleRepositoryImpl() }
+
+    /** Device form checks replace transport so they cannot write to the user's real account. */
+    @androidx.annotation.VisibleForTesting
+    internal var repositoryOverride: SideHustleRepository? = null
+    val repository: SideHustleRepository get() = repositoryOverride ?: defaultRepository
 
     override fun onCreate() {
         super.onCreate()

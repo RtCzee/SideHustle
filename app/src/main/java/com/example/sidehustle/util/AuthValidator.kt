@@ -21,8 +21,11 @@ object AuthValidator {
             EMAIL_PATTERN.matches(email)
     }
 
-    fun nameError(name: String): Int? =
-        if (name.isBlank()) R.string.error_name_required else null
+    fun nameError(name: String): Int? = when {
+        name.isBlank() -> R.string.error_name_required
+        name.length > 255 -> R.string.error_text_too_long
+        else -> null
+    }
 
     fun emailError(email: String): Int? = when {
         email.isBlank() -> R.string.error_email_required
@@ -43,7 +46,7 @@ object AuthValidator {
     private val PHONE_PATTERN = Regex("^\\+?[0-9 ()-]{7,20}$")
 
     fun phoneError(phone: String): Int? =
-        if (phone.isBlank() || PHONE_PATTERN.matches(phone)) null else R.string.error_phone_invalid
+        if (phone.isBlank() || (PHONE_PATTERN.matches(phone) && phone.count { it in '0'..'9' } in 7..15)) null else R.string.error_phone_invalid
 
     /** Unlike account email (emailError), a client's email is optional — blank is valid. */
     fun optionalEmailError(email: String): Int? =
@@ -53,12 +56,14 @@ object AuthValidator {
             R.string.error_email_invalid
         }
 
-    fun titleError(title: String): Int? =
-        if (title.isBlank()) R.string.error_title_required else null
+    fun titleError(title: String): Int? = when {
+        title.isBlank() -> R.string.error_title_required
+        title.length > 255 -> R.string.error_text_too_long
+        else -> null
+    }
 
     /** Agreed amount must parse as a number and be >= 0 (issue: Build Job Management). */
     fun amountError(amount: String): Int? {
-        val value = amount.trim().toDoubleOrNull() ?: return R.string.error_amount_invalid
-        return if (value < 0 || value.isNaN() || value.isInfinite()) R.string.error_amount_invalid else null
+        return FormValidator.moneyError(amount, allowZero = true)
     }
 }

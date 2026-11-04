@@ -22,6 +22,8 @@ import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentIncomeBinding
 import com.example.sidehustle.ui.common.list.ListStateHandler
 import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.common.error.dismissInlineError
+import com.example.sidehustle.util.FormValidator
 import com.example.sidehustle.ui.common.loading.setLoading
 import com.example.sidehustle.ui.navigation.setupFinanceNavigation
 import com.example.sidehustle.ui.navigation.setupFinanceForm
@@ -39,6 +41,7 @@ class IncomeFragment : Fragment() {
     private var listState: ListStateHandler? = null
     private var loadJob: Job? = null
     private var optionsJob: Job? = null
+    private var saving = false
     private var clients = emptyList<IncomeLinkOption>()
     private var jobs = emptyList<IncomeLinkOption>()
     private var invoices = emptyList<IncomeLinkOption>()
@@ -61,7 +64,10 @@ class IncomeFragment : Fragment() {
     }
     private fun pickDate() {
         val calendar = Calendar.getInstance()
-        DatePickerDialog(requireContext(), { _, y, m, d -> binding.incomeDate.setText("%04d-%02d-%02d".format(y, m + 1, d)) }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+        DatePickerDialog(requireContext(), { _, y, m, d ->
+            binding.incomeDate.setText(String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d))
+            binding.incomeDate.error = null
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
     }
     private fun loadOptions() {
         optionsJob?.cancel()
@@ -93,12 +99,19 @@ class IncomeFragment : Fragment() {
         binding.incomeInvoice.adapter = adapter(getString(R.string.income_no_invoice), invoices)
     }
     private fun saveIncome() {
-        val amount = binding.incomeAmount.text.toString().trim().toDoubleOrNull()
+        if (saving) return
+        dismissInlineError()
+        binding.incomeStatus.isVisible = false
+        val amountText = binding.incomeAmount.text.toString().trim()
         val date = binding.incomeDate.text.toString().trim()
-        if (amount == null || !amount.isFinite() || amount <= 0) { binding.incomeAmount.error = getString(R.string.income_amount_error); return }
-        if (date.isBlank()) { binding.incomeDate.error = getString(R.string.income_date_error); return }
-        if (binding.paymentMethod.selectedItemPosition == 0) { message(getString(R.string.income_payment_method_error)); return }
-        val request = CreateIncomeRequest(amount, date, binding.paymentMethod.selectedItem.toString(), binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
+        val method = binding.paymentMethod.selectedItem?.toString()
+        binding.incomeAmount.error = FormValidator.moneyError(amountText)?.let { getString(it) }
+        binding.incomeDate.error = FormValidator.dateError(date)?.let { getString(it) }
+        val paymentError = FormValidator.selectionError(method, resources.getStringArray(R.array.payment_methods).drop(1), R.string.income_payment_method_error)
+        if (paymentError != null) message(getString(paymentError))
+        if (binding.incomeAmount.error != null || binding.incomeDate.error != null || paymentError != null) return
+        val request = CreateIncomeRequest(amountText.toDouble(), date, method!!, binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
+        saving = true
         binding.saveIncome.setLoading(true, R.string.action_saving)
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -107,7 +120,10 @@ class IncomeFragment : Fragment() {
                 is ApiResult.Error -> showInlineError(result, ::saveIncome)
             }
             } finally {
-                if (isActive) _binding?.saveIncome?.setLoading(false, R.string.action_saving)
+                if (isActive && _binding != null) {
+                    saving = false
+                    binding.saveIncome.setLoading(false, R.string.action_saving)
+                }
             }
         }
     }
@@ -138,5 +154,5 @@ class IncomeFragment : Fragment() {
     private fun repository() = (requireActivity().application as SideHustleApp).repository
     private fun message(value: String) { binding.incomeStatus.text = value; binding.incomeStatus.isVisible = true }
     private fun formatMoney(currency: String, amount: Double) = "$currency ${NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)}"
-    override fun onDestroyView() { loadJob?.cancel(); optionsJob?.cancel(); listState = null; _binding = null; super.onDestroyView() }
+    override fun onDestroyView() { loadJob?.cancel(); optionsJob?.cancel(); saving = false; listState = null; _binding = null; super.onDestroyView() }
 }

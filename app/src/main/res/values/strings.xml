@@ -277,4 +277,15 @@
     <string name="reminder_job_due_title">Job due soon</string>
     <string name="reminder_body_fallback">You have an upcoming job. Tap to view its details.</string>
     <string name="reminder_permission_denied">Notifications are blocked on this device. Allow them in Android app settings to receive reminders.</string>
+    <string name="error_amount_positive">Enter an amount greater than 0.</string>
+    <string name="error_amount_too_large">Enter an amount no greater than 9,999,999,999.99.</string>
+    <string name="error_amount_precision">Use no more than two decimal places.</string>
+    <string name="error_date_required">Choose a date.</string>
+    <string name="error_date_invalid">Choose a valid date in YYYY-MM-DD format.</string>
+    <string name="error_text_too_long">Use 255 characters or fewer.</string>
+    <string name="error_status_required">Choose a valid job status.</string>
+    <string name="error_currency_required">Choose a currency from the list.</string>
+    <string name="error_language_required">Choose a language from the list.</string>
+    <string name="invoice_job_required">Choose a job for this client.</string>
+    <string name="invoice_amount_invalid">This job has no valid amount. Edit the job before creating an invoice.</string>
 </resources>
