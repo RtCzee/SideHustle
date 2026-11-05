@@ -58,7 +58,7 @@ router.get('/', requireAuth, async (req, res, next) => {
 });
 
 /** POST /clients — create. */
-router.post('/', requireAuth, async (req, res, next) => {
+async function create(req, res, next) {
   try {
     const name = normalizeName(req.body.name);
     if (!name) {
@@ -76,13 +76,15 @@ router.post('/', requireAuth, async (req, res, next) => {
       phoneNumber: req.body.phone_number ?? req.body.phoneNumber ?? null,
       address: req.body.address ?? null,
       notes: req.body.notes ?? null,
-    });
+    }, req.recordId);
 
     res.status(201).json(clientPayload(client));
   } catch (error) {
     next(error);
   }
-});
+}
+
+router.post('/', requireAuth, create);
 
 /** GET /clients/:id */
 router.get('/:id', requireAuth, async (req, res, next) => {
@@ -101,7 +103,7 @@ router.get('/:id', requireAuth, async (req, res, next) => {
 });
 
 /** PUT /clients/:id — partial update; only provided fields change. */
-router.put('/:id', requireAuth, async (req, res, next) => {
+async function update(req, res, next) {
   try {
     const hasName = req.body.name !== undefined;
     let name;
@@ -140,14 +142,16 @@ router.put('/:id', requireAuth, async (req, res, next) => {
     }
     next(error);
   }
-});
+}
+
+router.put('/:id', requireAuth, update);
 
 /**
  * DELETE /clients/:id
  * Responds 200 with a small JSON body rather than a bare 204: some HTTP clients
  * (Retrofit's Gson converter included) throw trying to parse an empty response body.
  */
-router.delete('/:id', requireAuth, async (req, res, next) => {
+async function remove(req, res, next) {
   try {
     const deleted = await deleteClient(req.user.uid, req.params.id);
     if (!deleted) {
@@ -160,6 +164,10 @@ router.delete('/:id', requireAuth, async (req, res, next) => {
     }
     next(error);
   }
-});
+}
+
+router.delete('/:id', requireAuth, remove);
 
 module.exports = router;
+
+module.exports.writes = { create, update, remove };

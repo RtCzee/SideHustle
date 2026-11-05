@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.R
+import com.example.sidehustle.util.formatMoney
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateInvoiceRequest
 import com.example.sidehustle.data.model.InvoiceClient
@@ -34,8 +35,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.util.Locale
 
 class InvoicesFragment : Fragment() {
     private var _binding: FragmentInvoicesBinding? = null
@@ -195,7 +194,8 @@ class InvoicesFragment : Fragment() {
         invoices.forEach { invoice ->
             val item = layoutInflater.inflate(R.layout.item_invoice, binding.invoiceList, false)
             item.findViewById<TextView>(R.id.invoice_info).text = getString(R.string.invoice_row,
-                invoice.number, invoice.clientName ?: getString(R.string.client_name_fallback), formatMoney("ZAR", invoice.total))
+                invoice.number, invoice.clientName ?: getString(R.string.client_name_fallback),
+                formatMoney(invoice.currency ?: "ZAR", invoice.total))
             val picker = item.findViewById<Spinner>(R.id.invoice_status)
             // Preserve unknown legacy values on display; loading a row must never update it.
             val localizedStatuses = statuses.map { LocalizedLabels.invoiceStatus(requireContext(), it) }
@@ -228,7 +228,6 @@ class InvoicesFragment : Fragment() {
         override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = action()
     }
-    private fun formatMoney(currency: String, amount: Double) = "$currency ${NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)}"
     override fun onDestroyView() {
         listJob?.cancel(); clientsJob?.cancel(); jobsJob?.cancel()
         saving = false

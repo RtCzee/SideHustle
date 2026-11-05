@@ -5,7 +5,7 @@ const { findUserById } = require('./users');
 const JOB_COLUMNS = `
   j.job_id, j.user_id, j.client_id, c.name AS client_name,
   j.title, j.description, j.status,
-  j.start_date, j.due_date, j.completed_date,
+  j.start_date::text AS start_date, j.due_date::text AS due_date, j.completed_date::text AS completed_date,
   j.agreed_amount, j.currency,
   j.created_at, j.updated_at
 `;
@@ -53,7 +53,7 @@ async function createJob(userId, {
   completedDate,
   agreedAmount,
   currency,
-}) {
+}, recordId) {
   let resolvedCurrency = currency;
   if (!resolvedCurrency) {
     const profile = await findUserById(userId);
@@ -62,13 +62,13 @@ async function createJob(userId, {
 
   const result = await getPool().query(
     `INSERT INTO jobs (
-       user_id, client_id, title, description, status,
+       job_id, user_id, client_id, title, description, status,
        start_date, due_date, completed_date, agreed_amount, currency
      )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     VALUES (COALESCE($1::uuid, gen_random_uuid()), $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING job_id`,
     [
-      userId,
+      recordId, userId,
       clientId,
       title,
       description ?? null,

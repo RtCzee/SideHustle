@@ -16,7 +16,7 @@ coroutines = "1.8.1"
 lifecycle = "2.8.7"
 recyclerview = "1.3.2"
 swiperefreshlayout = "1.1.0"
-room = "2.6.1"
+room = "2.8.5"
 credentials = "1.6.0"
 googleid = "1.1.1"
 

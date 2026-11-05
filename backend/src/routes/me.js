@@ -41,10 +41,11 @@ router.get('/', requireAuth, async (req, res, next) => {
 });
 
 /** POST /me — create profile after register (issue #11). */
-router.post('/', requireAuth, async (req, res, next) => {
+async function create(req, res, next) {
   try {
     const existing = await findUserById(req.user.uid);
     if (existing) {
+      if (req.ensureProfile) return res.json(profilePayload(existing));
       return res.status(409).json({ error: 'Profile already exists. Use PUT /me to update.' });
     }
 
@@ -71,10 +72,12 @@ router.post('/', requireAuth, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+}
+
+router.post('/', requireAuth, create);
 
 /** PUT /me — update profile for the signed-in user (issue #11). */
-router.put('/', requireAuth, async (req, res, next) => {
+async function update(req, res, next) {
   try {
     if (req.body.notifications_enabled !== undefined && typeof req.body.notifications_enabled !== 'boolean') {
       return res.status(400).json({ error: 'notifications_enabled must be a boolean.' });
@@ -108,6 +111,14 @@ router.put('/', requireAuth, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+}
+
+router.put('/', requireAuth, update);
 
 module.exports = router;
+
+module.exports.writes = {
+  create,
+  update,
+  ensure: (req, res, next) => create({ ...req, ensureProfile: true }, res, next),
+};

@@ -25,7 +25,6 @@ import com.example.sidehustle.network.SideHustleApi
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -120,8 +119,6 @@ class RemoteDataSource(
             ApiErrorMapper.fromHttp(error.code(), body)
         } catch (_: SocketTimeoutException) {
             ApiResult.Error("The server took too long to respond. Try again.", kind = ErrorKind.TIMEOUT)
-        } catch (_: UnknownHostException) {
-            ApiResult.Error("Could not reach the server. Check your connection and try again.", kind = ErrorKind.NETWORK)
         } catch (_: IOException) {
             ApiResult.Error("Could not reach the server. Check your connection and try again.", kind = ErrorKind.NETWORK)
         } catch (_: Exception) {

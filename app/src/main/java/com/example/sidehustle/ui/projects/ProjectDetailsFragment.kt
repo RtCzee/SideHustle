@@ -210,9 +210,9 @@ class ProjectDetailsFragment : Fragment() {
         binding.statusInput.setText(LocalizedLabels.jobStatus(requireContext(), job.status), false)
         binding.amountLayout.hint = getString(R.string.hint_agreed_amount_with_currency, job.currency)
         binding.amountInput.setText(formatAmountForInput(job.agreedAmount))
-        binding.startDateInput.setText(job.startDate.orEmpty())
-        binding.dueDateInput.setText(job.dueDate.orEmpty())
-        binding.completedDateInput.setText(job.completedDate.orEmpty())
+        binding.startDateInput.setText(job.startDate.orEmpty().substringBefore('T'))
+        binding.dueDateInput.setText(job.dueDate.orEmpty().substringBefore('T'))
+        binding.completedDateInput.setText(job.completedDate.orEmpty().substringBefore('T'))
         clearFieldErrors()
     }
 

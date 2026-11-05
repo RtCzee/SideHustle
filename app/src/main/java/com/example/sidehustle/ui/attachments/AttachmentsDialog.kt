@@ -16,6 +16,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.example.sidehustle.R
+import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.AttachmentRequest
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.data.remote.RemoteDataSource
@@ -129,7 +130,8 @@ class AttachmentsDialog : DialogFragment() {
         message(R.string.attachment_loading)
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                when (val result = remote.fetchAttachments(type, entityId)) {
+                val app = requireActivity().application as SideHustleApp
+                when (val result = app.fetchAttachments(type, entityId)) {
                     is ApiResult.Success -> {
                         files?.removeAllViews()
                         result.data.forEach { attachment ->
