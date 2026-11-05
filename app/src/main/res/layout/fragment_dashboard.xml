@@ -144,11 +144,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_income_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_income_value"
@@ -172,11 +173,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_expenses_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_expenses_value"
@@ -206,11 +208,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_profit_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_profit_value"
@@ -233,11 +236,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_outstanding_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_outstanding_value"

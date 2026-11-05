@@ -290,4 +290,21 @@
     <string name="error_language_required">Choose a language from the list.</string>
     <string name="invoice_job_required">Choose a job for this client.</string>
     <string name="invoice_amount_invalid">This job has no valid amount. Edit the job before creating an invoice.</string>
+    <string name="job_status_pending">Pending</string>
+    <string name="job_status_in_progress">In Progress</string>
+    <string name="job_status_completed">Completed</string>
+    <string name="job_status_cancelled">Cancelled</string>
+    <string name="expense_category_transport">Transport</string>
+    <string name="expense_category_materials">Materials</string>
+    <string name="expense_category_software">Software</string>
+    <string name="expense_category_other">Other</string>
+    <string name="payment_method_cash">Cash</string>
+    <string name="payment_method_eft">EFT</string>
+    <string name="payment_method_card">Card</string>
+    <string name="invoice_status_draft">Draft</string>
+    <string name="invoice_status_sent">Sent</string>
+    <string name="invoice_status_partially_paid">Partially Paid</string>
+    <string name="invoice_status_paid">Paid</string>
+    <string name="invoice_status_overdue">Overdue</string>
+    <string name="error_profile_name_required">Add a name to your account before signing in.</string>
 </resources>
