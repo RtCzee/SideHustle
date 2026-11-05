@@ -77,7 +77,7 @@ class LoginFragment : Fragment() {
         val repository = (requireActivity().application as SideHustleApp).repository
 
         viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = AuthProfileLoader(repository).load(auth.currentUser?.displayName, auth.currentUser?.email)) {
+            when (val result = AuthProfileLoader(repository, getString(R.string.error_profile_name_required)).load(auth.currentUser?.displayName, auth.currentUser?.email)) {
                 is ApiResult.Success -> {
                     Log.d(TAG, "Profile loaded for ${result.data.fullName}")
                     navigateToDashboard()

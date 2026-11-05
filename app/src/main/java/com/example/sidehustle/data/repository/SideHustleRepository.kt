@@ -20,6 +20,9 @@ import com.example.sidehustle.data.model.IncomeOptionsResponse
 import com.example.sidehustle.data.model.IncomeResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.data.remote.RemoteDataSource
+import com.example.sidehustle.data.local.LocalDataSource
+import com.google.firebase.auth.FirebaseAuth
+import java.util.UUID
 
 import com.example.sidehustle.data.model.ExpenseResponse
 
@@ -52,7 +55,11 @@ interface SideHustleRepository {
 
 class SideHustleRepositoryImpl(
     private val remote: RemoteDataSource = RemoteDataSource(),
+    private val local: LocalDataSource? = null,
 ) : SideHustleRepository {
+
+    private fun userId() = FirebaseAuth.getInstance().currentUser?.uid
+    private fun isOffline(error: ApiResult.Error) = error.kind == com.example.sidehustle.data.remote.ErrorKind.NETWORK || error.kind == com.example.sidehustle.data.remote.ErrorKind.TIMEOUT
 
     override suspend fun fetchHealth(): ApiResult<HealthResponse> = remote.fetchHealth()
 
@@ -66,42 +73,47 @@ class SideHustleRepositoryImpl(
 
     override suspend fun fetchDashboard(): ApiResult<DashboardResponse> = remote.fetchDashboard()
 
-    override suspend fun fetchClients(): ApiResult<List<ClientResponse>> = remote.fetchClients()
+    override suspend fun fetchClients(): ApiResult<List<ClientResponse>> = cached("clients", remote.fetchClients()) { it.clientId }
 
-    override suspend fun fetchClient(clientId: String): ApiResult<ClientResponse> =
-        remote.fetchClient(clientId)
+    override suspend fun fetchClient(clientId: String): ApiResult<ClientResponse> = when (val r = remote.fetchClient(clientId)) {
+        is ApiResult.Success -> { userId()?.let { local?.save(it, "clients", clientId, r.data) }; r }
+        is ApiResult.Error -> if (isOffline(r)) local?.read<ClientResponse>(userId().orEmpty(), "clients", clientId)?.let { ApiResult.Success(it) } ?: r else r
+    }
 
     override suspend fun createClient(request: ClientRequest): ApiResult<ClientResponse> =
-        remote.createClient(request)
+        write("clients", UUID.randomUUID().toString(), request, remote.createClient(request)) { it.clientId }
 
     override suspend fun updateClient(clientId: String, request: ClientRequest): ApiResult<ClientResponse> =
-        remote.updateClient(clientId, request)
+        write("clients", clientId, request, remote.updateClient(clientId, request)) { it.clientId }
 
     override suspend fun deleteClient(clientId: String): ApiResult<DeleteResult> =
         remote.deleteClient(clientId)
 
-    override suspend fun fetchJobs(): ApiResult<List<JobResponse>> = remote.fetchJobs()
+    override suspend fun fetchJobs(): ApiResult<List<JobResponse>> = cached("jobs", remote.fetchJobs()) { it.jobId }
 
-    override suspend fun fetchJob(jobId: String): ApiResult<JobResponse> = remote.fetchJob(jobId)
+    override suspend fun fetchJob(jobId: String): ApiResult<JobResponse> = when (val r = remote.fetchJob(jobId)) {
+        is ApiResult.Success -> { userId()?.let { local?.save(it, "jobs", jobId, r.data) }; r }
+        is ApiResult.Error -> if (isOffline(r)) local?.read<JobResponse>(userId().orEmpty(), "jobs", jobId)?.let { ApiResult.Success(it) } ?: r else r
+    }
 
     override suspend fun createJob(request: JobRequest): ApiResult<JobResponse> =
-        remote.createJob(request)
+        write("jobs", UUID.randomUUID().toString(), request, remote.createJob(request)) { it.jobId }
 
     override suspend fun updateJob(jobId: String, request: JobRequest): ApiResult<JobResponse> =
-        remote.updateJob(jobId, request)
+        write("jobs", jobId, request, remote.updateJob(jobId, request)) { it.jobId }
 
-    override suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>> = remote.fetchExpenses()
+    override suspend fun fetchExpenses(): ApiResult<List<ExpenseResponse>> = cached("expenses", remote.fetchExpenses()) { it.expenseId }
 
     override suspend fun createExpense(request: CreateExpenseRequest): ApiResult<ExpenseResponse> =
-        remote.createExpense(request)
+        write("expenses", UUID.randomUUID().toString(), request, remote.createExpense(request)) { it.expenseId }
 
     override suspend fun fetchIncomeOptions(): ApiResult<IncomeOptionsResponse> =
         remote.fetchIncomeOptions()
 
-    override suspend fun fetchIncome(): ApiResult<List<IncomeResponse>> = remote.fetchIncome()
+    override suspend fun fetchIncome(): ApiResult<List<IncomeResponse>> = cached("income", remote.fetchIncome()) { it.id }
 
     override suspend fun createIncome(request: CreateIncomeRequest): ApiResult<IncomeResponse> =
-        remote.createIncome(request)
+        write("income", UUID.randomUUID().toString(), request, remote.createIncome(request)) { it.id }
 
     override suspend fun fetchInvoiceClients(): ApiResult<List<InvoiceClient>> =
         remote.fetchInvoiceClients()
@@ -116,4 +128,32 @@ class SideHustleRepositoryImpl(
 
     override suspend fun updateInvoiceStatus(invoiceId: String, status: String): ApiResult<InvoiceResponse> =
         remote.updateInvoiceStatus(invoiceId, status)
+
+    private suspend inline fun <reified T> cached(kind: String, result: ApiResult<List<T>>, crossinline id: (T) -> String): ApiResult<List<T>> {
+        val user = userId() ?: return result
+        return when (result) {
+            is ApiResult.Success -> { local?.replace(user, kind, result.data, id); result }
+            is ApiResult.Error -> if (isOffline(result)) local?.readAll<T>(user, kind)?.let { ApiResult.Success(it) } ?: result else result
+        }
+    }
+
+    private suspend fun <T> write(kind: String, id: String, request: Any, result: ApiResult<T>, responseId: (T) -> String): ApiResult<T> {
+        val user = userId() ?: return result
+        return when (result) {
+            is ApiResult.Success -> { local?.save(user, kind, responseId(result.data), result.data); result }
+            is ApiResult.Error -> if (isOffline(result)) {
+                val value: Any = when (request) {
+                    is ClientRequest -> ClientResponse(id, request.name, request.email, request.phoneNumber, request.address, request.notes)
+                    is JobRequest -> JobResponse(id, request.clientId, local?.read<ClientResponse>(user, "clients", request.clientId)?.name.orEmpty(), request.title, request.description, request.status, request.startDate, request.dueDate, request.completedDate, request.agreedAmount, "ZAR")
+                    is CreateExpenseRequest -> ExpenseResponse(id, request.amount, "ZAR", request.expenseDate, request.category, request.description)
+                    is CreateIncomeRequest -> IncomeResponse(id, request.amount, "ZAR", request.dateReceived, request.paymentMethod, request.description)
+                    else -> return result
+                }
+                local?.save(user, kind, id, value)
+                local?.enqueue(user, kind, "upsert", id, request)
+                @Suppress("UNCHECKED_CAST")
+                ApiResult.Success(value as T)
+            } else result
+        }
+    }
 }

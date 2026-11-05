@@ -24,6 +24,7 @@ import com.example.sidehustle.ui.common.list.ListStateHandler
 import com.example.sidehustle.ui.common.error.showInlineError
 import com.example.sidehustle.ui.common.error.dismissInlineError
 import com.example.sidehustle.util.FormValidator
+import com.example.sidehustle.util.LocalizedLabels
 import com.example.sidehustle.ui.common.loading.setLoading
 import com.example.sidehustle.ui.navigation.setupFinanceNavigation
 import com.example.sidehustle.ui.navigation.setupFinanceForm
@@ -51,7 +52,9 @@ class IncomeFragment : Fragment() {
         return binding.root
     }
     override fun onViewCreated(view: View, state: Bundle?) {
-        binding.paymentMethod.adapter = ArrayAdapter.createFromResource(requireContext(), R.array.payment_methods, android.R.layout.simple_spinner_dropdown_item)
+        val paymentMethods = resources.getStringArray(R.array.payment_methods)
+        binding.paymentMethod.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+            listOf(paymentMethods.first()) + paymentMethods.drop(1).map { LocalizedLabels.paymentMethod(requireContext(), it) })
         binding.incomeDate.setOnClickListener { pickDate() }
         setupFinanceNavigation(view, R.id.incomeFragment)
         setupFinanceForm(view, R.string.action_new_income, ::loadOptions)
@@ -104,14 +107,17 @@ class IncomeFragment : Fragment() {
         binding.incomeStatus.isVisible = false
         val amountText = binding.incomeAmount.text.toString().trim()
         val date = binding.incomeDate.text.toString().trim()
-        val method = binding.paymentMethod.selectedItem?.toString()
+        val methodLabel = binding.paymentMethod.selectedItem?.toString()
         binding.incomeAmount.error = FormValidator.moneyError(amountText)?.let { getString(it) }
         binding.incomeDate.error = FormValidator.dateError(date)?.let { getString(it) }
-        val paymentError = FormValidator.selectionError(method, resources.getStringArray(R.array.payment_methods).drop(1), R.string.income_payment_method_error)
+        val paymentError = FormValidator.selectionError(methodLabel,
+            resources.getStringArray(R.array.payment_methods).drop(1).map { LocalizedLabels.paymentMethod(requireContext(), it) },
+            R.string.income_payment_method_error)
         if (paymentError != null) message(getString(paymentError))
         if (binding.incomeAmount.error != null || binding.incomeDate.error != null || paymentError != null) return
         val paymentMethod = method ?: return
         val request = CreateIncomeRequest(amountText.toDouble(), date, paymentMethod, binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
+        val request = CreateIncomeRequest(amountText.toDouble(), date, LocalizedLabels.paymentMethodCode(requireContext(), methodLabel!!), binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
         saving = true
         binding.saveIncome.setLoading(true, R.string.action_saving)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -147,7 +153,7 @@ class IncomeFragment : Fragment() {
         records.forEach { record ->
             val item = inflater.inflate(R.layout.item_income, binding.incomeList, false)
             item.findViewById<TextView>(R.id.income_amount_text).text = formatMoney(record.currency, record.amount)
-            item.findViewById<TextView>(R.id.income_detail_text).text = listOf(record.dateReceived, record.paymentMethod, record.description).filterNotNull().filter { it.isNotBlank() }.joinToString(" • ")
+            item.findViewById<TextView>(R.id.income_detail_text).text = listOf(record.dateReceived, LocalizedLabels.paymentMethod(requireContext(), record.paymentMethod), record.description).filterNotNull().filter { it.isNotBlank() }.joinToString(" • ")
             binding.incomeList.addView(item)
         }
     }

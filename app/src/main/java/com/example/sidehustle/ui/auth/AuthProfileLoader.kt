@@ -9,15 +9,16 @@ import com.example.sidehustle.data.repository.SideHustleRepository
 class AuthProfileLoader(
     private val fetch: suspend () -> ApiResult<UserProfileResponse>,
     private val create: suspend (CreateProfileRequest) -> ApiResult<UserProfileResponse>,
+    private val missingNameError: String = "Add a name to your account before signing in.",
 ) {
-    constructor(repository: SideHustleRepository) : this(repository::fetchProfile, repository::createProfile)
+    constructor(repository: SideHustleRepository, missingNameError: String) : this(repository::fetchProfile, repository::createProfile, missingNameError)
 
     suspend fun load(displayName: String?, email: String?): ApiResult<UserProfileResponse> {
         val existing = fetch()
         if (existing !is ApiResult.Error || existing.httpCode != 404) return existing
         val name = displayName?.trim()?.takeIf { it.isNotEmpty() }
             ?: email?.substringBefore('@')?.trim()?.takeIf { it.isNotEmpty() }
-            ?: return ApiResult.Error("Add a name to your account before signing in.")
+            ?: return ApiResult.Error(missingNameError)
         return when (val created = create(CreateProfileRequest(fullName = name.take(255)))) {
             // Another request/device may finish registration between GET and POST.
             is ApiResult.Error -> if (created.httpCode == 409) fetch() else created

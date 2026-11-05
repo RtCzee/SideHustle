@@ -27,8 +27,13 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
+import com.example.sidehustle.data.model.SyncRequest
+import com.example.sidehustle.data.model.SyncResponse
 
 interface SideHustleApi {
+
+    @POST("sync")
+    suspend fun sync(@Body body: SyncRequest): SyncResponse
 
     @PUT("me/push-device")
     suspend fun registerPushDevice(@Body body: com.example.sidehustle.data.model.PushDeviceRequest): com.example.sidehustle.data.model.PushDeviceResponse

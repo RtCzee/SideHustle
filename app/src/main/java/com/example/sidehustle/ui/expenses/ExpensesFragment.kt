@@ -22,6 +22,7 @@ import com.example.sidehustle.ui.common.list.ListStateHandler
 import com.example.sidehustle.ui.common.error.showInlineError
 import com.example.sidehustle.ui.common.error.dismissInlineError
 import com.example.sidehustle.util.FormValidator
+import com.example.sidehustle.util.LocalizedLabels
 import com.example.sidehustle.ui.navigation.setupFinanceNavigation
 import com.example.sidehustle.ui.navigation.setupFinanceForm
 import com.example.sidehustle.ui.navigation.openFinanceForm
@@ -47,9 +48,10 @@ class ExpensesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.categoryInput.adapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.expense_categories, android.R.layout.simple_spinner_dropdown_item,
-        )
+        val categories = resources.getStringArray(R.array.expense_categories).drop(1)
+        val categoryLabels = categories.map { LocalizedLabels.expenseCategory(requireContext(), it) }
+        binding.categoryInput.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+            listOf(resources.getStringArray(R.array.expense_categories).first()) + categoryLabels)
         binding.dateInput.setOnClickListener { showDatePicker() }
         binding.saveExpenseButton.setOnClickListener { saveExpense() }
         setupFinanceNavigation(view, R.id.expensesFragment)
@@ -74,13 +76,13 @@ class ExpensesFragment : Fragment() {
         dismissInlineError()
         val amountText = binding.amountInput.text.toString().trim()
         val date = binding.dateInput.text.toString().trim()
-        val category = binding.categoryInput.selectedItem?.toString().orEmpty()
+        val categoryLabel = binding.categoryInput.selectedItem?.toString().orEmpty()
         var valid = true
         binding.expensesStatus.isVisible = false
         binding.amountInput.error = FormValidator.moneyError(amountText)?.let { getString(it) }
         binding.dateInput.error = FormValidator.dateError(date)?.let { getString(it) }
         if (binding.amountInput.error != null || binding.dateInput.error != null) valid = false
-        if (FormValidator.selectionError(category, resources.getStringArray(R.array.expense_categories).drop(1), R.string.expenses_category_error) != null) {
+        if (FormValidator.selectionError(categoryLabel, categoryLabels, R.string.expenses_category_error) != null) {
             binding.expensesStatus.text = getString(R.string.expenses_category_error)
             binding.expensesStatus.isVisible = true
             valid = false
@@ -92,7 +94,7 @@ class ExpensesFragment : Fragment() {
         val request = CreateExpenseRequest(
             amount = amountText.toDouble(),
             expenseDate = date,
-            category = category,
+            category = LocalizedLabels.expenseCategoryCode(requireContext(), categoryLabel),
             description = binding.descriptionInput.text.toString().trim().ifBlank { null },
         )
         val repository = (requireActivity().application as SideHustleApp).repository
@@ -139,7 +141,8 @@ class ExpensesFragment : Fragment() {
         val inflater = LayoutInflater.from(requireContext())
         expenses.forEach { expense ->
             val item = inflater.inflate(R.layout.item_expense, binding.expensesList, false)
-            item.findViewById<TextView>(R.id.expense_category).text = expense.category
+            val categoryLabel = LocalizedLabels.expenseCategory(requireContext(), expense.category)
+            item.findViewById<TextView>(R.id.expense_category).text = categoryLabel
             item.findViewById<TextView>(R.id.expense_amount).text = formatMoney(expense.currency, expense.amount)
             item.findViewById<TextView>(R.id.expense_date).text = expense.expenseDate
             item.findViewById<TextView>(R.id.expense_description).apply {
@@ -149,11 +152,11 @@ class ExpensesFragment : Fragment() {
             binding.expensesList.addView(item)
             item.isClickable = true
             item.isFocusable = true
-            item.contentDescription = getString(R.string.attachment_expense_details, expense.category)
+            item.contentDescription = getString(R.string.attachment_expense_details, categoryLabel)
             item.setOnClickListener {
                 com.example.sidehustle.ui.attachments.AttachmentsDialog.show(
                     parentFragmentManager, "expenses", expense.expenseId,
-                    listOfNotNull(expense.category, formatMoney(expense.currency, expense.amount),
+                    listOfNotNull(categoryLabel, formatMoney(expense.currency, expense.amount),
                         expense.expenseDate, expense.description).joinToString("\n"))
             }
         }

@@ -25,6 +25,7 @@ import com.example.sidehustle.ui.common.error.showInlineError
 import com.example.sidehustle.ui.navigation.isValidDetailRequest
 import com.example.sidehustle.util.AuthValidator
 import com.example.sidehustle.util.FormValidator
+import com.example.sidehustle.util.LocalizedLabels
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -53,7 +54,8 @@ class ProjectDetailsFragment : Fragment() {
     private var loadJob: Job? = null
     private var saving = false
 
-    private val statuses: List<String> by lazy { resources.getStringArray(R.array.job_statuses).toList() }
+    private val statusCodes: List<String> by lazy { resources.getStringArray(R.array.job_statuses).toList() }
+    private val statuses: List<String> by lazy { statusCodes.map { LocalizedLabels.jobStatus(requireContext(), it) } }
     private val isoDateFormat: SimpleDateFormat by lazy {
         SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
     }
@@ -85,7 +87,7 @@ class ProjectDetailsFragment : Fragment() {
             // Nice-to-have: auto-fill today's date the moment a job is marked Completed,
             // if the user hasn't already set one. Still fully editable/clearable after.
             val status = statuses.getOrNull(position)
-            if (status == "Completed" && binding.completedDateInput.text.isNullOrBlank()) {
+            if (status == LocalizedLabels.jobStatus(requireContext(), "Completed") && binding.completedDateInput.text.isNullOrBlank()) {
                 binding.completedDateInput.setText(isoDateFormat.format(Date()))
             }
         }
@@ -205,7 +207,7 @@ class ProjectDetailsFragment : Fragment() {
         binding.clientInput.setText(job.clientName, false)
         binding.titleInput.setText(job.title)
         binding.descriptionInput.setText(job.description.orEmpty())
-        binding.statusInput.setText(job.status, false)
+        binding.statusInput.setText(LocalizedLabels.jobStatus(requireContext(), job.status), false)
         binding.amountLayout.hint = getString(R.string.hint_agreed_amount_with_currency, job.currency)
         binding.amountInput.setText(formatAmountForInput(job.agreedAmount))
         binding.startDateInput.setText(job.startDate.orEmpty())
@@ -273,7 +275,7 @@ class ProjectDetailsFragment : Fragment() {
             clientId = clientId,
             title = title,
             description = description,
-            status = status,
+            status = LocalizedLabels.jobStatusCode(requireContext(), status),
             startDate = startDate,
             dueDate = dueDate,
             completedDate = completedDate,

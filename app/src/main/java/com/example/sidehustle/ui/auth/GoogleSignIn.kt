@@ -49,7 +49,7 @@ class GoogleSignIn(
             val auth = FirebaseAuth.getInstance()
             val user = auth.signInWithCredential(GoogleAuthProvider.getCredential(google.idToken, null)).await().user
                 ?: return@googleSignInAttempt GoogleSignInResult.Failure(R.string.error_google_sign_in)
-            when (val profile = AuthProfileLoader(repository).load(user.displayName, user.email)) {
+            when (val profile = AuthProfileLoader(repository, activity.getString(R.string.error_profile_name_required)).load(user.displayName, user.email)) {
                 is ApiResult.Success -> GoogleSignInResult.Success(profile.data)
                 is ApiResult.Error -> GoogleSignInResult.Failure(R.string.error_google_profile, profile)
             }

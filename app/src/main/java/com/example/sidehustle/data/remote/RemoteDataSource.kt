@@ -36,6 +36,8 @@ class RemoteDataSource(
     private val api: SideHustleApi = ApiClient.api,
 ) {
 
+    suspend fun sync(request: com.example.sidehustle.data.model.SyncRequest): ApiResult<com.example.sidehustle.data.model.SyncResponse> = safeApiCall { api.sync(request) }
+
     suspend fun registerPushDevice(request: com.example.sidehustle.data.model.PushDeviceRequest) =
         safeApiCall { api.registerPushDevice(request) }
 

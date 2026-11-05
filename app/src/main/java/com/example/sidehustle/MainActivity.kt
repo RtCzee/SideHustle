@@ -31,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -54,6 +55,16 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) readReminderIntent(intent)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        lifecycleScope.launch {
+            (application as SideHustleApp).syncStatus.collect { status ->
+                binding.syncStatusText.isVisible = status != SyncStatus.ONLINE
+                binding.syncStatusText.text = when (status) {
+                    SyncStatus.OFFLINE -> getString(R.string.sync_offline)
+                    SyncStatus.SYNCING -> getString(R.string.sync_syncing)
+                    SyncStatus.ONLINE -> ""
+                }
+            }
+        }
         binding.floatingNav.setup(nav)
         nav.addOnDestinationChangedListener { controller, destination, args ->
             // Missing IDs are public 404 states; valid resource requests require a session.
