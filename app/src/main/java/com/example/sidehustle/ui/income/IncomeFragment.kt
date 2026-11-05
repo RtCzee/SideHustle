@@ -110,7 +110,8 @@ class IncomeFragment : Fragment() {
         val paymentError = FormValidator.selectionError(method, resources.getStringArray(R.array.payment_methods).drop(1), R.string.income_payment_method_error)
         if (paymentError != null) message(getString(paymentError))
         if (binding.incomeAmount.error != null || binding.incomeDate.error != null || paymentError != null) return
-        val request = CreateIncomeRequest(amountText.toDouble(), date, method!!, binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
+        val paymentMethod = method ?: return
+        val request = CreateIncomeRequest(amountText.toDouble(), date, paymentMethod, binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
         saving = true
         binding.saveIncome.setLoading(true, R.string.action_saving)
         viewLifecycleOwner.lifecycleScope.launch {

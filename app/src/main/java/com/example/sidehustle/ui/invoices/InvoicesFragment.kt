@@ -144,6 +144,8 @@ class InvoicesFragment : Fragment() {
             binding.invoiceMessage.setText(error)
             return
         }
+        val selectedClient = client ?: return
+        val selectedJob = job ?: return
         saving = true
         binding.invoiceClient.isEnabled = false
         binding.invoiceJob.isEnabled = false
@@ -151,7 +153,7 @@ class InvoicesFragment : Fragment() {
         binding.createInvoice.setLoading(true, R.string.action_saving)
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                when (val result = repository.createInvoice(CreateInvoiceRequest(client!!.id, job!!.id))) {
+                when (val result = repository.createInvoice(CreateInvoiceRequest(selectedClient.id, selectedJob.id))) {
                     is ApiResult.Success -> {
                         binding.entryForm.isVisible = false
                         binding.toggleForm.setText(R.string.action_new_invoice)

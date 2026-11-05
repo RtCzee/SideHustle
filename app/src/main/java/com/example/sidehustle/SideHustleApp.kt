@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
  */
 class SideHustleApp : Application() {
 
-    val repository: SideHustleRepository by lazy { SideHustleRepositoryImpl() }
     val pushRegistration by lazy { com.example.sidehustle.notifications.PushRegistration(this) }
     private val sessionScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val defaultRepository: SideHustleRepository by lazy { SideHustleRepositoryImpl() }
