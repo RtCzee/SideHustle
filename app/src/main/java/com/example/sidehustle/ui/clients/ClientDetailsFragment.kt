@@ -63,7 +63,8 @@ class ClientDetailsFragment : Fragment() {
             binding.loadingIndicator.isVisible = true
             request = viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    when (val result = repository.fetchClient(clientId!!)) {
+                    val requestedClientId = clientId ?: return@launch
+                    when (val result = repository.fetchClient(requestedClientId)) {
                         is ApiResult.Success -> {
                             bind(result.data)
                             binding.formGroup.isVisible = true
@@ -96,12 +97,14 @@ class ClientDetailsFragment : Fragment() {
         binding.emailLayout.error = AuthValidator.optionalEmailError(email)?.let { getString(it) }
         binding.phoneLayout.error = AuthValidator.phoneError(phone)?.let { getString(it) }
         if (binding.nameLayout.error != null || binding.emailLayout.error != null || binding.phoneLayout.error != null) return
+        val existingClientId = clientId
+        if (!creating && existingClientId.isNullOrBlank()) return
         val data = ClientRequest(name, email, phone, binding.addressInput.text.toString().trim(), binding.notesInput.text.toString().trim())
         binding.saveButton.setLoading(true, R.string.action_saving)
         binding.deleteButton.isEnabled = false
         request = viewLifecycleOwner.lifecycleScope.launch {
             try {
-                when (val result = if (creating) repository.createClient(data) else repository.updateClient(clientId!!, data)) {
+                when (val result = if (creating) repository.createClient(data) else repository.updateClient(existingClientId ?: return@launch, data)) {
                     is ApiResult.Success -> findNavController().navigateUp()
                     is ApiResult.Error -> showInlineError(result, ::save)
                 }

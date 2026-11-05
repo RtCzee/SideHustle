@@ -31,8 +31,8 @@ import java.util.UUID
 /** Upload only to an already saved entity; failed API saves retain the uploaded URL for retry. */
 class AttachmentsDialog : DialogFragment() {
     private val remote = RemoteDataSource()
-    private val type get() = requireArguments().getString("type")!!
-    private val entityId get() = requireArguments().getString("id")!!
+    private val type get() = arguments?.getString(ARG_TYPE).orEmpty()
+    private val entityId get() = arguments?.getString(ARG_ID).orEmpty()
     private var status: TextView? = null
     private var files: LinearLayout? = null
     private var pick: MaterialButton? = null
@@ -70,7 +70,7 @@ class AttachmentsDialog : DialogFragment() {
             val padding = (24 * resources.displayMetrics.density).toInt()
             setPadding(padding, padding, padding, padding)
             addView(TextView(context).apply {
-                text = requireArguments().getString("summary")
+                text = arguments?.getString(ARG_SUMMARY).orEmpty()
                 textSize = 20f
             })
             addView(TextView(context).apply { setText(R.string.attachments_title) })
@@ -98,7 +98,15 @@ class AttachmentsDialog : DialogFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) { load() }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (type !in supportedEntityTypes || entityId.isBlank()) {
+            message(R.string.error_generic_message)
+            pick?.isEnabled = false
+            retry?.isEnabled = false
+            return
+        }
+        load()
+    }
 
     override fun onStart() {
         super.onStart()
@@ -203,11 +211,17 @@ class AttachmentsDialog : DialogFragment() {
 
     companion object {
         fun show(manager: FragmentManager, type: String, id: String, summary: String) {
+            if (type !in supportedEntityTypes || id.isBlank()) return
             if (!manager.isStateSaved && manager.findFragmentByTag("attachments") == null) {
                 AttachmentsDialog().apply {
-                    arguments = bundleOf("type" to type, "id" to id, "summary" to summary)
+                    arguments = bundleOf(ARG_TYPE to type, ARG_ID to id, ARG_SUMMARY to summary)
                 }.show(manager, "attachments")
             }
         }
+
+        private const val ARG_TYPE = "type"
+        private const val ARG_ID = "id"
+        private const val ARG_SUMMARY = "summary"
+        private val supportedEntityTypes = setOf("jobs", "expenses")
     }
 }

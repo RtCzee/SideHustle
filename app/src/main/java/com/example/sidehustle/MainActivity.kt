@@ -88,8 +88,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         ViewCompat.requestApplyInsets(binding.root)
-        if (savedInstanceState == null && intent?.data != null) {
-            val request = NavDeepLinkRequest.Builder.fromUri(intent.data!!).build()
+        val deepLinkUri = intent?.data
+        if (savedInstanceState == null && deepLinkUri != null) {
+            val request = NavDeepLinkRequest.Builder.fromUri(deepLinkUri).build()
             if (!nav.graph.hasDeepLink(request)) nav.showNotFound()
         }
         binding.root.post { openPendingReminder() }

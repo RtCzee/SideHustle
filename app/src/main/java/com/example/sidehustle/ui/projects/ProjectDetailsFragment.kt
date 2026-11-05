@@ -45,12 +45,12 @@ class ProjectDetailsFragment : Fragment() {
     private var _binding: FragmentJobDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val jobId: String? get() = arguments?.get(ARG_JOB_ID) as? String
+    private val jobId: String? get() = arguments?.getString(ARG_JOB_ID)
     private val isEditMode: Boolean get() = jobId != null
 
     private var clients: List<ClientResponse> = emptyList()
     private var selectedClientId: String? = null
-    private val isCreating: Boolean get() = arguments?.get(ARG_IS_CREATING) == true
+    private val isCreating: Boolean get() = arguments?.getBoolean(ARG_IS_CREATING, false) == true
     private var loadJob: Job? = null
     private var saving = false
 
@@ -137,8 +137,9 @@ class ProjectDetailsFragment : Fragment() {
         loadJob = viewLifecycleOwner.lifecycleScope.launch {
             try {
                 // Resolve the resource first, so a missing job always gets a 404 state.
-                if (isEditMode) {
-                    when (val result = repository.fetchJob(jobId!!)) {
+                val requestedJobId = jobId
+                if (requestedJobId != null) {
+                    when (val result = repository.fetchJob(requestedJobId)) {
                         is ApiResult.Success -> populateFields(result.data)
                         is ApiResult.Error -> {
                             showLoadError(result)
@@ -269,8 +270,9 @@ class ProjectDetailsFragment : Fragment() {
             return
         }
 
+        val clientId = selectedClientId ?: return
         val request = JobRequest(
-            clientId = selectedClientId!!,
+            clientId = clientId,
             title = title,
             description = description,
             status = LocalizedLabels.jobStatusCode(requireContext(), status),
@@ -285,8 +287,9 @@ class ProjectDetailsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-            val result = if (isEditMode) {
-                repository.updateJob(jobId!!, request)
+            val existingJobId = jobId
+            val result = if (existingJobId != null) {
+                repository.updateJob(existingJobId, request)
             } else {
                 repository.createJob(request)
             }

@@ -3,7 +3,6 @@
     <string name="sync_syncing">Syncing your changes…</string>
 
     <string name="app_name">SideHustle</string>
-    <string name="placeholder_body">This is a placeholder screen. Real content will be added in later issues.</string>
 
     <string name="login_title">Welcome back</string>
     <string name="login_subtitle">Sign in to manage your clients, jobs, and finances.</string>
@@ -62,18 +61,12 @@
     <string name="dashboard_profit_label">Net profit</string>
     <string name="dashboard_outstanding_label">Outstanding</string>
     <string name="dashboard_jobs_label">Completed jobs this month</string>
-    <string name="dashboard_placeholder">Business metrics and the SideHustle Score will appear here.</string>
     <string name="error_profile_not_found">Your account has no profile yet. Register again or contact support.</string>
     <string name="clients_title">Clients</string>
-    <string name="clients_placeholder">Your client list will appear here. Open details to check that navigation works.</string>
     <string name="client_details_title">Client details</string>
-    <string name="client_details_placeholder">A single client’s profile will appear here.</string>
     <string name="projects_title">Projects</string>
-    <string name="projects_placeholder">Your jobs and projects will appear here. Open details to check that navigation works.</string>
     <string name="project_details_title">Job details</string>
-    <string name="project_details_placeholder">A single job’s status and amount will appear here.</string>
     <string name="invoices_title">Invoices</string>
-    <string name="invoices_placeholder">Invoices will appear here. Open expenses to reach the other finance screen.</string>
     <string name="expenses_title">Expenses</string>
     <string name="income_title">Income</string>
     <string name="income_add_title">Add income</string>
@@ -106,7 +99,6 @@
     <string name="invoice_total_placeholder">Total: select a job</string>
     <string name="invoice_selection_error">Select a client and a job.</string>
     <string name="invoice_created">Invoice created.</string>
-    <string name="expenses_placeholder">Expense records will appear here.</string>
     <string name="expenses_add_title">Add an expense</string>
     <string name="expenses_amount_hint">Amount</string>
     <string name="expenses_date_hint">Date (tap to choose)</string>
@@ -129,7 +121,6 @@
         <item>Other</item>
     </string-array>
     <string name="settings_title">Settings</string>
-    <string name="settings_placeholder">Profile and app preferences will appear here.</string>
     <string name="settings_section_profile">Profile</string>
     <string name="settings_section_preferences">Preferences</string>
     <string name="hint_phone">Phone number</string>
@@ -201,7 +192,6 @@
     <string name="nav_finances">Finances</string>
     <string name="nav_settings">Settings</string>
 
-    <string name="action_continue_placeholder">Continue to app</string>
     <string name="action_go_to_register">Don\'t have an account? Create one</string>
     <string name="action_go_to_login">Already have an account? Log in</string>
     <string name="action_open_client_details">Open client details</string>
@@ -216,7 +206,6 @@
     <string name="cd_loading">Loading</string>
     <string name="cd_loading_list">Loading list</string>
     <string name="action_saving">Saving…</string>
-    <string name="client_row_updated">Updated %1$s</string>
     <!-- Shared API error states -->
     <string name="dashboard_unavailable">—</string>
     <string name="error_network_title">Connection problem</string>

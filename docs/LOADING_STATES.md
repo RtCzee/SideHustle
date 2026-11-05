@@ -75,8 +75,7 @@ override fun onDestroyView() { loading = null; _binding = null; super.onDestroyV
 coroutine is cancelled. Overlapping calls are counted, so loading stays on until the last one finishes.
 You can also call `loading.setLoading(true/false)` directly.
 
-**Screens that extend `PlaceholderFragment`** get all of this for free: just use `loading.whileLoading { }`
-and override `loadingMessageRes` (see `DashboardFragment`).
+Screens that use the shared loading view can call `loading.whileLoading { }` and override `loadingMessageRes` (see `DashboardFragment`).
 
 ## 3. List skeleton (shimmer)
 
