@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.SideHustle" parent="Theme.SideHustle.Base">
+        <item name="android:windowLightNavigationBar">@bool/light_system_bars</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>

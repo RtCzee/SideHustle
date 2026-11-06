@@ -5,11 +5,21 @@
 -->
 <data-extraction-rules>
     <cloud-backup>
+        <exclude domain="database" path="sidehustle-offline.db" />
+        <exclude domain="database" path="sidehustle-offline.db-wal" />
+        <exclude domain="database" path="sidehustle-offline.db-shm" />
+        <exclude domain="sharedpref" path="push.xml" />
         <!-- TODO: Use <include> and <exclude> to control what is backed up.
         <include .../>
         <exclude .../>
         -->
     </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="sidehustle-offline.db" />
+        <exclude domain="database" path="sidehustle-offline.db-wal" />
+        <exclude domain="database" path="sidehustle-offline.db-shm" />
+        <exclude domain="sharedpref" path="push.xml" />
+    </device-transfer>
     <!--
     <device-transfer>
         <include .../>

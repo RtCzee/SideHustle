@@ -23,16 +23,27 @@ import com.example.sidehustle.data.model.IncomeResponse
 import com.example.sidehustle.network.ApiClient
 import com.example.sidehustle.network.SideHustleApi
 import retrofit2.HttpException
-import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.net.UnknownHostException
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 
 import com.example.sidehustle.data.model.ExpenseResponse
 
 class RemoteDataSource(
     private val api: SideHustleApi = ApiClient.api,
 ) {
+
+    suspend fun sync(request: com.example.sidehustle.data.model.SyncRequest): ApiResult<com.example.sidehustle.data.model.SyncResponse> = safeApiCall { api.sync(request) }
+
+    suspend fun registerPushDevice(request: com.example.sidehustle.data.model.PushDeviceRequest) =
+        safeApiCall { api.registerPushDevice(request) }
+
+    suspend fun fetchAttachments(type: String, id: String) = safeApiCall { api.getAttachments(type, id) }
+
+    suspend fun addAttachment(type: String, id: String, request: com.example.sidehustle.data.model.AttachmentRequest) =
+        safeApiCall { api.addAttachment(type, id, request) }
 
     suspend fun fetchHealth(): ApiResult<HealthResponse> = safeApiCall { api.getHealth() }
 
@@ -97,41 +108,26 @@ class RemoteDataSource(
     suspend fun updateInvoiceStatus(invoiceId: String, status: String): ApiResult<InvoiceResponse> =
         safeApiCall { api.updateInvoiceStatus(invoiceId, UpdateInvoiceStatusRequest(status)) }
 
-    private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
-        return try {
+    internal suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
+        val result = try {
             ApiResult.Success(block())
+        } catch (error: CancellationException) {
+            throw error
         } catch (error: HttpException) {
-            val body = error.response()?.errorBody()?.string()
-            Log.e("SideHustle", "API HTTP ${error.code()}: ${body?.take(200)}")
-            val serverMessage = body?.let { extractErrorMessage(it) }
-            ApiResult.Error(serverMessage ?: mapHttpError(error.code()), error.code())
+            val body = try { error.response()?.errorBody()?.string() } catch (_: IOException) { null }
+            Log.e("SideHustle", "API HTTP ${error.code()}")
+            ApiErrorMapper.fromHttp(error.code(), body)
         } catch (_: SocketTimeoutException) {
-            ApiResult.Error("The server took too long to respond. Try again.")
-        } catch (_: UnknownHostException) {
-            ApiResult.Error("No internet connection. Check your network and try again.")
+            ApiResult.Error("The server took too long to respond. Try again.", kind = ErrorKind.TIMEOUT)
         } catch (_: IOException) {
-            ApiResult.Error("Could not reach the server. Check your connection and try again.")
+            ApiResult.Error("Could not reach the server. Check your connection and try again.", kind = ErrorKind.NETWORK)
         } catch (_: Exception) {
             ApiResult.Error("Something went wrong. Please try again.")
         }
+        // Retrofit can deliver an HTTP/IO failure as the view's request is cancelled.
+        // Never turn that late result into UI work for a destroyed Fragment view.
+        currentCoroutineContext().ensureActive()
+        return result
     }
 
-    /** The backend returns validation failures as {"error": "..."} — prefer that specific
-     *  message over a generic one when it's present and readable. */
-    private fun extractErrorMessage(body: String): String? = try {
-        JSONObject(body).optString("error").takeIf { it.isNotBlank() }
-    } catch (_: Exception) {
-        null
-    }
-
-    private fun mapHttpError(code: Int): String {
-        return when (code) {
-            400 -> "Some details weren't valid. Check the form and try again."
-            401 -> "Your session expired. Please log in again."
-            404 -> "Profile not found."
-            409 -> "A profile already exists for this account."
-            in 500..599 -> "The server had a problem. Try again later."
-            else -> "The request failed (HTTP $code)."
-        }
-    }
 }

@@ -1,7 +1,6 @@
 package com.example.sidehustle.ui.dashboard
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,36 +8,37 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.sidehustle.R
+import com.example.sidehustle.util.formatMoney
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.UserProfileResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentDashboardBinding
+import com.example.sidehustle.ui.common.error.dismissInlineError
+import com.example.sidehustle.ui.common.error.showFullPageError
+import com.example.sidehustle.ui.common.error.showInlineError
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.util.Locale
 
-/**
- * Home screen — loads metrics from GET /dashboard, falls back to GET /me if needed.
- */
+/** Loads metrics from GET /dashboard, falling back to GET /me for first-load partial content. */
 class DashboardFragment : Fragment() {
-
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
+    private var loadJob: Job? = null
+    private var hasContent = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        showPlaceholders()
+        binding.welcomeName.text = FirebaseAuth.getInstance().currentUser?.displayName
+            ?: getString(R.string.dashboard_name_placeholder)
     }
 
     override fun onResume() {
@@ -46,91 +46,81 @@ class DashboardFragment : Fragment() {
         loadDashboard()
     }
 
-    private fun showPlaceholders() {
-        binding.welcomeName.text = FirebaseAuth.getInstance().currentUser?.displayName
-            ?: getString(R.string.dashboard_name_placeholder)
-        binding.scoreValue.text = getString(R.string.dashboard_zero)
-        binding.jobsValue.text = getString(R.string.dashboard_zero)
-        binding.metricIncomeValue.text = getString(R.string.dashboard_money_placeholder)
-        binding.metricExpensesValue.text = getString(R.string.dashboard_money_placeholder)
-        binding.metricProfitValue.text = getString(R.string.dashboard_money_placeholder)
-        binding.metricOutstandingValue.text = getString(R.string.dashboard_money_placeholder)
-    }
-
     private fun loadDashboard() {
+        loadJob?.cancel()
+        dismissInlineError()
+        binding.errorState.isVisible = false
+        binding.dashboardContent.isVisible = true
+        binding.loadingIndicator.isVisible = true
         val repository = (requireActivity().application as SideHustleApp).repository
-        setLoading(true)
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = repository.fetchDashboard()) {
-                is ApiResult.Success -> {
-                    Log.d(TAG, "Dashboard loaded for ${result.data.fullName}")
-                    binding.statusMessage.isVisible = false
-                    showData(result.data)
+        loadJob = viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                when (val result = repository.fetchDashboard()) {
+                    is ApiResult.Success -> {
+                        showData(result.data)
+                        hasContent = true
+                    }
+                    is ApiResult.Error -> {
+                        if (result.httpCode == 401 || hasContent) showFailure(result)
+                        else loadProfileFallback(result)
+                    }
                 }
-                is ApiResult.Error -> {
-                    Log.e(TAG, "Dashboard API failed: ${result.message} (HTTP ${result.httpCode})")
-                    loadProfileFallback(result.message)
-                }
+            } finally {
+                if (isActive) _binding?.loadingIndicator?.isVisible = false
             }
-            setLoading(false)
         }
     }
 
-    /** If /dashboard is missing or fails, still show name from GET /me. */
-    private suspend fun loadProfileFallback(dashboardError: String) {
+    private suspend fun loadProfileFallback(dashboardError: ApiResult.Error) {
         val repository = (requireActivity().application as SideHustleApp).repository
-        when (val profileResult = repository.fetchProfile()) {
+        val result = repository.fetchProfile()
+        currentCoroutineContext().ensureActive()
+        if (_binding == null) return
+        when (result) {
             is ApiResult.Success -> {
-                Log.d(TAG, "Profile fallback loaded for ${profileResult.data.fullName}")
-                showProfileOnly(profileResult.data)
-                binding.statusMessage.isVisible = true
-                binding.statusMessage.text = getString(R.string.dashboard_metrics_unavailable)
+                showProfileOnly(result.data)
+                hasContent = true
+                showInlineError(dashboardError, ::loadDashboard)
             }
-            is ApiResult.Error -> {
-                Log.e(TAG, "Profile fallback failed: ${profileResult.message}")
-                binding.statusMessage.isVisible = true
-                binding.statusMessage.text = dashboardError
-            }
+            is ApiResult.Error -> showFailure(result)
         }
     }
 
-    private fun setLoading(loading: Boolean) {
-        binding.loadingIndicator.isVisible = loading
+    private fun showFailure(error: ApiResult.Error) {
+        if (hasContent && error.httpCode != 401) {
+            showInlineError(error, ::loadDashboard)
+        } else {
+            binding.dashboardContent.isVisible = false
+            showFullPageError(binding.errorState, error, ::loadDashboard)
+        }
     }
 
     private fun showData(data: DashboardResponse) {
         binding.welcomeName.text = data.fullName
         binding.scoreValue.text = data.sideHustleScore.toString()
         binding.jobsValue.text = data.completedJobsThisMonth.toString()
-        binding.metricIncomeValue.text = formatMoney(data.preferredCurrency, data.totalIncome)
-        binding.metricExpensesValue.text = formatMoney(data.preferredCurrency, data.totalExpenses)
-        binding.metricProfitValue.text = formatMoney(data.preferredCurrency, data.netProfit)
-        binding.metricOutstandingValue.text = formatMoney(data.preferredCurrency, data.outstandingPayments)
+        binding.metricIncomeValue.text = formatMoney(data.preferredCurrency, data.totalIncome, useRandSymbol = true)
+        binding.metricExpensesValue.text = formatMoney(data.preferredCurrency, data.totalExpenses, useRandSymbol = true)
+        binding.metricProfitValue.text = formatMoney(data.preferredCurrency, data.netProfit, useRandSymbol = true)
+        binding.metricOutstandingValue.text = formatMoney(data.preferredCurrency, data.outstandingPayments, useRandSymbol = true)
     }
 
     private fun showProfileOnly(profile: UserProfileResponse) {
         binding.welcomeName.text = profile.fullName
-        binding.scoreValue.text = getString(R.string.dashboard_zero)
-        binding.jobsValue.text = getString(R.string.dashboard_zero)
-        val zero = formatMoney(profile.preferredCurrency, 0.0)
-        binding.metricIncomeValue.text = zero
-        binding.metricExpensesValue.text = zero
-        binding.metricProfitValue.text = zero
-        binding.metricOutstandingValue.text = zero
+        // Unavailable metrics must not look like successfully loaded zero balances.
+        binding.scoreValue.text = getString(R.string.dashboard_unavailable)
+        binding.jobsValue.text = getString(R.string.dashboard_unavailable)
+        binding.metricIncomeValue.text = getString(R.string.dashboard_unavailable)
+        binding.metricExpensesValue.text = getString(R.string.dashboard_unavailable)
+        binding.metricProfitValue.text = getString(R.string.dashboard_unavailable)
+        binding.metricOutstandingValue.text = getString(R.string.dashboard_unavailable)
     }
 
-    private fun formatMoney(currency: String, amount: Double): String {
-        val formatted = NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)
-        return if (currency == "ZAR") "R $formatted" else "$currency $formatted"
-    }
 
     override fun onDestroyView() {
+        loadJob?.cancel()
+        hasContent = false
         _binding = null
         super.onDestroyView()
-    }
-
-    companion object {
-        private const val TAG = "SideHustle"
     }
 }

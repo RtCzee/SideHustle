@@ -18,7 +18,7 @@ import com.example.sidehustle.R
  * skeleton (view_list_loading) instead.
  */
 fun SwipeRefreshLayout.applySideHustleStyle() {
-    // Dark variants: the bright lime/cyan are too faint on a light circle.
+    // Contrast variants resolve to darker accents by day and brighter accents at night.
     setColorSchemeResources(R.color.lime_dark, R.color.cyan_dark)
     setProgressBackgroundColorSchemeResource(R.color.surface)
 }

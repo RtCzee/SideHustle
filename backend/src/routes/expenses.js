@@ -3,13 +3,9 @@ const { requireAuth } = require('../middleware/auth');
 const { EXPENSE_CATEGORIES, createExpense, listExpenses } = require('../db/expenses');
 const { findUserById } = require('../db/users');
 
-const router = express.Router();
+const { isIsoDate } = require('../services/FinancialRules');
 
-function isIsoDate(value) {
-  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = new Date(`${value}T00:00:00.000Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
+const router = express.Router();
 
 /** GET /expenses — expense records for the signed-in user. */
 router.get('/', requireAuth, async (req, res, next) => {
@@ -21,7 +17,7 @@ router.get('/', requireAuth, async (req, res, next) => {
 });
 
 /** POST /expenses — records a business expense for the signed-in user. */
-router.post('/', requireAuth, async (req, res, next) => {
+async function create(req, res, next) {
   try {
     const { amount, expense_date: expenseDate, category, description } = req.body || {};
     const parsedAmount = typeof amount === 'number' ? amount : Number(amount);
@@ -47,11 +43,15 @@ router.post('/', requireAuth, async (req, res, next) => {
       expenseDate,
       category,
       description: description?.trim(),
-    });
+    }, req.recordId);
     res.status(201).json(expense);
   } catch (error) {
     next(error);
   }
-});
+}
+
+router.post('/', requireAuth, create);
 
 module.exports = router;
+
+module.exports.writes = { create };

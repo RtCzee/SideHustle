@@ -1,0 +1,18 @@
+[
+  {
+    "income_id": "66666666-6666-4666-8666-666666666666",
+    "amount": 1250.55,
+    "currency": "ZAR",
+    "date_received": "2026-10-20",
+    "payment_method": "EFT",
+    "description": "Website deposit"
+  },
+  {
+    "income_id": "77777777-7777-4777-8777-777777777777",
+    "amount": 200,
+    "currency": "ZAR",
+    "date_received": "2026-10-21",
+    "payment_method": "Cash",
+    "description": null
+  }
+]

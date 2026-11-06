@@ -23,11 +23,31 @@
     </style>
 
     <style name="CurvedNavLabel">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:importantForAccessibility">no</item>
         <item name="android:textColor">@color/nav_label_inactive</item>
         <item name="android:textSize">@dimen/curved_nav_label_size</item>
     </style>
 
+    <!-- Filled buttons keep the brand lime while controls and text actions use contrast-safe primary. -->
+    <style name="Widget.SideHustle.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/button_background</item>
+        <item name="android:textColor">@color/button_content</item>
+        <item name="iconTint">@color/button_content</item>
+    </style>
+    <style name="Widget.SideHustle.FinanceTab" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/finance_tab_text</item>
+        <item name="backgroundTint">@color/finance_tab_background</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

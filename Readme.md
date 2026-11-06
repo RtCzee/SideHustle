@@ -28,6 +28,48 @@ The prototype must compile and run, support register/login with encrypted passwo
 
 ---
 
+## App screenshots
+
+The green offline banner shows when the app is saving changes on the device.
+
+### Account access
+
+| Sign in | Create account |
+| --- | --- |
+| <img src="assets/1000195121.jpg" alt="Sign in screen" width="220"><br>Sign in with email and password or continue with Google. | <img src="assets/1000195122.jpg" alt="Create account screen" width="220"><br>Register a new SideHustle account. |
+
+### Dashboard and settings
+
+| Dashboard | Settings |
+| --- | --- |
+| <img src="assets/1000195123.jpg" alt="Dashboard screen" width="220"><br>See the SideHustle Score, financial totals, and completed jobs. | <img src="assets/1000195134.jpg" alt="Settings screen" width="220"><br>Edit profile details, currency, language, and notifications. |
+
+### Clients and projects
+
+| Clients | Add client |
+| --- | --- |
+| <img src="assets/1000195124.jpg" alt="Clients screen" width="220"><br>Browse saved clients and their contact details. | <img src="assets/1000195125.jpg" alt="Add client screen" width="220"><br>Save contact information, an address, and notes. |
+
+| Projects | Add job |
+| --- | --- |
+| <img src="assets/1000195126.jpg" alt="Projects screen" width="220"><br>View jobs or add the first one from the empty state. | <img src="assets/1000195127.jpg" alt="Add job screen" width="220"><br>Assign a client and enter the job’s status, amount, and dates. |
+
+### Finances
+
+| Invoices | Create invoice |
+| --- | --- |
+| <img src="assets/1000195128.jpg" alt="Invoices screen" width="220"><br>View existing invoices and start a new one. | <img src="assets/1000195129.jpg" alt="Create invoice screen" width="220"><br>Select a client and job to calculate the invoice total. |
+
+| Expenses | Add expense |
+| --- | --- |
+| <img src="assets/1000195130.jpg" alt="Expenses screen" width="220"><br>Review recent business expenses. | <img src="assets/1000195131.jpg" alt="Add expense screen" width="220"><br>Record an amount, date, category, and optional description. |
+
+| Income | Add income |
+| --- | --- |
+| <img src="assets/1000195132.jpg" alt="Income screen" width="220"><br>Review recent income records. | <img src="assets/1000195133.jpg" alt="Add income screen" width="220"><br>Record a payment and optionally link it to a client, job, or invoice. |
+
+---
+
 ## System architecture
 
 ![SideHustle system architecture](System_Design.jpeg)
@@ -90,6 +132,7 @@ From our Part 1 design:
 ```text
 SideHustle/
   app/                  Android app (Kotlin)
+  assets/               App screenshots
   backend/              Node.js + Express REST API
   System_Design.jpeg    Architecture diagram (above)
   .github/              CODEOWNERS, contributing guide

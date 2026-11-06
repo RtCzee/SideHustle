@@ -1,7 +1,10 @@
 <resources>
+    <string name="sync_offline">Offline · changes are saved on this device</string>
+    <string name="sync_syncing">Syncing your changes…</string>
+    <string name="sync_blocked">Some changes are still on this device. Sync will retry.</string>
+    <string name="creating_invoice">Creating invoice…</string>
 
     <string name="app_name">SideHustle</string>
-    <string name="placeholder_body">This is a placeholder screen. Real content will be added in later issues.</string>
 
     <string name="login_title">Welcome back</string>
     <string name="login_subtitle">Sign in to manage your clients, jobs, and finances.</string>
@@ -15,7 +18,15 @@
     <string name="action_register">Create account</string>
     <string name="action_register_loading">Creating account…</string>
     <string name="action_google_sign_in">Continue with Google</string>
-    <string name="google_sign_in_coming_soon">Google Sign-In will be added in a later issue.</string>
+    <string name="google_sign_in_cancelled">Google sign-in cancelled. You can try again or use email.</string>
+    <string name="error_google_not_configured">Google sign-in is not configured for this app build. Please use email for now.</string>
+    <string name="error_google_sign_in">Could not sign in with Google. Please try again.</string>
+    <string name="error_google_credential">Google returned an invalid sign-in response. Please try again.</string>
+    <string name="error_google_profile">Signed in with Google, but could not load your profile. Please retry.</string>
+    <string name="error_google_no_account">No Google account is available. Add an account on this device or use email.</string>
+    <string name="error_google_unavailable">Google sign-in is unavailable on this device. Update Google Play services or use email.</string>
+    <string name="error_google_existing_account">This email uses another sign-in method. Sign in using that method.</string>
+    <string name="error_google_disabled">This account has been disabled. Contact support.</string>
     <string name="or_divider">or</string>
 
     <string name="error_name_required">Enter your full name.</string>
@@ -52,18 +63,12 @@
     <string name="dashboard_profit_label">Net profit</string>
     <string name="dashboard_outstanding_label">Outstanding</string>
     <string name="dashboard_jobs_label">Completed jobs this month</string>
-    <string name="dashboard_placeholder">Business metrics and the SideHustle Score will appear here.</string>
     <string name="error_profile_not_found">Your account has no profile yet. Register again or contact support.</string>
     <string name="clients_title">Clients</string>
-    <string name="clients_placeholder">Your client list will appear here. Open details to check that navigation works.</string>
     <string name="client_details_title">Client details</string>
-    <string name="client_details_placeholder">A single client’s profile will appear here.</string>
-    <string name="projects_title">Jobs</string>
-    <string name="projects_placeholder">Your jobs and projects will appear here. Open details to check that navigation works.</string>
+    <string name="projects_title">Projects</string>
     <string name="project_details_title">Job details</string>
-    <string name="project_details_placeholder">A single job’s status and amount will appear here.</string>
     <string name="invoices_title">Invoices</string>
-    <string name="invoices_placeholder">Invoices will appear here. Open expenses to reach the other finance screen.</string>
     <string name="expenses_title">Expenses</string>
     <string name="income_title">Income</string>
     <string name="income_add_title">Add income</string>
@@ -96,7 +101,6 @@
     <string name="invoice_total_placeholder">Total: select a job</string>
     <string name="invoice_selection_error">Select a client and a job.</string>
     <string name="invoice_created">Invoice created.</string>
-    <string name="expenses_placeholder">Expense records will appear here.</string>
     <string name="expenses_add_title">Add an expense</string>
     <string name="expenses_amount_hint">Amount</string>
     <string name="expenses_date_hint">Date (tap to choose)</string>
@@ -119,7 +123,6 @@
         <item>Other</item>
     </string-array>
     <string name="settings_title">Settings</string>
-    <string name="settings_placeholder">Profile and app preferences will appear here.</string>
     <string name="settings_section_profile">Profile</string>
     <string name="settings_section_preferences">Preferences</string>
     <string name="hint_phone">Phone number</string>
@@ -187,11 +190,10 @@
 
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_clients">Clients</string>
-    <string name="nav_projects">Jobs</string>
+    <string name="nav_projects">Projects</string>
     <string name="nav_finances">Finances</string>
     <string name="nav_settings">Settings</string>
 
-    <string name="action_continue_placeholder">Continue to app</string>
     <string name="action_go_to_register">Don\'t have an account? Create one</string>
     <string name="action_go_to_login">Already have an account? Log in</string>
     <string name="action_open_client_details">Open client details</string>
@@ -206,5 +208,94 @@
     <string name="cd_loading">Loading</string>
     <string name="cd_loading_list">Loading list</string>
     <string name="action_saving">Saving…</string>
-    <string name="client_row_updated">Updated %1$s</string>
+    <!-- Shared API error states -->
+    <string name="dashboard_unavailable">—</string>
+    <string name="error_network_title">Connection problem</string>
+    <string name="error_network_message">Could not reach the server. Check your connection and try again.</string>
+    <string name="error_timeout_message">The server took too long to respond. Please try again.</string>
+    <string name="error_session_title">Please log in again</string>
+    <string name="error_session_message">Session expired. Please log in again.</string>
+    <string name="error_not_found_title">Item not found</string>
+    <string name="error_not_found_message">We could not find that item.</string>
+    <string name="error_validation_title">Check your details</string>
+    <string name="error_validation_message">Some details were not valid. Check your input and try again.</string>
+    <string name="error_server_title">Server problem</string>
+    <string name="error_server_message">Something went wrong on our side. Please try again.</string>
+    <string name="error_generic_title">Something went wrong</string>
+    <string name="error_generic_message">We could not complete that request. Please try again.</string>
+    <string name="error_action_login">Log in</string>
+    <string name="error_action_dismiss">Dismiss</string>
+    <string name="navigation_selected">Selected</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_hide_form">Close form</string>
+    <string name="action_new_invoice">Create invoice</string>
+    <string name="action_new_expense">Add expense</string>
+    <string name="action_new_income">Record income</string>
+    <string name="invoices_empty_title">No invoices yet</string>
+    <string name="invoices_empty_message">Create an invoice for a client and project to track payments.</string>
+    <string name="expenses_empty_title">No expenses yet</string>
+    <string name="expenses_empty_message">Add an expense to track what your business spends.</string>
+    <string name="income_empty_title">No income yet</string>
+    <string name="income_empty_message">Record your first payment to start tracking earnings.</string>
+    <string name="invoice_no_clients_title">Add a client first</string>
+    <string name="invoice_no_clients_message">Invoices need a client and a project. Start in Clients, then add a project.</string>
+    <string name="invoice_no_jobs_title">Add a project first</string>
+    <string name="invoice_no_jobs_message">This client has no projects to invoice. Add one in Projects.</string>
+    <string name="action_open_clients">Open Clients</string>
+    <string name="action_open_projects">Open Projects</string>
+    <string name="invoice_row">%1$s · %2$s · %3$s</string>
+    <string name="client_name_fallback">Client</string>
+    <string name="attachments_title">Attachments</string>
+    <string name="attachment_close">Close</string>
+    <string name="attachment_expense_action">View details and attachments</string>
+    <string name="attachment_add">Attach a file or image</string>
+    <string name="attachment_retry">Retry</string>
+    <string name="attachment_cancelled">No file selected. Choose a file to try again.</string>
+    <string name="attachment_picker_failed">Could not open the file picker. Please try again.</string>
+    <string name="attachment_loading">Loading attachments…</string>
+    <string name="attachment_empty">No attachments yet. Files up to 20 MB are supported.</string>
+    <string name="attachment_ready">Select an attachment to open it.</string>
+    <string name="attachment_uploading">Uploading file and saving attachment…</string>
+    <string name="attachment_saved">Attachment saved.</string>
+    <string name="attachment_upload_failed">Upload failed. Check your connection and select the file again.</string>
+    <string name="attachment_save_failed">File uploaded, but its attachment could not be saved. Tap Retry.</string>
+    <string name="attachment_load_failed">Could not load attachments. Tap Retry.</string>
+    <string name="attachment_too_large">Choose a file smaller than 20 MB.</string>
+    <string name="attachment_open">Open %1$s</string>
+    <string name="attachment_open_failed">Could not open this attachment. Install a browser and try again.</string>
+    <string name="attachment_default_name">Attachment</string>
+    <string name="attachment_save_job_first">Save job to attach files</string>
+    <string name="attachment_expense_details">Open %1$s expense details and attachments</string>
+    <string name="reminder_channel_name">Job reminders</string>
+    <string name="reminder_job_due_title">Job due soon</string>
+    <string name="reminder_body_fallback">You have an upcoming job. Tap to view its details.</string>
+    <string name="reminder_permission_denied">Notifications are blocked on this device. Allow them in Android app settings to receive reminders.</string>
+    <string name="error_amount_positive">Enter an amount greater than 0.</string>
+    <string name="error_amount_too_large">Enter an amount no greater than 9,999,999,999.99.</string>
+    <string name="error_amount_precision">Use no more than two decimal places.</string>
+    <string name="error_date_required">Choose a date.</string>
+    <string name="error_date_invalid">Choose a valid date in YYYY-MM-DD format.</string>
+    <string name="error_text_too_long">Use 255 characters or fewer.</string>
+    <string name="error_status_required">Choose a valid job status.</string>
+    <string name="error_currency_required">Choose a currency from the list.</string>
+    <string name="error_language_required">Choose a language from the list.</string>
+    <string name="invoice_job_required">Choose a job for this client.</string>
+    <string name="invoice_amount_invalid">This job has no valid amount. Edit the job before creating an invoice.</string>
+    <string name="job_status_pending">Pending</string>
+    <string name="job_status_in_progress">In Progress</string>
+    <string name="job_status_completed">Completed</string>
+    <string name="job_status_cancelled">Cancelled</string>
+    <string name="expense_category_transport">Transport</string>
+    <string name="expense_category_materials">Materials</string>
+    <string name="expense_category_software">Software</string>
+    <string name="expense_category_other">Other</string>
+    <string name="payment_method_cash">Cash</string>
+    <string name="payment_method_eft">EFT</string>
+    <string name="payment_method_card">Card</string>
+    <string name="invoice_status_draft">Draft</string>
+    <string name="invoice_status_sent">Sent</string>
+    <string name="invoice_status_partially_paid">Partially Paid</string>
+    <string name="invoice_status_paid">Paid</string>
+    <string name="invoice_status_overdue">Overdue</string>
+    <string name="error_profile_name_required">Add a name to your account before signing in.</string>
 </resources>

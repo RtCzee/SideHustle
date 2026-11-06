@@ -8,8 +8,12 @@
     "dev": "node --watch src/index.js",
     "db:schema": "node src/db/applySchema.js",
     "db:seed": "node src/db/applySeed.js",
-    "db:verify": "node src/db/verifyDb.js"
-    ,"test": "node --test"
+    "db:verify": "node src/db/verifyDb.js",
+    "db:attachments": "node src/db/applyAttachments.js",
+    "db:notifications": "node src/db/applyNotifications.js",
+    "db:sync": "node src/db/applySync.js",
+    "reminders:send": "node src/sendReminders.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18"

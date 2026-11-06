@@ -1,7 +1,6 @@
 package com.example.sidehustle.ui.projects
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,112 +15,105 @@ import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.JobResponse
 import com.example.sidehustle.data.remote.ApiResult
 import com.example.sidehustle.databinding.FragmentJobsBinding
+import com.example.sidehustle.ui.common.error.dismissInlineError
+import com.example.sidehustle.ui.common.error.showFullPageError
+import com.example.sidehustle.ui.common.error.showInlineError
+import com.example.sidehustle.ui.common.loading.applySideHustleStyle
+import com.example.sidehustle.ui.navigation.navigateSafely
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-/**
- * Jobs list screen (issue: Build Job Management). Loads GET /jobs, supports
- * pull-to-refresh, an empty state, and navigating to add/edit a job.
- */
+/** First-load errors replace the list; refresh errors retain rows and offer Retry inline. */
 class ProjectsFragment : Fragment() {
-
     private var _binding: FragmentJobsBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: JobsAdapter
+    private var loadJob: Job? = null
+    private var hasLoaded = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentJobsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         adapter = JobsAdapter { job -> openDetails(job.jobId) }
         binding.jobsList.layoutManager = LinearLayoutManager(requireContext())
         binding.jobsList.adapter = adapter
-
-        binding.addButton.setOnClickListener { openDetails(jobId = null) }
-        binding.emptyAddButton.setOnClickListener { openDetails(jobId = null) }
-        binding.retryButton.setOnClickListener { loadJobs(showFullLoading = true) }
-        binding.swipeRefresh.setOnRefreshListener { loadJobs(showFullLoading = false) }
+        binding.addButton.setOnClickListener { openDetails(null) }
+        binding.emptyAddButton.setOnClickListener { openDetails(null) }
+        binding.swipeRefresh.applySideHustleStyle()
+        binding.swipeRefresh.setOnRefreshListener { loadJobs() }
     }
 
     override fun onResume() {
         super.onResume()
-        // Refresh every time this screen becomes visible, so returning from add/edit
-        // always shows the current list (also covers the very first appearance).
-        loadJobs(showFullLoading = true)
+        loadJobs()
     }
 
     private fun openDetails(jobId: String?) {
-        findNavController().navigate(
+        findNavController().navigateSafely(
             R.id.action_projectsFragment_to_projectDetailsFragment,
-            bundleOf(ProjectDetailsFragment.ARG_JOB_ID to jobId)
+            bundleOf(ProjectDetailsFragment.ARG_JOB_ID to jobId,
+                ProjectDetailsFragment.ARG_IS_CREATING to (jobId == null)),
         )
     }
 
-    private fun loadJobs(showFullLoading: Boolean) {
-        val repository = (requireActivity().application as SideHustleApp).repository
-
-        if (showFullLoading) {
-            binding.errorGroup.isVisible = false
+    private fun loadJobs() {
+        val requestBinding = _binding ?: return
+        loadJob?.cancel()
+        dismissInlineError()
+        binding.errorState.isVisible = false
+        binding.loadingIndicator.isVisible = !hasLoaded
+        if (!hasLoaded) {
             binding.emptyState.isVisible = false
             binding.swipeRefresh.isVisible = false
-            binding.loadingIndicator.isVisible = true
         } else {
+            binding.swipeRefresh.isVisible = adapter.itemCount > 0
+            binding.emptyState.isVisible = adapter.itemCount == 0
             binding.swipeRefresh.isRefreshing = true
         }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = repository.fetchJobs()) {
-                is ApiResult.Success -> {
-                    Log.d(TAG, "Loaded ${result.data.size} job(s)")
-                    showJobs(result.data)
-                }
-                is ApiResult.Error -> {
-                    Log.e(TAG, "Failed to load jobs: ${result.message}")
-                    binding.loadingIndicator.isVisible = false
-                    binding.swipeRefresh.isRefreshing = false
-                    if (showFullLoading) {
-                        binding.swipeRefresh.isVisible = false
-                        binding.emptyState.isVisible = false
-                        binding.errorMessage.text = result.message.ifBlank {
-                            getString(R.string.jobs_load_error)
+        val repository = (requireActivity().application as SideHustleApp).repository
+        loadJob = viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val result = repository.fetchJobs()
+                coroutineContext.ensureActive()
+                if (_binding !== requestBinding) return@launch
+                when (result) {
+                    is ApiResult.Success -> showJobs(result.data)
+                    is ApiResult.Error -> {
+                        if (!hasLoaded || result.httpCode == 401) {
+                            binding.swipeRefresh.isVisible = false
+                            binding.emptyState.isVisible = false
+                            showFullPageError(binding.errorState, result, ::loadJobs)
+                        } else {
+                            showInlineError(result, ::loadJobs)
                         }
-                        binding.errorGroup.isVisible = true
                     }
-                    // On a pull-to-refresh failure, leave whatever was already on screen in place.
+                }
+            } finally {
+                if (isActive && _binding === requestBinding) {
+                    requestBinding.loadingIndicator.isVisible = false
+                    requestBinding.swipeRefresh.isRefreshing = false
                 }
             }
         }
     }
 
     private fun showJobs(jobs: List<JobResponse>) {
-        binding.loadingIndicator.isVisible = false
-        binding.swipeRefresh.isRefreshing = false
-        binding.errorGroup.isVisible = false
+        hasLoaded = true
+        binding.errorState.isVisible = false
         adapter.submitList(jobs)
-
-        if (jobs.isEmpty()) {
-            binding.swipeRefresh.isVisible = false
-            binding.emptyState.isVisible = true
-        } else {
-            binding.emptyState.isVisible = false
-            binding.swipeRefresh.isVisible = true
-        }
+        binding.emptyState.isVisible = jobs.isEmpty()
+        binding.swipeRefresh.isVisible = jobs.isNotEmpty()
     }
 
     override fun onDestroyView() {
+        loadJob?.cancel()
+        hasLoaded = false
         _binding = null
         super.onDestroyView()
     }
-
-    companion object {
-        private const val TAG = "SideHustle"
-    }
 }
-

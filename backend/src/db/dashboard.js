@@ -1,6 +1,7 @@
 const { getPool } = require('./pool');
 const { findUserById } = require('./users');
 const { SideHustleScoreCalculator } = require('../services/SideHustleScoreCalculator');
+const { calculateProfit } = require('../services/FinancialRules');
 
 async function getDashboardMetrics(userId) {
   const profile = await findUserById(userId);
@@ -39,7 +40,7 @@ async function getDashboardMetrics(userId) {
 
   const totalIncome = Number(incomeRow.rows[0].total);
   const totalExpenses = Number(expenseRow.rows[0].total);
-  const netProfit = totalIncome - totalExpenses;
+  const netProfit = calculateProfit(totalIncome, totalExpenses);
   const outstandingPayments = Number(outstandingRow.rows[0].total);
   const completedJobsThisMonth = jobsRow.rows[0].count;
 

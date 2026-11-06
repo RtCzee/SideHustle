@@ -1,6 +1,7 @@
 package com.example.sidehustle.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.google.gson.JsonObject
 
 data class HealthResponse(
     val status: String,
@@ -8,6 +9,19 @@ data class HealthResponse(
     val database: String? = null,
     @SerializedName("databaseError")
     val databaseError: String? = null,
+)
+
+data class SyncOperation(
+    @SerializedName("operation_id") val operationId: String,
+    val kind: String,
+    val action: String,
+    @SerializedName("record_id") val recordId: String,
+    val payload: JsonObject,
+)
+data class SyncRequest(@SerializedName("user_id") val userId: String, val operations: List<SyncOperation>)
+data class SyncResponse(
+    @SerializedName("accepted_operation_ids") val acceptedOperationIds: List<String>,
+    val results: Map<String, JsonObject>? = null,
 )
 
 data class UserProfileResponse(
@@ -193,6 +207,10 @@ data class InvoiceResponse(
     @SerializedName("total_amount") val total: Double,
     val status: String,
     @SerializedName("client_name") val clientName: String? = null,
+    @SerializedName("client_id") val clientId: String? = null,
+    @SerializedName("job_id") val jobId: String? = null,
+    @SerializedName("amount_paid") val amountPaid: Double = 0.0,
+    val currency: String? = null,
 )
 
 data class UpdateInvoiceStatusRequest(val status: String)
@@ -223,4 +241,7 @@ data class IncomeResponse(
     @SerializedName("date_received") val dateReceived: String,
     @SerializedName("payment_method") val paymentMethod: String,
     val description: String? = null,
+    @SerializedName("client_id") val clientId: String? = null,
+    @SerializedName("job_id") val jobId: String? = null,
+    @SerializedName("invoice_id") val invoiceId: String? = null,
 )

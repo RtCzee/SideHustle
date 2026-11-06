@@ -6,6 +6,10 @@
    See https://developer.android.com/about/versions/12/backup-restore
 -->
 <full-backup-content>
+    <exclude domain="sharedpref" path="push.xml" />
+    <exclude domain="database" path="sidehustle-offline.db" />
+    <exclude domain="database" path="sidehustle-offline.db-wal" />
+    <exclude domain="database" path="sidehustle-offline.db-shm" />
     <!--
    <include domain="sharedpref" path="."/>
    <exclude domain="sharedpref" path="device.xml"/>

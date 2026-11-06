@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+<androidx.core.widget.NestedScrollView android:id="@+id/dashboard_content" xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     android:clipToPadding="false"
     android:fillViewport="true"
-    android:paddingBottom="110dp">
+    android:paddingBottom="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +18,7 @@
         android:paddingHorizontal="20dp"
         android:paddingTop="24dp">
 
-        <!-- Clean header — white card, cyan accent (no green gradient) -->
+        <!-- Adaptive card surface with the SideHustle cyan accent. -->
         <LinearLayout
             android:id="@+id/welcome_card"
             android:layout_width="match_parent"
@@ -67,20 +70,7 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/status_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_dashboard_error"
-            android:padding="12dp"
-            android:textColor="@color/cyan_dark"
-            android:textSize="13sp"
-            android:visibility="gone"
-            tools:text="Could not load dashboard."
-            tools:visibility="visible" />
-
-        <!-- SideHustle Score -->
+<!-- SideHustle Score -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -154,11 +144,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_income_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_income_value"
@@ -182,11 +173,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_expenses_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_expenses_value"
@@ -216,11 +208,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_profit_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_profit_value"
@@ -243,11 +236,12 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_outstanding_label"
                     android:textColor="@color/dashboard_text_muted"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxLines="2" />
 
                 <TextView
                     android:id="@+id/metric_outstanding_value"
@@ -301,3 +295,11 @@
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
+
+    <com.example.sidehustle.ui.common.error.ErrorStateView
+        android:id="@+id/error_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="24dp"
+        android:visibility="gone" />
+</FrameLayout>

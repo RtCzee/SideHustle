@@ -1,10 +1,11 @@
-const { getPool } = require('./pool');
+const { getPool, withTransaction } = require('./pool');
 
 const PROFILE_COLUMNS =
-  'user_id, email, full_name, phone_number, profile_picture_url, preferred_currency, preferred_language, created_at, updated_at';
+  `user_id, email, full_name, phone_number, profile_picture_url, preferred_currency, preferred_language, created_at, updated_at,
+   COALESCE((SELECT notifications_enabled FROM user_settings WHERE user_settings.user_id = users.user_id), TRUE) AS notifications_enabled`;
 
-async function findUserById(userId) {
-  const result = await getPool().query(
+async function findUserById(userId, db = getPool()) {
+  const result = await db.query(
     `SELECT ${PROFILE_COLUMNS} FROM users WHERE user_id = $1`,
     [userId]
   );
@@ -21,10 +22,7 @@ async function createUser({
 }) {
   const currency = preferredCurrency ?? 'ZAR';
   const language = preferredLanguage ?? 'en';
-  const client = await getPool().connect();
-
-  try {
-    await client.query('BEGIN');
+  return withTransaction(async client => {
     const userResult = await client.query(
       `INSERT INTO users (user_id, email, full_name, phone_number, preferred_currency, preferred_language)
        VALUES ($1, $2, $3, $4, $5, $6)
@@ -36,17 +34,11 @@ async function createUser({
        VALUES ($1, $2, $3)`,
       [userId, currency, language]
     );
-    await client.query('COMMIT');
     return userResult.rows[0];
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
+  });
 }
 
-async function updateUser(userId, fields) {
+async function updateUser(userId, fields, pool = getPool()) {
   const allowed = {
     full_name: fields.fullName,
     phone_number: fields.phoneNumber,
@@ -66,19 +58,18 @@ async function updateUser(userId, fields) {
     }
   }
 
-  if (sets.length === 0) {
-    return findUserById(userId);
-  }
-
   sets.push(`updated_at = NOW()`);
   values.push(userId);
-
-  const result = await getPool().query(
-    `UPDATE users SET ${sets.join(', ')} WHERE user_id = $${index} RETURNING ${PROFILE_COLUMNS}`,
-    values
-  );
-
-  return result.rows[0] ?? null;
+  return withTransaction(async client => {
+    await client.query(`UPDATE users SET ${sets.join(', ')} WHERE user_id = $${index}`, values);
+    if (fields.notificationsEnabled !== undefined) {
+      await client.query(
+        `INSERT INTO user_settings(user_id, notifications_enabled) VALUES ($1, $2)
+         ON CONFLICT (user_id) DO UPDATE SET notifications_enabled = EXCLUDED.notifications_enabled`,
+        [userId, fields.notificationsEnabled]);
+    }
+    return findUserById(userId, client);
+  }, pool);
 }
 
 module.exports = { findUserById, createUser, updateUser };
