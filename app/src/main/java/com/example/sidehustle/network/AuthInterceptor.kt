@@ -11,6 +11,7 @@ import okhttp3.Response
 class AuthInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        if (chain.request().url.encodedPath == "/health") return chain.proceed(chain.request())
         val token = runBlocking { FirebaseTokenProvider.getIdToken() }
         val request = if (token.isNullOrBlank()) {
             chain.request()

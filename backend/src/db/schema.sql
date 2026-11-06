@@ -62,6 +62,7 @@ CREATE TABLE invoices (
     issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
     due_date DATE,
     total_amount NUMERIC(12, 2) NOT NULL CHECK (total_amount >= 0),
+    currency VARCHAR(10) NOT NULL DEFAULT 'ZAR',
     amount_paid NUMERIC(12, 2) NOT NULL DEFAULT 0 CHECK (amount_paid >= 0),
     status VARCHAR(32) NOT NULL DEFAULT 'Draft'
         CHECK (status IN ('Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue')),

@@ -42,7 +42,8 @@ class MainActivity : AppCompatActivity() {
     private var keyboardVisible = false
     private var pendingReminder: ReminderTarget? = null
     private var pushSyncJob: Job? = null
-    private val pushRegistration get() = (application as SideHustleApp).pushRegistration
+    private val app get() = application as SideHustleApp
+    private val pushRegistration get() = app.pushRegistration
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         pushRegistration.syncAsync()
         if (!granted) Snackbar.make(binding.root, R.string.reminder_permission_denied, Snackbar.LENGTH_LONG).show()
@@ -56,11 +57,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         lifecycleScope.launch {
-            (application as SideHustleApp).syncStatus.collect { status ->
+            app.syncStatus.collect { status ->
                 binding.syncStatusText.isVisible = status != SyncStatus.ONLINE
                 binding.syncStatusText.text = when (status) {
                     SyncStatus.OFFLINE -> getString(R.string.sync_offline)
                     SyncStatus.SYNCING -> getString(R.string.sync_syncing)
+                    SyncStatus.BLOCKED -> getString(R.string.sync_blocked)
                     SyncStatus.ONLINE -> ""
                 }
             }
@@ -73,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.clientDetailsFragment -> !isValidDetailRequest(args?.getString("clientId"), args?.getBoolean("isCreating") == true)
                 else -> false
             }
-            val redirect = if (invalidDetail) null else requiredSessionDestination(destination.id, auth.currentUser != null)
+            val redirect = if (invalidDetail) null else requiredSessionDestination(destination.id, app.hasUiSession)
             if (redirect != null) controller.resetSession(redirect) else updateChrome()
             if (destination.id == R.id.dashboardFragment) syncPushRegistration()
             binding.root.post { openPendingReminder() }
@@ -143,7 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateChrome() {
-        val showNav = nav.currentDestination?.id in mainDestinations && auth.currentUser != null && !keyboardVisible
+        val showNav = nav.currentDestination?.id in mainDestinations && app.hasUiSession && !keyboardVisible
         binding.floatingNav.isVisible = showNav
         val extraLabelSpace = ((resources.configuration.fontScale - 1f).coerceAtLeast(0f) * 40 * resources.displayMetrics.density).roundToInt()
         val navHeight = resources.getDimensionPixelSize(R.dimen.curved_nav_total_height) + extraLabelSpace

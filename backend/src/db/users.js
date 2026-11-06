@@ -1,4 +1,4 @@
-const { getPool } = require('./pool');
+const { getPool, withTransaction } = require('./pool');
 
 const PROFILE_COLUMNS =
   `user_id, email, full_name, phone_number, profile_picture_url, preferred_currency, preferred_language, created_at, updated_at,
@@ -22,10 +22,7 @@ async function createUser({
 }) {
   const currency = preferredCurrency ?? 'ZAR';
   const language = preferredLanguage ?? 'en';
-  const client = await getPool().connect();
-
-  try {
-    await client.query('BEGIN');
+  return withTransaction(async client => {
     const userResult = await client.query(
       `INSERT INTO users (user_id, email, full_name, phone_number, preferred_currency, preferred_language)
        VALUES ($1, $2, $3, $4, $5, $6)
@@ -37,14 +34,8 @@ async function createUser({
        VALUES ($1, $2, $3)`,
       [userId, currency, language]
     );
-    await client.query('COMMIT');
     return userResult.rows[0];
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
+  });
 }
 
 async function updateUser(userId, fields, pool = getPool()) {
@@ -69,9 +60,7 @@ async function updateUser(userId, fields, pool = getPool()) {
 
   sets.push(`updated_at = NOW()`);
   values.push(userId);
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
+  return withTransaction(async client => {
     await client.query(`UPDATE users SET ${sets.join(', ')} WHERE user_id = $${index}`, values);
     if (fields.notificationsEnabled !== undefined) {
       await client.query(
@@ -79,13 +68,8 @@ async function updateUser(userId, fields, pool = getPool()) {
          ON CONFLICT (user_id) DO UPDATE SET notifications_enabled = EXCLUDED.notifications_enabled`,
         [userId, fields.notificationsEnabled]);
     }
-    const profile = await findUserById(userId, client);
-    await client.query('COMMIT');
-    return profile;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally { client.release(); }
+    return findUserById(userId, client);
+  }, pool);
 }
 
 module.exports = { findUserById, createUser, updateUser };

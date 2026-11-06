@@ -24,6 +24,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PATCH
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -117,6 +118,6 @@ interface SideHustleApi {
     @POST("invoices")
     suspend fun createInvoice(@Body body: CreateInvoiceRequest): InvoiceResponse
 
-    @PUT("invoices/{id}/status")
+    @PATCH("invoices/{id}/status")
     suspend fun updateInvoiceStatus(@Path("id") invoiceId: String, @Body body: UpdateInvoiceStatusRequest): InvoiceResponse
 }

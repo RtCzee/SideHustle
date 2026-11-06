@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
+import com.example.sidehustle.util.formatMoney
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateExpenseRequest
 import com.example.sidehustle.data.model.ExpenseResponse
@@ -29,7 +30,6 @@ import com.example.sidehustle.ui.navigation.openFinanceForm
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
 
@@ -40,6 +40,7 @@ class ExpensesFragment : Fragment() {
     private var listState: ListStateHandler? = null
     private var loadJob: Job? = null
     private var saving = false
+    private val categories get() = resources.getStringArray(R.array.expense_categories).drop(1)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentExpensesBinding.inflate(inflater, container, false)
@@ -48,7 +49,6 @@ class ExpensesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val categories = resources.getStringArray(R.array.expense_categories).drop(1)
         val categoryLabels = categories.map { LocalizedLabels.expenseCategory(requireContext(), it) }
         binding.categoryInput.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
             listOf(resources.getStringArray(R.array.expense_categories).first()) + categoryLabels)
@@ -76,25 +76,22 @@ class ExpensesFragment : Fragment() {
         dismissInlineError()
         val amountText = binding.amountInput.text.toString().trim()
         val date = binding.dateInput.text.toString().trim()
-        val categoryLabel = binding.categoryInput.selectedItem?.toString().orEmpty()
-        var valid = true
+        val category = categories.getOrNull(binding.categoryInput.selectedItemPosition - 1)
         binding.expensesStatus.isVisible = false
         binding.amountInput.error = FormValidator.moneyError(amountText)?.let { getString(it) }
         binding.dateInput.error = FormValidator.dateError(date)?.let { getString(it) }
-        if (binding.amountInput.error != null || binding.dateInput.error != null) valid = false
-        if (FormValidator.selectionError(categoryLabel, categoryLabels, R.string.expenses_category_error) != null) {
+        if (category == null) {
             binding.expensesStatus.text = getString(R.string.expenses_category_error)
             binding.expensesStatus.isVisible = true
-            valid = false
         }
-        if (!valid) return
+        if (binding.amountInput.error != null || binding.dateInput.error != null || category == null) return
 
         setSaving(true)
         binding.expensesStatus.isVisible = false
         val request = CreateExpenseRequest(
             amount = amountText.toDouble(),
             expenseDate = date,
-            category = LocalizedLabels.expenseCategoryCode(requireContext(), categoryLabel),
+            category = category,
             description = binding.descriptionInput.text.toString().trim().ifBlank { null },
         )
         val repository = (requireActivity().application as SideHustleApp).repository
@@ -111,7 +108,7 @@ class ExpensesFragment : Fragment() {
                     loadExpenses()
                     com.example.sidehustle.ui.attachments.AttachmentsDialog.show(
                         parentFragmentManager, "expenses", result.data.expenseId,
-                        "${result.data.category} · ${formatMoney(result.data.currency, result.data.amount)} · ${result.data.expenseDate}")
+                        "${result.data.category} · ${formatMoney(result.data.currency, result.data.amount, useRandSymbol = true)} · ${result.data.expenseDate}")
                 }
                 is ApiResult.Error -> showInlineError(result, ::saveExpense)
             }
@@ -143,7 +140,7 @@ class ExpensesFragment : Fragment() {
             val item = inflater.inflate(R.layout.item_expense, binding.expensesList, false)
             val categoryLabel = LocalizedLabels.expenseCategory(requireContext(), expense.category)
             item.findViewById<TextView>(R.id.expense_category).text = categoryLabel
-            item.findViewById<TextView>(R.id.expense_amount).text = formatMoney(expense.currency, expense.amount)
+            item.findViewById<TextView>(R.id.expense_amount).text = formatMoney(expense.currency, expense.amount, useRandSymbol = true)
             item.findViewById<TextView>(R.id.expense_date).text = expense.expenseDate
             item.findViewById<TextView>(R.id.expense_description).apply {
                 text = expense.description
@@ -156,7 +153,7 @@ class ExpensesFragment : Fragment() {
             item.setOnClickListener {
                 com.example.sidehustle.ui.attachments.AttachmentsDialog.show(
                     parentFragmentManager, "expenses", expense.expenseId,
-                    listOfNotNull(categoryLabel, formatMoney(expense.currency, expense.amount),
+                    listOfNotNull(categoryLabel, formatMoney(expense.currency, expense.amount, useRandSymbol = true),
                         expense.expenseDate, expense.description).joinToString("\n"))
             }
         }
@@ -168,10 +165,6 @@ class ExpensesFragment : Fragment() {
         binding.saveExpenseButton.text = getString(if (saving) R.string.expenses_saving else R.string.expenses_save)
     }
 
-    private fun formatMoney(currency: String, amount: Double): String {
-        val formatted = NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)
-        return if (currency == "ZAR") "R $formatted" else "$currency $formatted"
-    }
 
     override fun onDestroyView() {
         loadJob?.cancel()

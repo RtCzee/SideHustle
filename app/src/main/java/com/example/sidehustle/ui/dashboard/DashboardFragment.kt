@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.sidehustle.R
+import com.example.sidehustle.util.formatMoney
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.DashboardResponse
 import com.example.sidehustle.data.model.UserProfileResponse
@@ -22,8 +23,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.util.Locale
 
 /** Loads metrics from GET /dashboard, falling back to GET /me for first-load partial content. */
 class DashboardFragment : Fragment() {
@@ -100,10 +99,10 @@ class DashboardFragment : Fragment() {
         binding.welcomeName.text = data.fullName
         binding.scoreValue.text = data.sideHustleScore.toString()
         binding.jobsValue.text = data.completedJobsThisMonth.toString()
-        binding.metricIncomeValue.text = formatMoney(data.preferredCurrency, data.totalIncome)
-        binding.metricExpensesValue.text = formatMoney(data.preferredCurrency, data.totalExpenses)
-        binding.metricProfitValue.text = formatMoney(data.preferredCurrency, data.netProfit)
-        binding.metricOutstandingValue.text = formatMoney(data.preferredCurrency, data.outstandingPayments)
+        binding.metricIncomeValue.text = formatMoney(data.preferredCurrency, data.totalIncome, useRandSymbol = true)
+        binding.metricExpensesValue.text = formatMoney(data.preferredCurrency, data.totalExpenses, useRandSymbol = true)
+        binding.metricProfitValue.text = formatMoney(data.preferredCurrency, data.netProfit, useRandSymbol = true)
+        binding.metricOutstandingValue.text = formatMoney(data.preferredCurrency, data.outstandingPayments, useRandSymbol = true)
     }
 
     private fun showProfileOnly(profile: UserProfileResponse) {
@@ -117,10 +116,6 @@ class DashboardFragment : Fragment() {
         binding.metricOutstandingValue.text = getString(R.string.dashboard_unavailable)
     }
 
-    private fun formatMoney(currency: String, amount: Double): String {
-        val formatted = NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)
-        return if (currency == "ZAR") "R $formatted" else "$currency $formatted"
-    }
 
     override fun onDestroyView() {
         loadJob?.cancel()

@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.sidehustle.ui.navigation.navigateSafely
 import com.example.sidehustle.R
+import com.example.sidehustle.util.formatMoney
 import com.example.sidehustle.SideHustleApp
 import com.example.sidehustle.data.model.CreateIncomeRequest
 import com.example.sidehustle.data.model.IncomeLinkOption
@@ -32,7 +33,6 @@ import com.example.sidehustle.ui.navigation.openFinanceForm
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
 
@@ -107,17 +107,21 @@ class IncomeFragment : Fragment() {
         binding.incomeStatus.isVisible = false
         val amountText = binding.incomeAmount.text.toString().trim()
         val date = binding.incomeDate.text.toString().trim()
-        val methodLabel = binding.paymentMethod.selectedItem?.toString()
+        val methods = resources.getStringArray(R.array.payment_methods).drop(1)
+        val paymentMethod = methods.getOrNull(binding.paymentMethod.selectedItemPosition - 1)
         binding.incomeAmount.error = FormValidator.moneyError(amountText)?.let { getString(it) }
         binding.incomeDate.error = FormValidator.dateError(date)?.let { getString(it) }
-        val paymentError = FormValidator.selectionError(methodLabel,
-            resources.getStringArray(R.array.payment_methods).drop(1).map { LocalizedLabels.paymentMethod(requireContext(), it) },
-            R.string.income_payment_method_error)
-        if (paymentError != null) message(getString(paymentError))
-        if (binding.incomeAmount.error != null || binding.incomeDate.error != null || paymentError != null) return
-        val paymentMethod = method ?: return
-        val request = CreateIncomeRequest(amountText.toDouble(), date, paymentMethod, binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
-        val request = CreateIncomeRequest(amountText.toDouble(), date, LocalizedLabels.paymentMethodCode(requireContext(), methodLabel!!), binding.incomeDescription.text.toString().trim().ifBlank { null }, clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id, jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id, invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id)
+        if (paymentMethod == null) message(getString(R.string.income_payment_method_error))
+        if (binding.incomeAmount.error != null || binding.incomeDate.error != null || paymentMethod == null) return
+        val request = CreateIncomeRequest(
+            amount = amountText.toDouble(),
+            dateReceived = date,
+            paymentMethod = paymentMethod,
+            description = binding.incomeDescription.text.toString().trim().ifBlank { null },
+            clientId = clients.getOrNull(binding.incomeClient.selectedItemPosition - 1)?.id,
+            jobId = jobs.getOrNull(binding.incomeJob.selectedItemPosition - 1)?.id,
+            invoiceId = invoices.getOrNull(binding.incomeInvoice.selectedItemPosition - 1)?.id,
+        )
         saving = true
         binding.saveIncome.setLoading(true, R.string.action_saving)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -160,6 +164,5 @@ class IncomeFragment : Fragment() {
     private fun adapter(emptyLabel: String, options: List<IncomeLinkOption>) = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, listOf(emptyLabel) + options.map { it.label })
     private fun repository() = (requireActivity().application as SideHustleApp).repository
     private fun message(value: String) { binding.incomeStatus.text = value; binding.incomeStatus.isVisible = true }
-    private fun formatMoney(currency: String, amount: Double) = "$currency ${NumberFormat.getNumberInstance(Locale.getDefault()).format(amount)}"
     override fun onDestroyView() { loadJob?.cancel(); optionsJob?.cancel(); saving = false; listState = null; _binding = null; super.onDestroyView() }
 }

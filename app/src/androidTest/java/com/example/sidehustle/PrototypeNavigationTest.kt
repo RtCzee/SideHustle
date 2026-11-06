@@ -21,8 +21,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.example.sidehustle.ui.common.list.ListStateView
 import com.example.sidehustle.ui.navigation.CurvedBottomNavBar
 import com.example.sidehustle.ui.navigation.resetSession
-import com.google.firebase.auth.FirebaseAuth
-import org.junit.Assume.assumeNotNull
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,21 +31,26 @@ class PrototypeNavigationTest {
     private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
 
     @Test fun mainTabsSurviveLeavingAnInFlightRequest() {
-        assumeNotNull(FirebaseAuth.getInstance().currentUser)
-        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
-            repeat(3) {
-                listOf(R.id.clientsFragment, R.id.projectsFragment, R.id.invoicesFragment,
-                    R.id.expensesFragment, R.id.incomeFragment, R.id.settingsFragment,
-                    R.id.dashboardFragment).forEach { destination ->
-                    scenario.onActivity { activity ->
-                        val nav = (activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
-                        nav.navigate(destination, null, NavOptions.Builder()
-                            .setPopUpTo(R.id.dashboardFragment, false).setLaunchSingleTop(true).build())
-                        assertEquals(destination, nav.currentDestination!!.id)
+        val app = instrumentation.targetContext.applicationContext as SideHustleApp
+        instrumentation.runOnMainSync { app.repositoryOverride = FormSafetyTest.OfflineRepository(holdReads = true).repository }
+        try {
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                repeat(3) {
+                    listOf(R.id.clientsFragment, R.id.projectsFragment, R.id.invoicesFragment,
+                        R.id.expensesFragment, R.id.incomeFragment, R.id.settingsFragment,
+                        R.id.dashboardFragment).forEach { destination ->
+                        scenario.onActivity { activity ->
+                            val nav = (activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+                            nav.navigate(destination, null, NavOptions.Builder()
+                                .setPopUpTo(R.id.dashboardFragment, false).setLaunchSingleTop(true).build())
+                            assertEquals(destination, nav.currentDestination!!.id)
+                        }
+                        instrumentation.waitForIdleSync()
                     }
-                    instrumentation.waitForIdleSync()
                 }
             }
+        } finally {
+            instrumentation.runOnMainSync { app.repositoryOverride = null }
         }
     }
 

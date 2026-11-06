@@ -1,6 +1,8 @@
 <resources>
     <string name="sync_offline">Offline · changes are saved on this device</string>
     <string name="sync_syncing">Syncing your changes…</string>
+    <string name="sync_blocked">Some changes are still on this device. Sync will retry.</string>
+    <string name="creating_invoice">Creating invoice…</string>
 
     <string name="app_name">SideHustle</string>
 

@@ -5,7 +5,7 @@ const { listJobs, findJobById, createJob, updateJob, userOwnsClient } = require(
 const router = express.Router();
 
 const { ALLOWED_STATUSES, normalizeStatus, statusForNewJob } = require('../services/JobRules');
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const { isIsoDate } = require('../services/FinancialRules');
 
 function normalizeTitle(value) {
   if (typeof value !== 'string') return null;
@@ -17,7 +17,7 @@ function normalizeTitle(value) {
 function normalizeAmount(value) {
   if (typeof value !== 'number' && typeof value !== 'string') return undefined;
   const amount = Number(value);
-  if (!Number.isFinite(amount) || amount < 0) return undefined;
+  if (!Number.isFinite(amount) || amount < 0 || amount > 9999999999.99) return undefined;
   return Math.round(amount * 100) / 100;
 }
 
@@ -27,7 +27,7 @@ function normalizeDate(value) {
   if (typeof value !== 'string') return undefined;
   const trimmed = value.trim();
   if (trimmed.length === 0) return null;
-  return DATE_PATTERN.test(trimmed) ? trimmed : undefined;
+  return isIsoDate(trimmed) ? trimmed : undefined;
 }
 
 function jobPayload(row) {
@@ -65,7 +65,7 @@ router.get('/', requireAuth, async (req, res, next) => {
 });
 
 /** POST /jobs — create. Requires an existing client owned by this user. */
-router.post('/', requireAuth, async (req, res, next) => {
+async function create(req, res, next) {
   try {
     const title = normalizeTitle(req.body.title);
     if (!title) {
@@ -118,13 +118,15 @@ router.post('/', requireAuth, async (req, res, next) => {
       completedDate,
       agreedAmount: amount,
       currency: req.body.currency ?? undefined,
-    });
+    }, req.recordId);
 
     res.status(201).json(jobPayload(job));
   } catch (error) {
     next(error);
   }
-});
+}
+
+router.post('/', requireAuth, create);
 
 /** GET /jobs/:id */
 router.get('/:id', requireAuth, async (req, res, next) => {
@@ -143,7 +145,7 @@ router.get('/:id', requireAuth, async (req, res, next) => {
 });
 
 /** PUT /jobs/:id — partial update; only provided fields change. Status can be changed here. */
-router.put('/:id', requireAuth, async (req, res, next) => {
+async function update(req, res, next) {
   try {
     const hasTitle = req.body.title !== undefined;
     let title;
@@ -235,6 +237,10 @@ router.put('/:id', requireAuth, async (req, res, next) => {
     }
     next(error);
   }
-});
+}
+
+router.put('/:id', requireAuth, update);
 
 module.exports = router;
+
+module.exports.writes = { create, update };

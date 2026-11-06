@@ -18,16 +18,15 @@ import com.example.sidehustle.data.remote.ErrorKind
 import com.example.sidehustle.data.repository.SideHustleRepository
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Assert.*
-import org.junit.Assume.assumeNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.reflect.Proxy
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
+import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 
 /** All saves and loads use a fake repository. Never writes account data or signs out Firebase. */
@@ -38,7 +37,6 @@ class FormSafetyTest {
     private lateinit var fake: OfflineRepository
 
     @Before fun installFakeRepository() {
-        assumeNotNull(FirebaseAuth.getInstance().currentUser)
         fake = OfflineRepository()
         instrumentation.runOnMainSync { app.repositoryOverride = fake.repository }
     }
@@ -283,7 +281,7 @@ class FormSafetyTest {
         snackbar.view.findViewById<View>(com.google.android.material.R.id.snackbar_action).performClick()
     }
 
-    private class OfflineRepository {
+    internal class OfflineRepository(private val holdReads: Boolean = false) {
         var writes = 0
         var failProfile = false
         var invoiceAmount = 100.0
@@ -295,6 +293,10 @@ class FormSafetyTest {
         val repository = Proxy.newProxyInstance(SideHustleRepository::class.java.classLoader,
             arrayOf(SideHustleRepository::class.java)) { _, method, args ->
             when {
+                holdReads && method.name.startsWith("fetch") -> {
+                    val wait: suspend () -> Nothing = { kotlinx.coroutines.awaitCancellation() }
+                    wait.startCoroutineUninterceptedOrReturn(args!!.last() as Continuation<Nothing>)
+                }
                 method.name.startsWith("create") || method.name.startsWith("update") || method.name.startsWith("delete") -> {
                     writes++
                     if (holdWrite) {

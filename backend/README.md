@@ -6,6 +6,11 @@ For FCM token registration, notification settings, and scheduled job reminders, 
 [Push reminders](../docs/PUSH_REMINDERS.md). Existing deployments must run
 `npm run db:notifications` before enabling the reminder worker.
 
+Apply `npm run db:sync` on an existing database before deploying the API for the
+offline-capable Android app. New databases get the sync table through `npm run db:schema`.
+The Android app mirrors business records per Firebase account in Room and sends
+queued writes to `POST /sync` when `GET /health` reports a connected database.
+
 - Issue **#7**: health check, Firebase token auth, JSON errors
 - Issue **#8**: PostgreSQL schema + local database setup
 
